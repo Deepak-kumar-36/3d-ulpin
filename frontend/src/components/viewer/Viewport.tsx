@@ -99,7 +99,7 @@ function Scene({
 
       {/* Cadastre Property Parcel Boundary on Ground */}
       {visibleLayers.cadastre_boundary && parcelGeometry && (
-        <primitive object={new THREE.LineLoop(parcelGeometry, COMMON_MATERIALS.parcelBoundary)} />
+        <primitive object={new THREE.LineLoop(parcelGeometry, COMMON_MATERIALS.parcel)} />
       )}
 
       {/* Floors with full architectural solids */}
