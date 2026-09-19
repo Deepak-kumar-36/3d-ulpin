@@ -35,8 +35,8 @@ export default function DetectedUnitsPage() {
   const imageSize = activeFloor?.image_size || [800, 600];
 
   const handleConfirm = () => {
-    // The project was already stored in sessionStorage by ProcessingPage
-    navigate('/project/detected/viewer');
+    const activeId = sessionStorage.getItem('verta_active_project_id') || 'detected';
+    navigate(`/project/${activeId}/viewer`);
   };
 
   return (

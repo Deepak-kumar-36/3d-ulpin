@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getProject } from '../api/client';
+import { getProject, normalizeProject } from '../api/client';
 import type { Project } from '../data/types';
 import Viewport from '../components/viewer/Viewport';
 import LayerPanel from '../components/viewer/LayerPanel';
@@ -35,26 +35,44 @@ export default function ViewerWorkspace() {
 
   useEffect(() => {
     async function load() {
-      // 1. Check sessionStorage for a detected project first
-      const stored = sessionStorage.getItem('verta_detected_project');
-      if (stored) {
-        try {
-          const proj = JSON.parse(stored) as Project;
-          setProject(proj);
-          setIsDemo(!!(proj as any)._isDemoData);
-          setLoading(false);
-          return;
-        } catch {
-          // corrupted storage, fall through
+      // 1. Explicit demo requested
+      if (id === 'demo') {
+        const proj = await getProject('demo', true);
+        setProject(proj);
+        setIsDemo(true);
+        setLoading(false);
+        return;
+      }
+
+      // 2. Active uploaded / detected project
+      const activeId = sessionStorage.getItem('verta_active_project_id');
+      if (id === 'detected' || (id && activeId && id === activeId)) {
+        const stored = sessionStorage.getItem('verta_detected_project');
+        if (stored) {
+          try {
+            const raw = JSON.parse(stored);
+            const proj = normalizeProject(raw);
+            setProject(proj);
+            setIsDemo(!!(proj as any)._isDemoData);
+            setLoading(false);
+            return;
+          } catch {
+            // Corrupted storage, fall through
+          }
         }
       }
 
-      // 2. Fall back to API / demo
+      // 3. Load from backend or fallback
       if (!id) return;
-      const proj = await getProject(id, true);
-      setProject(proj);
-      setIsDemo(!!(proj as any)._isDemoData);
-      setLoading(false);
+      try {
+        const proj = await getProject(id, true);
+        setProject(proj);
+        setIsDemo(!!(proj as any)._isDemoData);
+      } catch (err) {
+        console.error('Failed to load project:', err);
+      } finally {
+        setLoading(false);
+      }
     }
     load();
   }, [id]);

@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { detectPlan, getDemoProject, buildProjectFromVision } from '../api/client';
+import { detectPlan, getDemoProject, buildProjectFromVision, ingestCvFloors } from '../api/client';
 import type { VisionFloor } from '../api/client';
+import type { Project } from '../data/types';
 
 type Status = 'detecting' | 'done' | 'error';
 
@@ -13,6 +14,7 @@ export default function ProcessingPage() {
   const projectName: string = location.state?.projectName || 'Untitled Project';
   const files: File[] = location.state?.files || [];
   const floorLabels: string[] = location.state?.floorLabels || files.map((_, i) => `L${i + 1}`);
+  const floorHeight: number = location.state?.floorHeight || 3.6;
 
   const [status, setStatus] = useState<Status>('detecting');
   const [currentFileIdx, setCurrentFileIdx] = useState(0);
@@ -43,10 +45,23 @@ export default function ProcessingPage() {
     }
 
     // All floors detected successfully
-    // Store raw vision results + converted project in sessionStorage
     sessionStorage.setItem('verta_vision_results', JSON.stringify(collected));
-    const project = buildProjectFromVision(collected, projectName);
-    sessionStorage.setItem('verta_detected_project', JSON.stringify(project));
+
+    // Ingest into backend to extrude 3D solid geometries and generate 3D ULPINs
+    let finalProject: Project;
+    let finalProjectId = 'detected';
+
+    try {
+      const ingestRes = await ingestCvFloors(collected, projectName, floorHeight);
+      finalProject = ingestRes.project;
+      finalProjectId = ingestRes.project_id;
+    } catch (ingestErr) {
+      console.warn('Backend ingestion failed, falling back to client-side 3D synthesis:', ingestErr);
+      finalProject = buildProjectFromVision(collected, projectName);
+    }
+
+    sessionStorage.setItem('verta_detected_project', JSON.stringify(finalProject));
+    sessionStorage.setItem('verta_active_project_id', finalProjectId);
 
     // Also store the image data URLs for the overlay page
     const imageDataUrls: string[] = [];
@@ -60,9 +75,9 @@ export default function ProcessingPage() {
 
     // Brief pause on "done" then navigate
     setTimeout(() => {
-      navigate(`/project/detected/detected`);
+      navigate('/project/detected/detected');
     }, 800);
-  }, [files, floorLabels, projectName, navigate]);
+  }, [files, floorLabels, projectName, floorHeight, navigate]);
 
   useEffect(() => {
     runDetection();

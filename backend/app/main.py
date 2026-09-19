@@ -95,6 +95,7 @@ def health():
 async def detect(
     file: UploadFile = File(...),
     floor_id: str = Form(default=""),
+    detector: str = Form(default="auto"),
 ):
     """
     Accept a floor-plan image, run the vision pipeline, return the floor JSON.
@@ -136,6 +137,7 @@ async def detect(
                 use_cached=False,
                 save_cache=False,
                 debug=False,
+                detector=detector,
             ),
         )
     except ValueError as e:
@@ -178,6 +180,8 @@ def create_project_endpoint(body: ProjectCreate, db: Session = Depends(get_db)):
 @app.get("/project/{project_id}", tags=["Project"])
 def get_project_endpoint(project_id: str, db: Session = Depends(get_db)):
     """Retrieve the full project payload (floors, units, validation, 3D geometry)."""
+    if project_id in ("demo", "fallback"):
+        return run_fallback_pipeline(db)
     result = get_full_project(db, project_id)
     if result is None:
         raise HTTPException(status_code=404, detail="Project not found")

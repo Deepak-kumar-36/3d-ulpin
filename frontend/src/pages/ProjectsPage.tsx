@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { getProject } from '../api/client';
+import { getProject, normalizeProject } from '../api/client';
 import type { Project } from '../data/types';
 import ScrollReveal from '../components/ui/ScrollReveal';
 
@@ -9,8 +9,27 @@ export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   
   useEffect(() => {
-    // In a real app we'd fetch a list. For demo, we just fetch the mock demo project.
-    getProject('demo').then(p => setProjects([p]));
+    async function initProjects() {
+      const list: Project[] = [];
+      const stored = sessionStorage.getItem('verta_detected_project');
+      if (stored) {
+        try {
+          const det = normalizeProject(JSON.parse(stored));
+          list.push(det);
+        } catch {
+          // ignore corrupted
+        }
+      }
+
+      try {
+        const demo = await getProject('demo', true);
+        list.push(demo);
+      } catch (err) {
+        console.error('Failed to load demo project:', err);
+      }
+      setProjects(list);
+    }
+    initProjects();
   }, []);
 
   return (

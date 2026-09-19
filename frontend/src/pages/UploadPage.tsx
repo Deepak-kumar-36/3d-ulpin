@@ -78,8 +78,13 @@ export default function UploadPage() {
     };
     
     // In a real app, this would POST to API with files.
-    // For now, pass project name in state to processing page.
-    navigate('/project/new/processing', { state: { projectName: parsedData.name, files } });
+    navigate('/project/new/processing', { 
+      state: { 
+        projectName: parsedData.name, 
+        files,
+        floorHeight: parsedData.floor_height || 3.6,
+      } 
+    });
   };
 
   return (
