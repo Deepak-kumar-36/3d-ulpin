@@ -149,3 +149,38 @@ def test_cache_fallback(synthetic_image, tmp_out, tmp_cache):
         out_dir=str(tmp_out), cache_dir=str(tmp_cache),
     )
     assert result["source"] == "cache-fallback", f"Expected 'cache-fallback', got '{result['source']}'"
+
+
+# ─── 7. Architectural realistic plans (L1, L2, L3) ─────────────────────────────
+
+def test_architectural_plans_l1_l2_l3(tmp_out, tmp_cache):
+    """L1, L2, L3 realistic floor plans with ~70px doors detect correctly with close_frac=0.06."""
+    from vision import process_floor
+    from make_plans import floor1, floor2, floor3
+    import cv2
+
+    expected_counts = {"L1": 8, "L2": 6, "L3": 6}
+    floor_funcs = {"L1": floor1, "L2": floor2, "L3": floor3}
+
+    for name, fn in floor_funcs.items():
+        img_path = tmp_out / f"{name}.png"
+        cv2.imwrite(str(img_path), fn().img)
+
+        result = process_floor(
+            str(img_path),
+            out_dir=str(tmp_out),
+            cache_dir=str(tmp_cache),
+        )
+
+        assert len(result["units"]) == expected_counts[name], (
+            f"{name}: expected {expected_counts[name]} units, got {len(result['units'])}"
+        )
+
+        for unit in result["units"]:
+            ring = unit["polygon"]
+            assert len(ring) >= 3
+            assert ring[0] != ring[-1]
+            poly = Polygon(ring + [ring[0]])
+            assert poly.is_valid
+            assert poly.area > 0
+

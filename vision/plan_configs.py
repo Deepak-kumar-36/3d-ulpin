@@ -20,4 +20,15 @@ PLAN_CONFIGS: dict[str, dict] = {
     "synthetic_wide_gaps": {
         "close_frac": 0.055,
     },
+    # Realistic architectural plans with ~70px doors require close_frac = 0.06
+    # (at 0.03 rooms merge through doors -> 0 units; at 0.08 corridors split)
+    "L1": {
+        "close_frac": 0.06,
+    },
+    "L2": {
+        "close_frac": 0.06,
+    },
+    "L3": {
+        "close_frac": 0.06,
+    },
 }
