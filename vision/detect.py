@@ -127,7 +127,7 @@ def remove_specks(mask: np.ndarray, min_area: float) -> np.ndarray:
     return keep[labels]
 
 
-def free_space_mask(walls: np.ndarray, cfg: DetectConfig) -> np.ndarray:
+def free_space_mask(walls: np.ndarray, cfg: DetectConfig) -> tuple[np.ndarray, list[dict]]:
     """Seal gaps in walls, invert to free space, remove the outside region."""
     h, w = walls.shape
 
@@ -136,9 +136,24 @@ def free_space_mask(walls: np.ndarray, cfg: DetectConfig) -> np.ndarray:
         kw = _odd_kernel(cfg.window_close_frac, min(h, w))
         walls = cv2.morphologyEx(walls, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (kw, kw)))
 
+    doors = []
     if cfg.thin_line_open_frac > 0:
         kt = _odd_kernel(cfg.thin_line_open_frac, min(h, w))
-        walls = cv2.morphologyEx(walls, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT, (kt, kt)))
+        opened = cv2.morphologyEx(walls, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT, (kt, kt)))
+        thin_features = cv2.bitwise_xor(walls, opened)
+        walls = opened
+        
+        # Extract doors from the removed thin lines
+        # Min door area: fraction of image, similar to min_hole_frac but smaller (e.g. 0.0001)
+        min_door_area = 0.00005 * h * w
+        contours, _ = cv2.findContours(thin_features, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        for cnt in contours:
+            if cv2.contourArea(cnt) >= min_door_area:
+                x, y, bw, bh = cv2.boundingRect(cnt)
+                doors.append({
+                    "bbox": [x, y, x + bw, y + bh],
+                    "centroid": [round(x + bw / 2.0, 1), round(y + bh / 2.0, 1)]
+                })
 
     k = _odd_kernel(cfg.close_frac, min(h, w))
     sealed = cv2.morphologyEx(walls, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (k, k)))
@@ -152,7 +167,7 @@ def free_space_mask(walls: np.ndarray, cfg: DetectConfig) -> np.ndarray:
     free = cv2.copyMakeBorder(free, cfg.pad, cfg.pad, cfg.pad, cfg.pad, cv2.BORDER_CONSTANT, value=255)
     ff_mask = np.zeros((free.shape[0] + 2, free.shape[1] + 2), np.uint8)
     cv2.floodFill(free, ff_mask, (0, 0), 0)
-    return free
+    return free, doors
 
 
 def extract_units(free: np.ndarray, image_hw: tuple[int, int], cfg: DetectConfig) -> list[Polygon]:
@@ -202,7 +217,7 @@ def detect_units(image, floor_id: str, cfg: DetectConfig | None = None) -> dict:
     h, w = gray.shape
 
     walls = binarize_walls(gray, cfg)
-    free = free_space_mask(walls, cfg)
+    free, doors_raw = free_space_mask(walls, cfg)
     polys = _reading_order(extract_units(free, (h, w), cfg), h)
 
     units = []
@@ -217,12 +232,18 @@ def detect_units(image, floor_id: str, cfg: DetectConfig | None = None) -> dict:
             }
         )
 
+    doors = []
+    for i, d in enumerate(doors_raw, start=1):
+        d["id"] = f"{floor_id}-door-{i:02d}"
+        doors.append(d)
+
     return {
         "floor_id": floor_id,
         "image_size": [w, h],
         "px_per_meter": None,  # fill in once you know the plan scale
         "coord_system": {"origin": "top-left", "y_axis": "down", "exterior_winding": "ccw", "closed_ring": False},
         "units": units,
+        "doors": doors,
     }
 
 
