@@ -1,74 +1,68 @@
-import { type ReactNode, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { type ReactNode } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { CursorGlow } from '../components/ui/CursorGlow';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
-  const [showSplash, setShowSplash] = useState(true);
+  const location = useLocation();
 
-  useEffect(() => {
-    // Only show splash on initial load
-    const timer = setTimeout(() => setShowSplash(false), 2400);
-    return () => clearTimeout(timer);
-  }, []);
+  const isViewer = location.pathname.includes('/viewer');
 
   return (
     <>
       <CursorGlow />
-      
-      {/* Entry Splash Animation */}
-      <AnimatePresence>
-        {showSplash && (
-          <motion.div 
-            initial={{ opacity: 1 }}
-            exit={{ 
-              opacity: 0,
-              scale: 1.1,
-              filter: 'blur(10px)',
-            }}
-            transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
-            className="fixed inset-0 z-[100] bg-surface flex items-center justify-center overflow-hidden"
-          >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 1, ease: "easeOut" }}
-              className="relative flex flex-col items-center"
-            >
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: "100%" }}
-                transition={{ delay: 0.8, duration: 0.8, ease: "easeInOut" }}
-                className="absolute top-1/2 left-0 h-[1px] bg-on-surface/20 -translate-y-1/2 w-[200vw] -ml-[50vw]"
-              />
-              <motion.h1 
-                className="font-display text-[80px] md:text-[140px] font-bold tracking-tighter text-on-surface bg-surface px-8 z-10 mix-blend-difference"
-                initial={{ letterSpacing: '0.1em', filter: 'blur(10px)' }}
-                animate={{ letterSpacing: '-0.04em', filter: 'blur(0px)' }}
-                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-              >
-                Verta
-              </motion.h1>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <div className="flex flex-col min-h-screen">
-        {/* New Verta Header matching reference image */}
-        <header className="fixed top-0 left-0 right-0 z-50 bg-surface border-b border-outline backdrop-blur-md bg-surface/80">
-          <div className="h-16 w-full px-6 flex items-center justify-between font-mono text-[10px] tracking-widest uppercase text-on-surface-variant">
+        {/* Technical Architectural Header */}
+        <header className="fixed top-0 left-0 right-0 z-50 bg-surface/90 border-b border-outline/30 backdrop-blur-md">
+          <div className="h-16 w-full px-6 flex items-center justify-between font-mono text-[11px] tracking-widest uppercase">
             
+            {/* Brand */}
             <div className="flex items-center gap-4">
-              <Link to="/" className="text-on-surface font-bold hover:text-tertiary transition-colors">
+              <Link to="/" className="text-on-surface font-bold text-sm tracking-tighter hover:text-primary transition-colors">
                 VERTA
               </Link>
-              <span className="hidden sm:inline">VERTA CADASTRE ENGINE</span>
+              <span className="text-outline">/</span>
+              <span className="hidden sm:inline text-on-surface-variant text-[10px]">
+                3D VERTICAL CADASTRE ENGINE
+              </span>
             </div>
 
-            <div className="flex items-center gap-6">
-              <Link to="/project/demo/viewer" className="px-3 py-1.5 border border-outline hover:bg-surface-container-high transition-colors">
-                ENTER WORKSPACE
+            {/* Technical Navigation */}
+            <nav className="hidden md:flex items-center gap-6 text-on-surface-variant text-[10px]">
+              <Link 
+                to="/project/demo/viewer" 
+                className={`transition-colors hover:text-primary ${isViewer ? 'text-primary font-semibold' : ''}`}
+              >
+                3D CADASTRE
+              </Link>
+              <Link 
+                to="/projects" 
+                className="transition-colors hover:text-primary"
+              >
+                PROJECTS
+              </Link>
+              <Link 
+                to="/project/demo/upload" 
+                className="transition-colors hover:text-primary"
+              >
+                UPLOAD PLAN
+              </Link>
+              <Link 
+                to="/project/demo/validation" 
+                className="transition-colors hover:text-primary"
+              >
+                VALIDATION
+              </Link>
+            </nav>
+
+            {/* Direct Workspace Action */}
+            <div className="flex items-center gap-4">
+              <Link 
+                to="/project/demo/viewer" 
+                className="px-3.5 py-1.5 bg-surface-container border border-outline hover:border-primary hover:text-primary transition-all text-[10px] tracking-wider rounded font-mono flex items-center gap-2"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <span>WORKSPACE</span>
               </Link>
             </div>
           </div>

@@ -3,18 +3,25 @@ import { motion, useSpring, useMotionValue } from 'framer-motion';
 
 export function CursorGlow() {
   const [isVisible, setIsVisible] = useState(false);
+  const [isTouch, setIsTouch] = useState(false);
   
-  const cursorX = useMotionValue(-100);
-  const cursorY = useMotionValue(-100);
+  const cursorX = useMotionValue(-200);
+  const cursorY = useMotionValue(-200);
 
-  // Smooth springs for a fluid, laggy follow effect
-  const springX = useSpring(cursorX, { stiffness: 100, damping: 25, mass: 0.5 });
-  const springY = useSpring(cursorY, { stiffness: 100, damping: 25, mass: 0.5 });
+  // Gentle, smooth spring damping for atmospheric trailing light
+  const springX = useSpring(cursorX, { stiffness: 90, damping: 28, mass: 0.6 });
+  const springY = useSpring(cursorY, { stiffness: 90, damping: 28, mass: 0.6 });
 
   useEffect(() => {
+    // Disable atmospheric cursor glow on touch screens
+    if (window.matchMedia('(pointer: coarse)').matches) {
+      setIsTouch(true);
+      return;
+    }
+
     const moveCursor = (e: MouseEvent) => {
-      cursorX.set(e.clientX - 250); // offset by half width (500/2)
-      cursorY.set(e.clientY - 250);
+      cursorX.set(e.clientX - 200); // Center of 400px light sphere
+      cursorY.set(e.clientY - 200);
       if (!isVisible) setIsVisible(true);
     };
 
@@ -32,18 +39,20 @@ export function CursorGlow() {
     };
   }, [cursorX, cursorY, isVisible]);
 
+  if (isTouch) return null;
+
   return (
     <motion.div
-      className="pointer-events-none fixed top-0 left-0 z-0 w-[500px] h-[500px] rounded-full mix-blend-screen"
+      className="pointer-events-none fixed top-0 left-0 z-0 w-[400px] h-[400px] rounded-full blur-[35px]"
       style={{
         x: springX,
         y: springY,
-        background: 'radial-gradient(circle, rgba(141,163,153,0.06) 0%, rgba(141,163,153,0) 70%)',
+        background: 'radial-gradient(circle, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0) 65%)',
         opacity: isVisible ? 1 : 0,
       }}
       initial={{ opacity: 0 }}
       animate={{ opacity: isVisible ? 1 : 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.4 }}
     />
   );
 }

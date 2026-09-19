@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getProject } from '../api/client';
@@ -30,7 +30,7 @@ export default function ViewerWorkspace() {
 
   const viewportRef = useRef<HTMLDivElement>(null);
 
-  // Interaction State
+  // Interaction Mode: 'building' (Macro overview) vs 'exploration' (Active stratum focus)
   const [interactionMode, setInteractionMode] = useState<'building' | 'exploration'>('building');
 
   useEffect(() => {
@@ -43,14 +43,35 @@ export default function ViewerWorkspace() {
     load();
   }, [id]);
 
-  // Hook up floor scrolling (only active when in exploration mode)
+  // Hook up continuous mouse-wheel stratum exploration
   useFloorScroll({
     floors: project?.floors || [],
     activeFloorId,
-    onSelectFloor: (fId: string | 'all') => setActiveFloorId(fId),
+    onSelectFloor: (fId: string | 'all') => {
+      setActiveFloorId(fId);
+      if (fId !== 'all') {
+        setSelectedUnitId(null);
+      }
+    },
     targetRef: viewportRef,
     enabled: interactionMode === 'exploration',
   });
+
+  // Extract actionable validation failures/warnings
+  const failedUnits = useMemo(() => {
+    if (!project) return [];
+    return project.units
+      .filter(u => u.validations.some(v => v.status === 'fail' || v.status === 'warning'))
+      .map(u => {
+        const v = u.validations.find(val => val.status === 'fail') || u.validations.find(val => val.status === 'warning');
+        return {
+          id: u.id,
+          ulpin_3d: u.ulpin_3d,
+          floor_id: u.floor_id,
+          message: v?.message || 'Validation anomaly detected',
+        };
+      });
+  }, [project]);
 
   if (loading || !project) {
     return (
@@ -69,7 +90,7 @@ export default function ViewerWorkspace() {
       exit={{ opacity: 0 }}
       className="flex flex-col h-[calc(100vh-64px)] p-6 gap-6 relative"
     >
-      {/* Back to building mode button */}
+      {/* Return to building macro view button */}
       <AnimatePresence>
         {interactionMode === 'exploration' && (
           <motion.div 
@@ -84,20 +105,50 @@ export default function ViewerWorkspace() {
                 setActiveFloorId('all');
                 setSelectedUnitId(null);
               }}
-              className="bg-surface/90 backdrop-blur-md px-6 py-2 rounded-full shadow-cadastre flex items-center gap-2 hover:bg-surface-container-high transition-colors border border-outline/20 text-on-surface"
+              className="bg-surface/90 backdrop-blur-md px-6 py-2 rounded-full shadow-cadastre flex items-center gap-2 hover:bg-surface-container-high transition-colors border border-outline/20 text-on-surface cursor-pointer"
             >
               <span className="material-icon text-[16px]">arrow_upward</span>
-              <span className="font-label-caps tracking-wider uppercase text-xs">Return to Building View</span>
+              <span className="font-label-caps tracking-wider uppercase text-xs">Return to Macro Building View</span>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Floating Show Strata Toggle when hidden in macro building view */}
+      <AnimatePresence>
+        {interactionMode === 'building' && (
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={{ type: 'spring', stiffness: 220, damping: 25 }}
+            className="absolute top-8 left-8 z-30 pointer-events-auto"
+          >
+            <button 
+              onClick={() => {
+                setInteractionMode('exploration');
+                if (activeFloorId === 'all') {
+                  setActiveFloorId('floor-gf');
+                }
+              }}
+              className="bg-surface/95 backdrop-blur-md px-4 py-2.5 rounded-xl shadow-cadastre flex items-center gap-3 hover:bg-surface-container-high transition-all border border-primary/50 hover:border-primary text-primary cursor-pointer group hover:shadow-[0_0_25px_rgba(195,221,69,0.25)]"
+              title="Restore Strata & Layer Controls"
+            >
+              <span className="material-icon text-[20px] group-hover:scale-110 transition-transform">layers</span>
+              <div className="flex flex-col text-left">
+                <span className="font-label-caps tracking-wider uppercase text-xs font-bold text-primary">Show Strata</span>
+                <span className="font-mono text-[9px] text-on-surface-variant">Restore floor navigation</span>
+              </div>
             </button>
           </motion.div>
         )}
       </AnimatePresence>
 
       <div className="flex-1 flex gap-6 overflow-hidden">
-        {/* Left: Layers & Strata */}
+        {/* Left: Strata & Layer Controls */}
         <motion.div 
           animate={{ x: interactionMode === 'building' ? -400 : 0, opacity: interactionMode === 'building' ? 0 : 1 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 25 }}
+          transition={{ type: 'spring', stiffness: 220, damping: 26 }}
           className="w-[320px] flex-shrink-0"
         >
           <LayerPanel 
@@ -115,14 +166,20 @@ export default function ViewerWorkspace() {
             onToggleLayer={(layer: string) => setVisibleLayers(prev => ({ ...prev, [layer]: !prev[layer] }))}
             projectionMode={projectionMode}
             onChangeProjection={setProjectionMode}
+            onCollapse={() => {
+              setInteractionMode('building');
+              setActiveFloorId('all');
+              setSelectedUnitId(null);
+            }}
           />
         </motion.div>
 
-        {/* Center: 3D Viewport */}
+        {/* Center: Interactive 3D Viewport */}
         <div className="flex-1 relative" ref={viewportRef}>
           <Viewport 
             project={project}
             activeFloorId={activeFloorId}
+            onSelectFloor={(fId) => setActiveFloorId(fId)}
             selectedUnitId={selectedUnitId}
             hoveredUnitId={hoveredUnitId}
             onHoverUnit={setHoveredUnitId}
@@ -130,11 +187,16 @@ export default function ViewerWorkspace() {
             visibleLayers={visibleLayers}
             projectionMode={projectionMode}
             interactionMode={interactionMode}
-            onEnterExploration={() => setInteractionMode('exploration')}
+            onEnterExploration={() => {
+              setInteractionMode('exploration');
+              if (activeFloorId === 'all') {
+                setActiveFloorId('floor-gf');
+              }
+            }}
           />
         </div>
 
-        {/* Right: Inspection Panel */}
+        {/* Right: Technical Property Inspection Panel */}
         <motion.div 
           animate={{ x: interactionMode === 'building' ? 400 : 0, opacity: interactionMode === 'building' ? 0 : 1 }}
           transition={{ type: 'spring', stiffness: 200, damping: 25 }}
@@ -148,13 +210,22 @@ export default function ViewerWorkspace() {
         </motion.div>
       </div>
 
-      {/* Bottom: Validation Summary */}
+      {/* Bottom: Cadastre Validation Engine Bar */}
       <motion.div 
         animate={{ y: interactionMode === 'building' ? 100 : 0, opacity: interactionMode === 'building' ? 0 : 1 }}
         transition={{ type: 'spring', stiffness: 200, damping: 25 }}
         className="flex-shrink-0"
       >
-        <ValidationBar summary={project.validation_summary} projectId={project.id} />
+        <ValidationBar 
+          summary={project.validation_summary} 
+          projectId={project.id}
+          failedUnits={failedUnits}
+          onSelectUnit={(unitId, floorId) => {
+            setInteractionMode('exploration');
+            setActiveFloorId(floorId);
+            setSelectedUnitId(unitId);
+          }}
+        />
       </motion.div>
     </motion.div>
   );

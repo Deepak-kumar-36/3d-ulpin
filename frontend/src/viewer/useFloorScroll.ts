@@ -10,63 +10,77 @@ interface Props {
 }
 
 export function useFloorScroll({ floors, activeFloorId, onSelectFloor, targetRef, enabled = true }: Props) {
-  const isScrolling = useRef(false);
-  const scrollTimeout = useRef<number | null>(null);
+  const accumulatedDelta = useRef(0);
+  const isCooldown = useRef(false);
+  const cooldownTimer = useRef<number | null>(null);
+  const decayTimer = useRef<number | null>(null);
 
   useEffect(() => {
     const target = targetRef.current;
     if (!target || !enabled) return;
 
-    // Ordered from bottom to top for logical scrolling
-    // (B1 -> GF -> F1 -> F2...)
+    // Ordered bottom to top: B1, GF, F1, F2, F3, F4, F5
     const orderedFloors = [...floors].sort((a, b) => a.floor_number - b.floor_number);
-    
+    if (orderedFloors.length === 0) return;
+
+    const SCROLL_THRESHOLD = 60; // Threshold prevents hypersensitive trackpad jitter
+
     const handleWheel = (e: WheelEvent) => {
-      // Prevent default page scroll while over the viewport
+      // Prevent default browser viewport scrolling
       e.preventDefault();
 
-      if (isScrolling.current) return;
+      if (isCooldown.current) return;
 
-      const direction = Math.sign(e.deltaY); // 1 = down (scroll towards bottom/negative floors), -1 = up (scroll towards top/positive floors)
-      
-      let nextFloorId: string | 'all' = activeFloorId;
+      accumulatedDelta.current += e.deltaY;
 
-      if (activeFloorId === 'all') {
-        // If showing all, start from the top or bottom depending on scroll direction
-        if (direction > 0) {
-          nextFloorId = orderedFloors[orderedFloors.length - 1].id; // Go to top floor
-        } else {
-          nextFloorId = orderedFloors[0].id; // Go to bottom floor
-        }
-      } else {
-        const currentIndex = orderedFloors.findIndex(f => f.id === activeFloorId);
-        
-        if (direction > 0) {
-          // Scroll down -> go to lower floor
-          if (currentIndex > 0) {
-            nextFloorId = orderedFloors[currentIndex - 1].id;
+      // Clear decay timer on active input
+      if (decayTimer.current) window.clearTimeout(decayTimer.current);
+      decayTimer.current = window.setTimeout(() => {
+        accumulatedDelta.current = 0;
+      }, 200);
+
+      if (Math.abs(accumulatedDelta.current) >= SCROLL_THRESHOLD) {
+        const direction = Math.sign(accumulatedDelta.current); // > 0 is scroll downward, < 0 is scroll upward
+        accumulatedDelta.current = 0;
+
+        let nextFloorId: string | 'all' = activeFloorId;
+
+        if (activeFloorId === 'all') {
+          // If starting from full building overview:
+          // Scroll up -> enter from Ground Floor (0)
+          // Scroll down -> enter from top floor
+          if (direction < 0) {
+            const gf = orderedFloors.find(f => f.floor_number === 0) || orderedFloors[0];
+            nextFloorId = gf.id;
           } else {
-            nextFloorId = 'all'; // Go back to all when hitting bottom
+            nextFloorId = orderedFloors[orderedFloors.length - 1].id;
           }
         } else {
-          // Scroll up -> go to higher floor
-          if (currentIndex < orderedFloors.length - 1) {
-            nextFloorId = orderedFloors[currentIndex + 1].id;
+          const currentIndex = orderedFloors.findIndex(f => f.id === activeFloorId);
+          
+          if (direction > 0) {
+            // Scroll down -> descend stratum (F3 -> F2 -> F1 -> GF -> B1)
+            if (currentIndex > 0) {
+              nextFloorId = orderedFloors[currentIndex - 1].id;
+            }
           } else {
-            nextFloorId = 'all'; // Go back to all when hitting top
+            // Scroll up -> ascend stratum (B1 -> GF -> F1 -> F2 -> F3)
+            if (currentIndex < orderedFloors.length - 1) {
+              nextFloorId = orderedFloors[currentIndex + 1].id;
+            }
           }
         }
-      }
 
-      if (nextFloorId !== activeFloorId) {
-        onSelectFloor(nextFloorId);
-        
-        // Debounce / Cooldown
-        isScrolling.current = true;
-        if (scrollTimeout.current) window.clearTimeout(scrollTimeout.current);
-        scrollTimeout.current = window.setTimeout(() => {
-          isScrolling.current = false;
-        }, 400); // 400ms cooldown matches transition duration
+        if (nextFloorId !== activeFloorId) {
+          onSelectFloor(nextFloorId);
+          
+          // Cooldown to prevent multi-floor skip from trackpad momentum
+          isCooldown.current = true;
+          if (cooldownTimer.current) window.clearTimeout(cooldownTimer.current);
+          cooldownTimer.current = window.setTimeout(() => {
+            isCooldown.current = false;
+          }, 320);
+        }
       }
     };
 
@@ -74,7 +88,8 @@ export function useFloorScroll({ floors, activeFloorId, onSelectFloor, targetRef
     
     return () => {
       target.removeEventListener('wheel', handleWheel);
-      if (scrollTimeout.current) window.clearTimeout(scrollTimeout.current);
+      if (cooldownTimer.current) window.clearTimeout(cooldownTimer.current);
+      if (decayTimer.current) window.clearTimeout(decayTimer.current);
     };
   }, [floors, activeFloorId, onSelectFloor, targetRef, enabled]);
 }
