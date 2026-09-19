@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { Grid, CameraControls, BakeShadows } from '@react-three/drei';
 import type { Project } from '../../data/types';
 import { FloorGroup } from './FloorGroup';
+import { Roof } from './Roof';
 import { getFloorUnits } from '../../data/mockProject';
 import { COMMON_MATERIALS } from '../../viewer/scene';
 import * as THREE from 'three';
@@ -130,6 +131,19 @@ function Scene({
           />
         );
       })}
+
+      {/* Architectural Roof Slab (above highest floor) */}
+      {visibleLayers.footprint && (() => {
+        const sortedFloors = [...project.floors].sort((a, b) => b.floor_number - a.floor_number);
+        const topFloor = sortedFloors[0];
+        if (!topFloor) return null;
+        return (
+          <Roof
+            footprint={topFloor.footprint}
+            elevationTop={topFloor.elevation_top}
+          />
+        );
+      })()}
       
       {/* Architectural Ground Drafting Grid */}
       <Grid 

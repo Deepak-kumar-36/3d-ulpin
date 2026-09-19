@@ -6,6 +6,7 @@ import type { Floor, Unit } from '../../data/types';
 import { UnitMesh } from './UnitMesh';
 import { Staircase } from './Staircase';
 import { COMMON_MATERIALS, createExtrudedGeometry } from '../../viewer/scene';
+import { createExteriorWalls } from '../../viewer/archGeometry';
 
 interface Props {
   floor: Floor;
@@ -70,6 +71,16 @@ export function FloorGroup({
     return COLUMN_POSITIONS_BASE.filter(([_, z]) => !isTower || z <= 10);
   }, [floor.floor_number]);
 
+  // ── Exterior Wall Shell ──
+  const exteriorWallGroup = useMemo(() => {
+    return createExteriorWalls(
+      floor.footprint,
+      floorHeight,
+      floor.elevation_base,
+      isFloorActive ? COMMON_MATERIALS.wallExterior : COMMON_MATERIALS.wallExteriorInactive
+    );
+  }, [floor.footprint, floorHeight, floor.elevation_base, isFloorActive]);
+
   const floorCode = floor.floor_number < 0 
     ? `B0${Math.abs(floor.floor_number)}` 
     : floor.floor_number === 0 
@@ -113,6 +124,13 @@ export function FloorGroup({
           <Edges threshold={15} color="#45544d" />
         </mesh>
       ))}
+
+      {/* Exterior Wall Shell (raycast disabled) */}
+      {visibleLayers.footprint && (
+        <group raycast={() => null}>
+          <primitive object={exteriorWallGroup} />
+        </group>
+      )}
 
       {/* Minimal Architectural Floor Callout Leader Badge */}
       {showFloorLabel && (
@@ -166,7 +184,7 @@ export function FloorGroup({
         />
       )}
 
-      {/* Units on this floor */}
+      {/* Units on this floor (now with doors, windows, interior walls) */}
       {visibleLayers.units && units.map((unit) => (
         <UnitMesh
           key={unit.id}
@@ -178,6 +196,7 @@ export function FloorGroup({
           onClick={onClickUnit}
           projectionMode={projectionMode}
           showAnchors={visibleLayers.anchors}
+          floorFootprint={floor.footprint}
         />
       ))}
     </group>

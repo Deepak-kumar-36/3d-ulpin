@@ -9,6 +9,11 @@ import {
   getOutlineColor,
   COMMON_MATERIALS 
 } from '../../viewer/scene';
+import {
+  createDoorGroup,
+  createWindowGroups,
+  createInteriorWalls,
+} from '../../viewer/archGeometry';
 
 interface Props {
   unit: Unit;
@@ -19,6 +24,7 @@ interface Props {
   onClick: (id: string) => void;
   projectionMode?: 'isometric' | 'exploded' | 'xray';
   showAnchors?: boolean;
+  floorFootprint?: number[][];
 }
 
 export function UnitMesh({ 
@@ -30,6 +36,7 @@ export function UnitMesh({
   onClick,
   projectionMode = 'isometric',
   showAnchors = false,
+  floorFootprint,
 }: Props) {
   const meshRef = useRef<THREE.Mesh>(null);
 
@@ -53,59 +60,31 @@ export function UnitMesh({
   const hasFail = unit.validations.some(v => v.status === 'fail');
   const hasWarning = unit.validations.some(v => v.status === 'warning');
 
-  // Architectural details: simplified door thresholds and window mullions
-  const { doorGeo, winGeo } = useMemo(() => {
-    const poly = unit.polygon_2d;
-    if (poly.length < 2) return { doorGeo: null, winGeo: null };
+  // ── Procedural 3D Door ──
+  const doorGroup = useMemo(() => {
+    return createDoorGroup(unit.polygon_2d, unit.height, {
+      doorFrame: isFloorActive ? COMMON_MATERIALS.doorFrame : COMMON_MATERIALS.doorFrameInactive,
+      doorPanel: isFloorActive ? COMMON_MATERIALS.doorPanel : COMMON_MATERIALS.doorPanelInactive,
+    });
+  }, [unit.polygon_2d, unit.height, isFloorActive]);
 
-    const doorPts: THREE.Vector3[] = [];
-    const winPts: THREE.Vector3[] = [];
+  // ── Procedural 3D Windows (only on exterior edges) ──
+  const windowGroup = useMemo(() => {
+    if (!floorFootprint) return null;
+    return createWindowGroups(unit.polygon_2d, unit.height, floorFootprint, {
+      doorFrame: isFloorActive ? COMMON_MATERIALS.doorFrame : COMMON_MATERIALS.doorFrameInactive,
+      glass: isFloorActive ? COMMON_MATERIALS.glass : COMMON_MATERIALS.glassInactive,
+    });
+  }, [unit.polygon_2d, unit.height, floorFootprint, isFloorActive]);
 
-    // Doorway opening indicator on primary segment
-    const p1 = poly[0];
-    const p2 = poly[1];
-    const dx = p2[0] - p1[0];
-    const dz = p2[1] - p1[1];
-    const len = Math.hypot(dx, dz);
-
-    if (len > 1.2) {
-      const midX = (p1[0] + p2[0]) / 2;
-      const midZ = (p1[1] + p2[1]) / 2;
-      const nx = -dz / len;
-      const nz = dx / len;
-
-      doorPts.push(
-        new THREE.Vector3(midX - nx * 0.4, 0.02, midZ - nz * 0.4),
-        new THREE.Vector3(midX + nx * 0.4, 0.02, midZ + nz * 0.4)
-      );
-    }
-
-    // Windows on exterior perimeter edges
-    for (let i = 1; i < poly.length; i++) {
-      const a = poly[i];
-      const b = poly[(i + 1) % poly.length];
-      const edgeLen = Math.hypot(b[0] - a[0], b[1] - a[1]);
-
-      if (edgeLen > 2.5 && (a[0] <= 1.0 || b[0] <= 1.0 || a[1] <= 1.0 || b[1] <= 1.0)) {
-        const numWindows = Math.floor(edgeLen / 2.5);
-        for (let w = 1; w <= numWindows; w++) {
-          const t = w / (numWindows + 1);
-          const wx = a[0] + (b[0] - a[0]) * t;
-          const wz = a[1] + (b[1] - a[1]) * t;
-
-          winPts.push(
-            new THREE.Vector3(wx, 0.8, wz),
-            new THREE.Vector3(wx, unit.height - 0.35, wz)
-          );
-        }
-      }
-    }
-
-    const dGeo = doorPts.length > 0 ? new THREE.BufferGeometry().setFromPoints(doorPts) : null;
-    const wGeo = winPts.length > 0 ? new THREE.BufferGeometry().setFromPoints(winPts) : null;
-
-    return { doorGeo: dGeo, winGeo: wGeo };
-  }, [unit.polygon_2d, unit.height]);
+  // ── Interior Partition Walls ──
+  const wallGroup = useMemo(() => {
+    return createInteriorWalls(
+      unit.polygon_2d,
+      unit.height,
+      isFloorActive ? COMMON_MATERIALS.wall : COMMON_MATERIALS.wallInactive
+    );
+  }, [unit.polygon_2d, unit.height, isFloorActive]);
 
   // Smooth hover, selection, and validation animations
   useFrame((state, delta) => {
@@ -188,19 +167,17 @@ export function UnitMesh({
         </Html>
       )}
 
-      {/* Simplified Door Threshold Indicator on Floor Slab */}
-      {doorGeo && (
-        <primitive 
-          object={new THREE.LineSegments(doorGeo, COMMON_MATERIALS.doorThreshold)} 
-        />
-      )}
+      {/* ── Architectural Detail Group (raycast disabled) ── */}
+      <group raycast={() => null}>
+        {/* 3D Procedural Door */}
+        {doorGroup && <primitive object={doorGroup} />}
 
-      {/* Simplified Architectural Window Mullion Lines */}
-      {winGeo && (
-        <primitive 
-          object={new THREE.LineSegments(winGeo, COMMON_MATERIALS.mullion)} 
-        />
-      )}
+        {/* 3D Procedural Windows */}
+        {windowGroup && <primitive object={windowGroup} />}
+
+        {/* Interior Partition Walls */}
+        {wallGroup && <primitive object={wallGroup} />}
+      </group>
     </group>
   );
 }
