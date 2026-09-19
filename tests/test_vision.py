@@ -176,11 +176,19 @@ def test_architectural_plans_l1_l2_l3(tmp_out, tmp_cache):
             f"{name}: expected {expected_counts[name]} units, got {len(result['units'])}"
         )
 
+        expected_holes = {"L1": 1, "L2": 0, "L3": 2}
+        total_holes = sum(len(u["holes"]) for u in result["units"])
+        assert total_holes == expected_holes[name], (
+            f"{name}: expected {expected_holes[name]} total holes, got {total_holes}"
+        )
+
         for unit in result["units"]:
             ring = unit["polygon"]
-            assert len(ring) >= 3
+            # No needle spikes from door leaves: all rooms are clean rectangles
+            assert len(ring) == 4, f"{unit['id']}: expected 4 vertices, got {len(ring)} ({ring})"
             assert ring[0] != ring[-1]
             poly = Polygon(ring + [ring[0]])
             assert poly.is_valid
             assert poly.area > 0
+
 

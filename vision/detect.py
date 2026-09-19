@@ -38,7 +38,10 @@ class DetectConfig:
     shapely_tol_frac: float = 0.002    # Shapely simplify tolerance, fraction of image diagonal
     # --- holes (columns, shafts) ---
     keep_holes: bool = True
-    min_hole_frac: float = 0.01        # hole must be >= this fraction of its unit's area
+    min_hole_frac: float = 0.003       # hole must be >= this fraction of its unit's area
+    # --- thin feature suppression (door leaves, swing arcs, dimension lines) ---
+    window_close_frac: float = 0.008   # fuses multi-line windows before thin-line stripping
+    thin_line_open_frac: float = 0.004 # strips door leaves, swing arcs, and dimension marks (<~5px)
     # --- misc ---
     pad: int = 10                      # white margin so the outside is one connected region
 
@@ -127,6 +130,16 @@ def remove_specks(mask: np.ndarray, min_area: float) -> np.ndarray:
 def free_space_mask(walls: np.ndarray, cfg: DetectConfig) -> np.ndarray:
     """Seal gaps in walls, invert to free space, remove the outside region."""
     h, w = walls.shape
+
+    # Pre-clean walls: fuse window multi-lines, then strip thin lines (door leaves, arcs)
+    if cfg.window_close_frac > 0:
+        kw = _odd_kernel(cfg.window_close_frac, min(h, w))
+        walls = cv2.morphologyEx(walls, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (kw, kw)))
+
+    if cfg.thin_line_open_frac > 0:
+        kt = _odd_kernel(cfg.thin_line_open_frac, min(h, w))
+        walls = cv2.morphologyEx(walls, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT, (kt, kt)))
+
     k = _odd_kernel(cfg.close_frac, min(h, w))
     sealed = cv2.morphologyEx(walls, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (k, k)))
     free = cv2.bitwise_not(sealed)
