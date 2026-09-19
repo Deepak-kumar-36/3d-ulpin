@@ -26,10 +26,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy.orm import Session
 
-# ── Make sure the project root is on sys.path ──
+# ── Make sure the project root and backend are on sys.path ──
 _root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_backend = os.path.join(_root, "backend")
 if _root not in sys.path:
     sys.path.insert(0, _root)
+if _backend not in sys.path:
+    sys.path.insert(0, _backend)
 
 from app.storage.database import init_db, get_db, ProjectModel, UnitModel, FloorModel
 from app.schemas import (
