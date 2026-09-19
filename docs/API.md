@@ -91,6 +91,10 @@ GET    /project/{project_id}
 
 POST   /project/{project_id}/floor-plan
 
+POST   /cv/ingest
+
+POST   /cv/ingest-file
+
 POST   /process/{floor_plan_id}
 
 POST   /extrude/{project_id}
@@ -298,7 +302,50 @@ floor_height = 3.0
 
 ---
 
-# 9. Process Floor Plan
+---
+
+# 9. Ingest CV Floor JSON (Person 1 → Person 2)
+
+## `POST /cv/ingest`
+
+Ingest Person 1's floor-plan JSON files and run the full pipeline (extrude, validate, ULPIN generation, persistence).
+
+---
+
+## Request
+
+```json
+{
+  "project_name": "CV-Detected Building",
+  "floor_height": 3.0,
+  "floors": [
+    {
+      "floor_number": 0,
+      "json": {
+        "floor_id": "L1",
+        "image_size": [1600, 1200],
+        "units": [
+          {
+            "id": "L1-01",
+            "polygon": [[100, 100], [300, 100], [300, 250], [100, 250]],
+            "area_px": 30000
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+---
+
+## Response
+
+Returns the full project payload containing the ingested units with 3D geometry and ULPINs (same as `GET /project/{id}`), plus a `floor_reports` array summarizing the CV ingestion process.
+
+---
+
+# 10. Process Floor Plan
 
 ## `POST /process/{floor_plan_id}`
 
