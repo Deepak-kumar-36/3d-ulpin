@@ -5,12 +5,12 @@ export function CursorGlow() {
   const [isVisible, setIsVisible] = useState(false);
   const [isTouch, setIsTouch] = useState(false);
   
-  const cursorX = useMotionValue(-200);
-  const cursorY = useMotionValue(-200);
+  const cursorX = useMotionValue(-300);
+  const cursorY = useMotionValue(-300);
 
-  // Gentle, smooth spring damping for atmospheric trailing light
-  const springX = useSpring(cursorX, { stiffness: 90, damping: 28, mass: 0.6 });
-  const springY = useSpring(cursorY, { stiffness: 90, damping: 28, mass: 0.6 });
+  // Softer, more fluid spring damping for ambient trailing light
+  const springX = useSpring(cursorX, { stiffness: 45, damping: 20, mass: 0.8 });
+  const springY = useSpring(cursorY, { stiffness: 45, damping: 20, mass: 0.8 });
 
   useEffect(() => {
     // Disable atmospheric cursor glow on touch screens
@@ -20,8 +20,8 @@ export function CursorGlow() {
     }
 
     const moveCursor = (e: MouseEvent) => {
-      cursorX.set(e.clientX - 200); // Center of 400px light sphere
-      cursorY.set(e.clientY - 200);
+      cursorX.set(e.clientX - 300); // Center of 600px light sphere
+      cursorY.set(e.clientY - 300);
       if (!isVisible) setIsVisible(true);
     };
 
@@ -43,11 +43,11 @@ export function CursorGlow() {
 
   return (
     <motion.div
-      className="pointer-events-none fixed top-0 left-0 z-0 w-[400px] h-[400px] rounded-full blur-[35px]"
+      className="pointer-events-none fixed top-0 left-0 z-0 w-[600px] h-[600px] rounded-full blur-[80px]"
       style={{
         x: springX,
         y: springY,
-        background: 'radial-gradient(circle, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0) 65%)',
+        background: 'radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 40%, rgba(255, 255, 255, 0) 70%)',
         opacity: isVisible ? 1 : 0,
       }}
       initial={{ opacity: 0 }}
