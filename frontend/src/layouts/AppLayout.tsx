@@ -21,13 +21,22 @@ function CursorGlow() {
 }
 
 export default function AppLayout({ children }: { children: ReactNode }) {
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(() => {
+    // Phase C5: Use sessionStorage for splash screen
+    if (sessionStorage.getItem('splash_shown')) {
+      return false;
+    }
+    return true;
+  });
 
   useEffect(() => {
-    // Only show splash on initial load
-    const timer = setTimeout(() => setShowSplash(false), 2400);
+    if (!showSplash) return;
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+      sessionStorage.setItem('splash_shown', 'true');
+    }, 2400);
     return () => clearTimeout(timer);
-  }, []);
+  }, [showSplash]);
 
   return (
     <>
@@ -73,7 +82,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
       <div className="flex flex-col min-h-screen">
         {/* New Verta Header matching reference image */}
-        <header className="fixed top-0 left-0 right-0 z-50 bg-surface border-b border-outline backdrop-blur-md bg-surface/80">
+        <header className="fixed top-0 left-0 right-0 z-50 border-b border-outline backdrop-blur-md bg-surface/80">
           <div className="h-16 w-full px-6 flex items-center justify-between font-mono text-[10px] tracking-widest uppercase text-on-surface-variant">
             
             <div className="flex items-center gap-4">
@@ -86,9 +95,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             <nav className="hidden md:flex items-center gap-4 text-on-surface-variant">
               <Link to="/projects" className="hover:text-on-surface transition-colors">BUILD</Link>
               <span>.</span>
-              <span className="hover:text-on-surface transition-colors cursor-pointer">BREAK</span>
+              <span className="hover:text-on-surface transition-colors">BREAK</span>
               <span>.</span>
-              <span className="hover:text-on-surface transition-colors cursor-pointer">SOLVE</span>
+              <span className="hover:text-on-surface transition-colors">SOLVE</span>
             </nav>
 
             <div className="flex items-center gap-6">

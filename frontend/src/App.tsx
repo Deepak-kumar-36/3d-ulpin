@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import AppLayout from './layouts/AppLayout';
 import LandingPage from './pages/LandingPage';
@@ -10,10 +10,12 @@ import ViewerWorkspace from './pages/ViewerWorkspace';
 import ValidationPage from './pages/ValidationPage';
 
 export default function App() {
+  const location = useLocation();
+
   return (
     <AppLayout>
       <AnimatePresence mode="wait">
-        <Routes>
+        <Routes location={location} key={location.pathname}>
           <Route path="/" element={<LandingPage />} />
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/project/:id/upload" element={<UploadPage />} />

@@ -88,7 +88,7 @@ export default function LayerPanel({
               onClick={() => onChangeProjection(mode as any)}
               className={`py-1.5 rounded text-body-sm transition-colors ${
                 projectionMode === mode
-                  ? 'bg-primary-container text-on-primary shadow-sm'
+                  ? 'bg-primary-container text-on-primary-container shadow-sm'
                   : 'text-on-surface hover:bg-surface'
               }`}
             >

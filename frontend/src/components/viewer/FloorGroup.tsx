@@ -14,6 +14,8 @@ interface Props {
   onHoverUnit: (id: string | null) => void;
   onClickUnit: (id: string) => void;
   explodeOffset?: number; // For "exploded" view mode
+  visibleLayers: Record<string, boolean>;
+  projectionMode: 'isometric' | 'exploded' | 'xray';
 }
 
 export function FloorGroup({
@@ -25,6 +27,8 @@ export function FloorGroup({
   onHoverUnit,
   onClickUnit,
   explodeOffset = 0,
+  visibleLayers,
+  projectionMode,
 }: Props) {
   // Slab geometry
   const slabGeometry = useMemo(() => {
@@ -46,17 +50,22 @@ export function FloorGroup({
   return (
     <group position={[0, explodeOffset, 0]}>
       {/* Floor Slab Plate */}
-      <mesh
-        geometry={slabGeometry}
-        material={MATERIALS.slab}
-        position={[0, floor.elevation_base, 0]}
-        renderOrder={0}
-      >
-        <Edges scale={1} threshold={15} color="#c1c8c2" />
-      </mesh>
+      {visibleLayers.footprint && (
+        <mesh
+          geometry={slabGeometry}
+          material={MATERIALS.slab}
+          position={[0, floor.elevation_base - 0.02, 0]}
+          renderOrder={0}
+        >
+          {projectionMode === 'xray' && (
+             <meshBasicMaterial attach="material" wireframe color="#4a4f4b" />
+          )}
+          <Edges scale={1} threshold={15} color="#c1c8c2" />
+        </mesh>
+      )}
 
       {/* Units */}
-      {units.map((unit) => (
+      {visibleLayers.units && units.map((unit) => (
         <UnitMesh
           key={unit.id}
           unit={unit}
@@ -64,6 +73,8 @@ export function FloorGroup({
           isHovered={unit.id === hoveredUnitId}
           onHover={onHoverUnit}
           onClick={onClickUnit}
+          projectionMode={projectionMode}
+          showAnchors={visibleLayers.anchors}
         />
       ))}
     </group>

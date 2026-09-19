@@ -21,7 +21,7 @@ export default function ProjectsPage() {
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12">
         <ScrollReveal direction="up" delay={0}>
           <div className="flex flex-col gap-2">
-            <h1 className="font-headline text-headline-lg text-primary tracking-tight">Registry Projects</h1>
+            <h1 className="font-headline text-headline-md text-primary tracking-tight">Registry Projects</h1>
             <p className="text-body-md text-on-surface-variant">
               Manage 3D cadastral conversions and validation reports.
             </p>
@@ -40,7 +40,7 @@ export default function ProjectsPage() {
         {/* New Project Card */}
         <ScrollReveal direction="up" delay={100} className="h-full">
           <Link to="/project/new/upload" className="flex flex-col items-center justify-center h-[280px] bg-surface-container-lowest border-2 border-dashed border-outline-variant/40 rounded-xl hover:border-primary/50 hover:bg-surface-container-low transition-colors group">
-            <div className="w-12 h-12 rounded-full bg-surface-container group-hover:bg-primary-container flex items-center justify-center text-on-surface-variant group-hover:text-on-primary transition-colors mb-4">
+            <div className="w-12 h-12 rounded-full bg-surface-container group-hover:bg-primary-container flex items-center justify-center text-on-surface-variant group-hover:text-on-primary-container transition-colors mb-4">
               <span className="material-icon text-[24px]">add</span>
             </div>
             <span className="font-headline text-headline-sm text-on-surface">Upload 2D Plan</span>
@@ -54,7 +54,14 @@ export default function ProjectsPage() {
             <div className="flex flex-col h-[280px] cadastre-card p-6 group hover:shadow-cadastre-md transition-shadow">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex flex-col">
-                  <span className="font-label-caps uppercase text-primary mb-1">Cadastral Map</span>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-label-caps uppercase text-primary">Cadastral Map</span>
+                    {(proj as any)._isDemoData && (
+                      <span className="bg-error/20 text-error px-1.5 py-0.5 rounded text-[9px] font-mono border border-error/30 uppercase">
+                        DEMO
+                      </span>
+                    )}
+                  </div>
                   <h3 className="font-headline text-headline-sm text-on-surface line-clamp-1">{proj.name}</h3>
                 </div>
                 <div className="bg-primary-fixed-dim/20 text-primary px-2 py-1 rounded font-mono text-[10px] font-semibold border border-primary/10">

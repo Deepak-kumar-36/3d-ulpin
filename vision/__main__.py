@@ -26,6 +26,7 @@ def main() -> None:
     run.add_argument("--debug", action="store_true", help="write overlay PNGs to <out>/debug")
     run.add_argument("--save-cache", action="store_true", help="store live results as the fallback cache")
     run.add_argument("--cached", action="store_true", help="force cached results (same as USE_CACHED=1)")
+    run.add_argument("--detector", choices=["classic", "ml", "auto"], default=None, help="detector engine (classic, ml, auto)")
     run.add_argument("--threshold", choices=["otsu", "adaptive"], default="otsu")
     run.add_argument("--close-frac", type=float, default=None, help="door-gap sealing kernel (fraction of min side)")
     run.add_argument("--min-area-frac", type=float, default=None)
@@ -49,8 +50,9 @@ def main() -> None:
             res = process_floor(
                 img, out_dir=args.out, cache_dir=args.cache, cfg=cfg,
                 use_cached=True if args.cached else None, save_cache=args.save_cache, debug=args.debug,
+                detector=args.detector,
             )
-            print(f"{res['floor_id']}: {len(res['units'])} units [{res['source']}]")
+            print(f"{res['floor_id']}: {len(res['units'])} units [{res['source']}, detector={res.get('detector', 'classic')}]")
     elif args.cmd == "stub":
         for fid in args.floor_ids:
             path = save_json(make_stub(fid), Path(args.out) / f"{fid}.json")

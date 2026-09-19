@@ -28,3 +28,4 @@ uvicorn==0.53.0
 trimesh>=4.4.0
 mapbox-earcut>=1.0.1
 scipy>=1.11.0
+pymupdf>=1.23.0

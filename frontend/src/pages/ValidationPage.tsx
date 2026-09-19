@@ -17,10 +17,10 @@ export default function ValidationPage() {
   if (!project) return null;
 
   // Flatten all validations across all units
-  const allValidations: (Validation & { ulpin: string, floor_number: number })[] = [];
+  const allValidations: (Validation & { ulpin: string, floor_number: number, unit_id: string })[] = [];
   project.units.forEach(unit => {
     unit.validations.forEach(val => {
-      allValidations.push({ ...val, ulpin: unit.ulpin_3d, floor_number: unit.floor_number });
+      allValidations.push({ ...val, ulpin: unit.ulpin_3d, floor_number: unit.floor_number, unit_id: unit.id });
     });
   });
 
@@ -46,7 +46,7 @@ export default function ValidationPage() {
             <span className="text-primary">Validation Report</span>
           </div>
           <div className="flex items-center justify-between">
-            <h1 className="font-headline text-headline-lg text-primary tracking-tight">Validation Report</h1>
+            <h1 className="font-headline text-headline-md text-primary tracking-tight">Validation Report</h1>
             <Link to={`/project/${id}/viewer`} className="cadastre-btn-secondary">
               <span className="material-icon text-[20px]">view_in_ar</span>
               Return to 3D View
@@ -68,7 +68,7 @@ export default function ValidationPage() {
           </div>
           <div className="cadastre-card p-5 flex flex-col gap-1 border-tertiary-fixed/50">
             <span className="font-label-caps uppercase text-on-surface-variant">Warnings</span>
-            <span className="font-mono text-[32px] text-on-tertiary-fixed-variant leading-none">{project.validation_summary.warnings}</span>
+            <span className="font-mono text-[32px] text-tertiary leading-none">{project.validation_summary.warnings}</span>
           </div>
           <div className="cadastre-card p-5 flex flex-col gap-1 border-error-container">
             <span className="font-label-caps uppercase text-on-surface-variant">Failures</span>
