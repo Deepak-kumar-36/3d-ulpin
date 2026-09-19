@@ -1,24 +1,7 @@
-import { type ReactNode, useEffect, useRef, useCallback, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-
-function CursorGlow() {
-  const ref = useRef<HTMLDivElement>(null);
-
-  const handleMove = useCallback((e: MouseEvent) => {
-    if (ref.current) {
-      ref.current.style.left = `${e.clientX}px`;
-      ref.current.style.top = `${e.clientY}px`;
-    }
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener('mousemove', handleMove, { passive: true });
-    return () => window.removeEventListener('mousemove', handleMove);
-  }, [handleMove]);
-
-  return <div ref={ref} className="cursor-glow" />;
-}
+import { CursorGlow } from '../components/ui/CursorGlow';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const [showSplash, setShowSplash] = useState(true);
@@ -78,21 +61,12 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             
             <div className="flex items-center gap-4">
               <Link to="/" className="text-on-surface font-bold hover:text-tertiary transition-colors">
-                PRAYAS '26
+                VERTA
               </Link>
-              <span className="hidden sm:inline">AT PLAKSHA UNIVERSITY</span>
+              <span className="hidden sm:inline">VERTA CADASTRE ENGINE</span>
             </div>
 
-            <nav className="hidden md:flex items-center gap-4 text-on-surface-variant">
-              <Link to="/projects" className="hover:text-on-surface transition-colors">BUILD</Link>
-              <span>.</span>
-              <span className="hover:text-on-surface transition-colors cursor-pointer">BREAK</span>
-              <span>.</span>
-              <span className="hover:text-on-surface transition-colors cursor-pointer">SOLVE</span>
-            </nav>
-
             <div className="flex items-center gap-6">
-              <span className="hidden sm:inline">SEP 19 - 20, 2026</span>
               <Link to="/project/demo/viewer" className="px-3 py-1.5 border border-outline hover:bg-surface-container-high transition-colors">
                 ENTER WORKSPACE
               </Link>

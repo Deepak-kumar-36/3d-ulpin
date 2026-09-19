@@ -52,10 +52,10 @@ export default function LayerPanel({
               <button
                 key={floor.id}
                 onClick={() => onSelectFloor(floor.id)}
-                className={`text-left p-3 rounded-lg transition-all flex flex-col gap-1 border ${
+                className={`text-left p-3 rounded-lg transition-all duration-300 flex flex-col gap-1 border ${
                   isActive 
-                    ? 'bg-secondary-container/20 border-primary' 
-                    : 'bg-surface-container-low border-transparent hover:bg-surface-container'
+                    ? 'bg-secondary-container/20 border-primary shadow-[0_0_15px_rgba(195,221,69,0.2)]' 
+                    : 'bg-surface-container-low border-transparent hover:bg-surface-container hover:border-outline hover:shadow-cadastre-sm'
                 }`}
               >
                 <div className="flex items-center justify-between">

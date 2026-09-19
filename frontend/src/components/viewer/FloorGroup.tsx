@@ -1,6 +1,7 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { Edges } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
 import type { Floor, Unit } from '../../data/types';
 import { UnitMesh } from './UnitMesh';
 import { MATERIALS } from '../../viewer/scene';
@@ -26,6 +27,15 @@ export function FloorGroup({
   onClickUnit,
   explodeOffset = 0,
 }: Props) {
+  const groupRef = useRef<THREE.Group>(null);
+
+  // Smooth animation for exploding floors
+  useFrame((_state, delta) => {
+    if (groupRef.current) {
+      groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, explodeOffset, 5 * delta);
+    }
+  });
+
   // Slab geometry
   const slabGeometry = useMemo(() => {
     const shape = new THREE.Shape();
@@ -44,7 +54,7 @@ export function FloorGroup({
   if (!isVisible) return null;
 
   return (
-    <group position={[0, explodeOffset, 0]}>
+    <group ref={groupRef} position={[0, explodeOffset, 0]}>
       {/* Floor Slab Plate */}
       <mesh
         geometry={slabGeometry}

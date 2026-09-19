@@ -45,32 +45,17 @@ export default function LandingPage() {
                 </p>
                 
                 <div className="flex items-center gap-4 mt-4">
-                  <Link to="/project/demo/viewer" className="px-8 py-4 bg-on-surface text-surface font-semibold tracking-wider hover:bg-tertiary transition-colors">
+                  <Link to="/project/demo/viewer" className="px-8 py-4 bg-on-surface text-surface font-semibold tracking-wider hover:bg-tertiary hover:shadow-[0_0_20px_rgba(195,221,69,0.5)] hover:-translate-y-1 transition-all duration-300">
                     ENTER 3D CADASTRE
                   </Link>
-                  <Link to="/project/new/upload" className="px-8 py-4 border border-outline hover:bg-surface-container-high transition-colors tracking-wider text-on-surface">
+                  <Link to="/project/new/upload" className="px-8 py-4 border border-outline hover:bg-surface-container-high hover:border-on-surface hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:-translate-y-1 transition-all duration-300 tracking-wider text-on-surface">
                     UPLOAD PLAN
                   </Link>
                 </div>
               </div>
             </motion.div>
 
-            {/* Team Block */}
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 2.6, duration: 0.8 }}
-              className="mt-12 pt-8 border-t border-outline flex flex-col gap-4"
-            >
-              <div className="flex items-center gap-4 text-on-surface-variant font-mono text-[10px] tracking-widest uppercase">
-                <span>TEAM</span>
-                <span className="w-8 h-[1px] bg-outline"></span>
-              </div>
-              <h3 className="font-display text-[28px] text-on-surface">Script in Shorts</h3>
-              <p className="font-mono text-[12px] text-on-surface-variant">
-                Deepak Kumar &nbsp;|&nbsp; Adarsh Kumar &nbsp;|&nbsp; Vishesh Bharti
-              </p>
-            </motion.div>
+
 
           </div>
 
@@ -111,7 +96,7 @@ export default function LandingPage() {
             <span>PEOPLE</span>
             <span>IMPACT</span>
           </div>
-          <span className="hidden md:inline">A 24-HOUR HACKATHON FOR A BETTER TOMORROW</span>
+          <span className="hidden md:inline">COMPUTATIONAL PROPERTY REGISTRY</span>
         </div>
       </section>
 
@@ -224,7 +209,7 @@ export default function LandingPage() {
             <span className="hover:text-on-surface cursor-pointer">PROTOTYPE</span>
             <span className="hover:text-on-surface cursor-pointer">IMPACT</span>
           </div>
-          <span className="hidden md:inline">VERTA &nbsp;/&nbsp; SCRIPT IN SHORTS</span>
+          <span className="hidden md:inline">VERTA</span>
         </div>
       </section>
     </div>

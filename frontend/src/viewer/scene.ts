@@ -2,29 +2,29 @@ import * as THREE from 'three';
 import type { Unit } from '../data/types';
 
 // Palette matching Verta dark architectural design
-export const MATERIALS = {
-  residential: new THREE.MeshLambertMaterial({ color: 0x333333, transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
-  commercial: new THREE.MeshLambertMaterial({ color: 0x222222, transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
-  office: new THREE.MeshLambertMaterial({ color: 0x444444, transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
-  lobby: new THREE.MeshLambertMaterial({ color: 0x222222, transparent: true, opacity: 0.9, side: THREE.DoubleSide }),
-  retail: new THREE.MeshLambertMaterial({ color: 0x333333, transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
-  parking: new THREE.MeshLambertMaterial({ color: 0x111111, transparent: true, opacity: 0.9, side: THREE.DoubleSide }),
-  penthouse: new THREE.MeshLambertMaterial({ color: 0x555555, transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
+export const MATERIALS: Record<string, THREE.Material> = {
+  residential: new THREE.MeshLambertMaterial({ color: 0x3d3d3d, side: THREE.DoubleSide }),
+  commercial: new THREE.MeshLambertMaterial({ color: 0x2d2d2d, side: THREE.DoubleSide }),
+  office: new THREE.MeshLambertMaterial({ color: 0x4d4d4d, side: THREE.DoubleSide }),
+  lobby: new THREE.MeshLambertMaterial({ color: 0x262626, side: THREE.DoubleSide }),
+  retail: new THREE.MeshLambertMaterial({ color: 0x383838, side: THREE.DoubleSide }),
+  parking: new THREE.MeshLambertMaterial({ color: 0x1a1a1a, side: THREE.DoubleSide }),
+  penthouse: new THREE.MeshLambertMaterial({ color: 0x555555, side: THREE.DoubleSide }),
   
   // States
-  selected: new THREE.MeshLambertMaterial({ color: 0x8da399, transparent: true, opacity: 0.4, side: THREE.DoubleSide }), // Accent sage green
-  validationFail: new THREE.MeshLambertMaterial({ color: 0xff5555, transparent: true, opacity: 0.6, side: THREE.DoubleSide }),
+  selected: new THREE.MeshLambertMaterial({ color: 0x8da399, emissive: 0x223322, side: THREE.DoubleSide }),
+  validationFail: new THREE.MeshLambertMaterial({ color: 0x8b3a3a, emissive: 0x330000, side: THREE.DoubleSide }),
   
   // Environment
-  slab: new THREE.MeshLambertMaterial({ color: 0x050505, side: THREE.DoubleSide }), // Pitch black
+  slab: new THREE.MeshLambertMaterial({ color: 0x111111, side: THREE.DoubleSide }),
   parcel: new THREE.LineDashedMaterial({ color: 0x8da399, dashSize: 1, gapSize: 1, linewidth: 2 }), // Sage green
 };
 
 export const OUTLINE_COLORS = {
-  default: 0x555555, // Subtle grey outlines for blueprint feel
-  selected: 0xffffff, // White outline when selected
-  validationFail: 0xffaaaa, // Light red
-  office: 0x666666,
+  default: 0x444444,
+  selected: 0xffffff,
+  validationFail: 0xff8888,
+  office: 0x777777,
 };
 
 /**

@@ -6,15 +6,16 @@ interface Props {
   activeFloorId: string | 'all';
   onSelectFloor: (id: string | 'all') => void;
   targetRef: React.RefObject<HTMLDivElement | null>;
+  enabled?: boolean;
 }
 
-export function useFloorScroll({ floors, activeFloorId, onSelectFloor, targetRef }: Props) {
+export function useFloorScroll({ floors, activeFloorId, onSelectFloor, targetRef, enabled = true }: Props) {
   const isScrolling = useRef(false);
   const scrollTimeout = useRef<number | null>(null);
 
   useEffect(() => {
     const target = targetRef.current;
-    if (!target) return;
+    if (!target || !enabled) return;
 
     // Ordered from bottom to top for logical scrolling
     // (B1 -> GF -> F1 -> F2...)
@@ -75,5 +76,5 @@ export function useFloorScroll({ floors, activeFloorId, onSelectFloor, targetRef
       target.removeEventListener('wheel', handleWheel);
       if (scrollTimeout.current) window.clearTimeout(scrollTimeout.current);
     };
-  }, [floors, activeFloorId, onSelectFloor, targetRef]);
+  }, [floors, activeFloorId, onSelectFloor, targetRef, enabled]);
 }

@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react';
 import * as THREE from 'three';
-import { useCursor } from '@react-three/drei';
-import { Outlines } from '@react-three/drei';
+import { useCursor, Outlines } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
 import type { Unit } from '../../data/types';
 import { createExtrudedGeometry, getUnitMaterial, getOutlineColor } from '../../viewer/scene';
 
@@ -21,8 +21,34 @@ export function UnitMesh({ unit, isSelected, isHovered, onHover, onClick }: Prop
     return createExtrudedGeometry(unit.polygon_2d, unit.height);
   }, [unit.polygon_2d, unit.height]);
 
-  const material = getUnitMaterial(unit, isSelected);
+  const material = useMemo(() => getUnitMaterial(unit, isSelected).clone(), [unit, isSelected]);
   const outlineColor = getOutlineColor(unit, isSelected);
+
+  // Smooth hover/select highlight animation
+  useFrame((_state, delta) => {
+    if (material instanceof THREE.MeshLambertMaterial) {
+      // Base emissive intensity based on state
+      let targetIntensity = 0;
+      if (isSelected) targetIntensity = 0.4;
+      else if (isHovered) targetIntensity = 0.15;
+      
+      // If validation failed, pulse it slightly
+      if (unit.validations.some(v => v.status === 'fail')) {
+        targetIntensity += Math.sin(_state.clock.elapsedTime * 4) * 0.1;
+      }
+
+      // Smoothly interpolate current intensity to target
+      material.emissiveIntensity = THREE.MathUtils.lerp(material.emissiveIntensity, targetIntensity, 10 * delta);
+    }
+    
+    if (meshRef.current) {
+      const targetScale = isHovered || isSelected ? 1.02 : 1;
+      meshRef.current.scale.lerp(new THREE.Vector3(targetScale, 1, targetScale), 10 * delta);
+      
+      const targetY = isHovered || isSelected ? 0.2 : 0;
+      meshRef.current.position.y = THREE.MathUtils.lerp(meshRef.current.position.y, targetY, 10 * delta);
+    }
+  });
 
   // Hover state cursor
   useCursor(isHovered, 'pointer', 'auto');
