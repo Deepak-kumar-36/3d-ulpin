@@ -196,7 +196,6 @@ export function FloorGroup({
           onClick={onClickUnit}
           projectionMode={projectionMode}
           showAnchors={visibleLayers.anchors}
-          floorFootprint={floor.footprint}
         />
       ))}
     </group>

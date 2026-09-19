@@ -10,8 +10,6 @@ import {
   COMMON_MATERIALS 
 } from '../../viewer/scene';
 import {
-  createDoorGroup,
-  createWindowGroups,
   createInteriorWalls,
 } from '../../viewer/archGeometry';
 
@@ -24,7 +22,6 @@ interface Props {
   onClick: (id: string) => void;
   projectionMode?: 'isometric' | 'exploded' | 'xray';
   showAnchors?: boolean;
-  floorFootprint?: number[][];
 }
 
 export function UnitMesh({ 
@@ -36,7 +33,6 @@ export function UnitMesh({
   onClick,
   projectionMode = 'isometric',
   showAnchors = false,
-  floorFootprint,
 }: Props) {
   const meshRef = useRef<THREE.Mesh>(null);
 
@@ -59,23 +55,6 @@ export function UnitMesh({
   const outlineColor = getOutlineColor(unit, isSelected, isFloorActive);
   const hasFail = unit.validations.some(v => v.status === 'fail');
   const hasWarning = unit.validations.some(v => v.status === 'warning');
-
-  // ── Procedural 3D Door ──
-  const doorGroup = useMemo(() => {
-    return createDoorGroup(unit.polygon_2d, unit.height, {
-      doorFrame: isFloorActive ? COMMON_MATERIALS.doorFrame : COMMON_MATERIALS.doorFrameInactive,
-      doorPanel: isFloorActive ? COMMON_MATERIALS.doorPanel : COMMON_MATERIALS.doorPanelInactive,
-    });
-  }, [unit.polygon_2d, unit.height, isFloorActive]);
-
-  // ── Procedural 3D Windows (only on exterior edges) ──
-  const windowGroup = useMemo(() => {
-    if (!floorFootprint) return null;
-    return createWindowGroups(unit.polygon_2d, unit.height, floorFootprint, {
-      doorFrame: isFloorActive ? COMMON_MATERIALS.doorFrame : COMMON_MATERIALS.doorFrameInactive,
-      glass: isFloorActive ? COMMON_MATERIALS.glass : COMMON_MATERIALS.glassInactive,
-    });
-  }, [unit.polygon_2d, unit.height, floorFootprint, isFloorActive]);
 
   // ── Interior Partition Walls ──
   const wallGroup = useMemo(() => {
@@ -169,12 +148,6 @@ export function UnitMesh({
 
       {/* ── Architectural Detail Group (raycast disabled) ── */}
       <group raycast={() => null}>
-        {/* 3D Procedural Door */}
-        {doorGroup && <primitive object={doorGroup} />}
-
-        {/* 3D Procedural Windows */}
-        {windowGroup && <primitive object={windowGroup} />}
-
         {/* Interior Partition Walls */}
         {wallGroup && <primitive object={wallGroup} />}
       </group>
