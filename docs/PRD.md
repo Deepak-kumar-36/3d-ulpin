@@ -3,7 +3,7 @@
 **24-Hour Independent Hackathon | Theme: Urban Planning | Team size: 3**
 
 **Document status:** Implementation-ready draft
-**Team:** [Team Name]
+**Team:** Script in Shorts
 **Last updated:** [Date]
 
 ---
