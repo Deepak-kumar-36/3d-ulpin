@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { useCursor, Outlines } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import type { Unit } from '../../data/types';
-import { createExtrudedGeometry, getUnitMaterial, getOutlineColor } from '../../viewer/scene';
+import { createUnitGeometry, getUnitMaterial, getOutlineColor } from '../../viewer/scene';
 
 interface Props {
   unit: Unit;
@@ -18,8 +18,8 @@ export function UnitMesh({ unit, isSelected, isHovered, onHover, onClick }: Prop
 
   // Compute geometry only once per unit
   const geometry = useMemo(() => {
-    return createExtrudedGeometry(unit.polygon_2d, unit.height);
-  }, [unit.polygon_2d, unit.height]);
+    return createUnitGeometry(unit);
+  }, [unit]);
 
   const material = useMemo(() => getUnitMaterial(unit, isSelected).clone(), [unit, isSelected]);
   const outlineColor = getOutlineColor(unit, isSelected);
@@ -74,7 +74,7 @@ export function UnitMesh({ unit, isSelected, isHovered, onHover, onClick }: Prop
         }}
         renderOrder={1}
       >
-        <Outlines thickness={isSelected ? 0.04 : 0.02} color={outlineColor} />
+        {/* <Outlines thickness={isSelected ? 0.04 : 0.02} color={outlineColor} /> */}
       </mesh>
     </group>
   );

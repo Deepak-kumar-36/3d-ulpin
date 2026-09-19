@@ -28,26 +28,63 @@ export const OUTLINE_COLORS = {
 };
 
 /**
- * Extrudes a 2D polygon into a 3D geometry using Three.js ExtrudeGeometry.
+ * Creates geometry from backend pre-calculated vertices and faces.
+ * Falls back to extruding the 2D polygon if 3D data is missing.
  */
-export function createExtrudedGeometry(polygon2d: number[][], height: number): THREE.ExtrudeGeometry {
+export function createUnitGeometry(unit: Unit): THREE.BufferGeometry {
+  if (unit.vertices && unit.vertices.length > 0 && unit.faces && unit.faces.length > 0) {
+    const geometry = new THREE.BufferGeometry();
+    
+    // Flatten vertices array [x1, y1, z1, x2, y2, z2...]
+    const positions = new Float32Array(unit.vertices.length * 3);
+    for (let i = 0; i < unit.vertices.length; i++) {
+      // Backend z is vertical, we need to map to Three.js coordinates
+      // The backend extrudes from z=base to z=base+height. But wait, UnitMesh
+      // applies a position offset `[0, unit.elevation, 0]`.
+      // The backend vertices ALREADY include the elevation in their Z coordinate!
+      // Wait, let's check `services.py`:
+      // `base_z = compute_elevation(floor_number, floor_height)`
+      // `vertices, faces = extrude_polygon(coords, base_z, floor_height)`
+      // If we use UnitMesh's group position offset, we would double-apply the elevation.
+      // We will subtract unit.elevation here so the local origin is at the base of the unit.
+      positions[i * 3] = unit.vertices[i][0];
+      positions[i * 3 + 1] = unit.vertices[i][2] - unit.elevation; // Map backend Z to Three.js Y
+      positions[i * 3 + 2] = unit.vertices[i][1]; // Map backend Y to Three.js Z
+    }
+    
+    // Flatten faces array
+    const indices = [];
+    for (let i = 0; i < unit.faces.length; i++) {
+      indices.push(unit.faces[i][0], unit.faces[i][1], unit.faces[i][2]);
+    }
+    
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setIndex(new THREE.BufferAttribute(new Uint16Array(indices), 1));
+    geometry.computeVertexNormals();
+    geometry.computeBoundingBox();
+    geometry.computeBoundingSphere();
+    
+    return geometry;
+  }
+  
+  // Fallback to naive extrusion
   const shape = new THREE.Shape();
-  if (polygon2d.length === 0) return new THREE.ExtrudeGeometry(shape, { depth: height, bevelEnabled: false });
+  if (unit.polygon_2d.length === 0) return new THREE.ExtrudeGeometry(shape, { depth: unit.height, bevelEnabled: false });
 
-  shape.moveTo(polygon2d[0][0], polygon2d[0][1]);
-  for (let i = 1; i < polygon2d.length; i++) {
-    shape.lineTo(polygon2d[i][0], polygon2d[i][1]);
+  shape.moveTo(unit.polygon_2d[0][0], unit.polygon_2d[0][1]);
+  for (let i = 1; i < unit.polygon_2d.length; i++) {
+    shape.lineTo(unit.polygon_2d[i][0], unit.polygon_2d[i][1]);
   }
 
   const extrudeSettings = {
-    depth: height,
+    depth: unit.height,
     bevelEnabled: false,
   };
 
   const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
   
   geometry.rotateX(Math.PI / 2);
-  geometry.translate(0, height, 0);
+  geometry.translate(0, unit.height, 0);
 
   return geometry;
 }

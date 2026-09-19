@@ -111,11 +111,7 @@ def upload_floor_plan(
     db: Session = Depends(get_db),
 ):
     """
-    Upload a floor plan image for a given floor.
-
-    NOTE: The actual CV processing is Person 1's responsibility.
-    This endpoint stores the image and returns a floor_plan_id that can be
-    passed to /process.
+    Upload a floor plan image, run the CV detection pipeline, and ingest the results.
     """
     project = db.query(ProjectModel).filter_by(id=project_id).first()
     if not project:
@@ -130,11 +126,46 @@ def upload_floor_plan(
     with open(filepath, "wb") as f:
         f.write(file.file.read())
 
+    # Run the CV pipeline
+    from vision.detect import detect_units, DetectConfig
+    from vision.plan_configs import PLAN_CONFIGS
+    
+    # Try to get a specific config or fallback to base
+    # PLAN_CONFIGS uses 1-based L1, L2, L3 etc.
+    config_key = f"L{floor_number + 1}"
+    cfg_overrides = PLAN_CONFIGS.get(config_key, PLAN_CONFIGS.get("L1", {}))
+    cfg = DetectConfig(**cfg_overrides)
+    
+    try:
+        cv_json = detect_units(filepath, floor_id=f"L{floor_number}", cfg=cfg)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Vision pipeline failed: {str(e)}")
+
+    # Transform to backend coordinates
+    from app.cv_adapter import transform_cv_floor
+    transformed = transform_cv_floor(cv_json, floor_number)
+
+    # Prepare units for ingestion
+    units_data = [{
+        "polygon": u["polygon"],
+        "floor_number": u["floor_number"],
+        "unit_type": u["unit_type"],
+    } for u in transformed["units"]]
+
+    # Ingest units and validate
+    try:
+        from app.services import ingest_units, run_validation
+        unit_ids = ingest_units(db, project_id, units_data)
+        run_validation(db, project_id)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ingestion failed: {str(e)}")
+
     return {
         "floor_plan_id": fp_id,
         "project_id": project_id,
         "floor_number": floor_number,
         "file_path": filepath,
+        "units_detected": len(unit_ids)
     }
 
 

@@ -85,6 +85,14 @@ def ingest_units(
     floor_height = building.floor_height
     parcel_id = project.parcel_id
 
+    # Calculate building index to avoid ULPIN collisions on the same parcel
+    projects_on_parcel = db.query(ProjectModel).filter_by(parcel_id=parcel_id).order_by(ProjectModel.id).all()
+    building_index = 1
+    for i, p in enumerate(projects_on_parcel, start=1):
+        if p.id == project_id:
+            building_index = i
+            break
+
     # Group inputs by floor
     floors_map: Dict[int, List[Dict]] = {}
     for u in units_input:
@@ -150,7 +158,7 @@ def ingest_units(
             # Generate ULPIN
             ulpin = generate_ulpin(
                 parcel_id=parcel_id,
-                building_index=1,
+                building_index=building_index,
                 floor_number=floor_number,
                 unit_index=idx,
             )
@@ -266,10 +274,25 @@ def get_full_project(db: Session, project_id: str) -> Optional[Dict[str, Any]]:
     all_validations = []
 
     for floor_rec in sorted(building.floors, key=lambda f: f.floor_number):
+        fn = floor_rec.floor_number
+        base_z = compute_elevation(fn, building.floor_height)
+        top_z = base_z + building.floor_height
+        
+        if fn < 0:
+            label = f"Basement {abs(fn)}"
+        elif fn == 0:
+            label = "Ground Floor"
+        else:
+            label = f"Floor {fn:02d}"
+            
         floors_out.append({
             "id": floor_rec.id,
-            "floor_number": floor_rec.floor_number,
+            "floor_number": fn,
             "footprint": json.loads(floor_rec.footprint),
+            "label": label,
+            "unit_count": len(floor_rec.units),
+            "elevation_base": base_z,
+            "elevation_top": top_z,
         })
 
         for unit_rec in floor_rec.units:

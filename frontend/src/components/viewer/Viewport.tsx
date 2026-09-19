@@ -75,7 +75,7 @@ function Scene({
       }}
     >
       {/* Environmental lighting for realistic glass reflections */}
-      <Environment preset="city" />
+      {/* <Environment preset="city" /> */}
 
       {/* Subtle atmospheric lighting */}
       <ambientLight intensity={0.4} color="#ffffff" />
