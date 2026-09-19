@@ -197,9 +197,9 @@ export default function Viewport(props: Props) {
   return (
     <div className="w-full h-full relative bg-surface-container rounded-xl overflow-hidden shadow-cadastre group">
       {/* HUD overlay */}
-      <div className="absolute top-4 left-4 right-4 z-10 flex justify-between items-center pointer-events-none">
+      <div className="absolute top-4 left-4 right-4 z-10 flex justify-between items-center pointer-events-none" style={{ pointerEvents: 'none' }}>
         <div className="flex items-center gap-3">
-          <div className="pointer-events-auto bg-surface/90 backdrop-blur-md px-4 py-2 rounded shadow-cadastre-sm flex items-center gap-3 border border-outline/20">
+          <div className="pointer-events-auto bg-surface/90 backdrop-blur-md px-4 py-2 rounded shadow-cadastre-sm flex items-center gap-3 border border-outline/20" style={{ pointerEvents: 'auto' }}>
             <span className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" />
             <div className="flex flex-col">
               <span className="font-label-caps text-primary tracking-wider uppercase text-[10px]">
@@ -226,10 +226,11 @@ export default function Viewport(props: Props) {
           {props.interactionMode === 'building' && (
             <button 
               onClick={props.onEnterExploration}
-              className="pointer-events-auto bg-surface/95 backdrop-blur-md px-3.5 py-2 rounded shadow-cadastre-sm flex items-center gap-2 hover:bg-primary/20 hover:border-primary text-primary transition-all duration-200 border border-primary/40 cursor-pointer group hover:shadow-[0_0_15px_rgba(195,221,69,0.25)]"
+              className="pointer-events-auto bg-surface/95 backdrop-blur-md px-3.5 py-2 rounded shadow-cadastre-sm flex items-center gap-2 hover:bg-primary/20 hover:border-primary text-primary transition-all duration-200 border border-primary/40 cursor-pointer group/strata hover:shadow-[0_0_15px_rgba(195,221,69,0.25)]"
+              style={{ pointerEvents: 'auto' }}
               title="Show Strata & Floor Navigation"
             >
-              <span className="material-icon text-[18px] group-hover:scale-110 transition-transform">layers</span>
+              <span className="material-icon text-[18px] group-hover/strata:scale-110 transition-transform">layers</span>
               <span className="font-label-caps tracking-wider uppercase text-xs font-semibold">Show Strata</span>
             </button>
           )}
@@ -240,7 +241,8 @@ export default function Viewport(props: Props) {
           onClick={() => {
             cameraControlsRef.current?.setLookAt(30, 26, 30, 0, 8, 0, true);
           }}
-          className="pointer-events-auto bg-surface/90 backdrop-blur-md px-4 py-2 rounded shadow-cadastre-sm flex items-center gap-2 hover:bg-surface-container-high transition-colors text-on-surface border border-outline/20 cursor-pointer"
+          className="pointer-events-auto bg-surface/90 backdrop-blur-md px-4 py-2 rounded shadow-cadastre-sm flex items-center gap-2 hover:bg-surface-container-high hover:text-primary transition-all duration-200 text-on-surface border border-outline/20 hover:border-primary/40 cursor-pointer"
+          style={{ pointerEvents: 'auto' }}
         >
           <span className="material-icon text-[16px]">center_focus_strong</span>
           <span className="font-label-caps tracking-wider uppercase text-xs">Reset View</span>

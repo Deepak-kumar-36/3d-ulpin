@@ -30,7 +30,8 @@
            hover:bg-surface-container-high hover:text-on-surface transition-all duration-300;
   }
   .cadastre-chip {
-    @apply inline-flex items-center gap-1.5 px-2.5 py-1 font-mono text-data-mono-sm uppercase tracking-widest border border-outline;
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 font-mono text-data-mono-sm uppercase tracking-widest border border-outline
+           transition-all duration-200 cursor-pointer;
   }
   .cadastre-input {
     @apply w-full px-3 py-2.5 bg-surface-container-high border border-outline font-mono text-data-mono text-on-surface
@@ -57,8 +58,8 @@
 /* Cursor glow - make it a subtle white/cyan glow for the dark theme */
 .cursor-glow {
   position: fixed;
-  width: 400px;
-  height: 400px;
+  width: 600px;
+  height: 600px;
   border-radius: 50%;
   pointer-events: none;
   background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 60%);
@@ -66,6 +67,14 @@
   z-index: 0;
   transition: opacity 0.3s ease;
   will-change: left, top;
+}
+
+/* Universal interactive element hover base */
+button, a, [role="button"] {
+  transition: all 0.2s ease;
+}
+button:active, a:active, [role="button"]:active {
+  transform: scale(0.97);
 }
 
 @media (pointer: coarse) {

@@ -33,12 +33,14 @@ export default function LandingPage() {
         animate={{ opacity: 0.05, scale: 1 }}
         transition={{ duration: 4, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
         className="absolute top-1/4 -left-1/4 w-[800px] h-[800px] bg-primary rounded-full blur-[120px] pointer-events-none"
+        style={{ pointerEvents: 'none' }}
       />
       <motion.div 
         initial={{ opacity: 0, scale: 1.2 }}
         animate={{ opacity: 0.03, scale: 1 }}
         transition={{ duration: 5, repeat: Infinity, repeatType: "reverse", ease: "easeInOut", delay: 1 }}
         className="absolute bottom-0 -right-1/4 w-[600px] h-[600px] bg-[#68a2b8] rounded-full blur-[100px] pointer-events-none"
+        style={{ pointerEvents: 'none' }}
       />
 
       {/* Primary Focused Architectural Section */}
@@ -93,7 +95,7 @@ export default function LandingPage() {
           <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-4 pt-4">
             <Link 
               to="/project/demo/viewer" 
-              className="px-8 py-4 bg-primary text-on-primary font-mono text-sm tracking-widest uppercase font-bold rounded-lg hover:bg-primary/90 transition-all duration-300 flex items-center gap-3 shadow-[0_0_20px_rgba(195,221,69,0.3)] hover:shadow-[0_0_35px_rgba(195,221,69,0.5)] hover:-translate-y-1 cursor-pointer group relative overflow-hidden"
+              className="px-8 py-4 bg-primary text-on-primary font-mono text-sm tracking-widest uppercase font-bold rounded-lg hover:bg-primary/90 transition-all duration-300 flex items-center gap-3 shadow-[0_0_20px_rgba(195,221,69,0.3)] hover:shadow-[0_0_35px_rgba(195,221,69,0.5)] hover:-translate-y-1 cursor-pointer group/cta relative overflow-hidden"
             >
               {/* Shine effect on button */}
               <motion.div 
@@ -102,15 +104,15 @@ export default function LandingPage() {
                 className="absolute top-0 bottom-0 w-1/3 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12"
               />
               <span className="relative z-10">ENTER 3D CADASTRE</span>
-              <span className="material-icon text-[18px] relative z-10 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+              <span className="material-icon text-[18px] relative z-10 group-hover/cta:translate-x-1 transition-transform">arrow_forward</span>
             </Link>
 
             <Link 
               to="/project/demo/upload" 
-              className="px-8 py-4 bg-surface/80 backdrop-blur-md border border-outline hover:border-primary/50 text-on-surface font-mono text-sm tracking-widest uppercase rounded-lg hover:bg-surface-container-highest transition-all duration-300 flex items-center gap-3 cursor-pointer group hover:-translate-y-1 hover:shadow-cadastre"
+              className="px-8 py-4 bg-surface/80 backdrop-blur-md border border-outline hover:border-primary/50 text-on-surface font-mono text-sm tracking-widest uppercase rounded-lg hover:bg-surface-container-highest transition-all duration-300 flex items-center gap-3 cursor-pointer group/upload hover:-translate-y-1 hover:shadow-cadastre"
             >
               <span>UPLOAD PLAN</span>
-              <span className="material-icon text-[18px] group-hover:-translate-y-1 transition-transform">upload_file</span>
+              <span className="material-icon text-[18px] group-hover/upload:-translate-y-1 transition-transform">upload_file</span>
             </Link>
           </motion.div>
 

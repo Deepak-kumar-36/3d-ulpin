@@ -67,7 +67,7 @@ export default function LayerPanel({
               <button
                 key={floor.id}
                 onClick={() => onSelectFloor(floor.id)}
-                className={`text-left p-3 rounded-lg transition-all duration-300 flex flex-col gap-1 border ${
+                className={`text-left p-3 rounded-lg transition-all duration-300 flex flex-col gap-1 border cursor-pointer ${
                   isActive 
                     ? 'bg-secondary-container/20 border-primary shadow-[0_0_15px_rgba(195,221,69,0.2)]' 
                     : 'bg-surface-container-low border-transparent hover:bg-surface-container hover:border-outline hover:shadow-cadastre-sm'
@@ -101,10 +101,10 @@ export default function LayerPanel({
             <button
               key={mode}
               onClick={() => onChangeProjection(mode as any)}
-              className={`py-1.5 rounded text-body-sm transition-colors ${
+              className={`py-1.5 rounded text-body-sm transition-all duration-200 cursor-pointer ${
                 projectionMode === mode
                   ? 'bg-primary-container text-on-primary-container shadow-sm'
-                  : 'text-on-surface hover:bg-surface'
+                  : 'text-on-surface hover:bg-surface hover:text-primary'
               }`}
             >
               {mode.charAt(0).toUpperCase() + mode.slice(1)}

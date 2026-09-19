@@ -49,6 +49,7 @@ export function CursorGlow() {
         y: springY,
         background: 'radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 40%, rgba(255, 255, 255, 0) 70%)',
         opacity: isVisible ? 1 : 0,
+        pointerEvents: 'none'
       }}
       initial={{ opacity: 0 }}
       animate={{ opacity: isVisible ? 1 : 0 }}

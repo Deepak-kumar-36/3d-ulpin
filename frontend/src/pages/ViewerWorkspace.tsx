@@ -154,7 +154,7 @@ export default function ViewerWorkspace() {
                 setActiveFloorId('all');
                 setSelectedUnitId(null);
               }}
-              className="bg-surface/90 backdrop-blur-md px-6 py-2 rounded-full shadow-cadastre flex items-center gap-2 hover:bg-surface-container-high transition-colors border border-outline/20 text-on-surface cursor-pointer"
+              className="bg-surface/90 backdrop-blur-md px-6 py-2 rounded-full shadow-cadastre flex items-center gap-2 hover:bg-surface-container-high hover:text-primary transition-all duration-200 border border-outline/20 text-on-surface cursor-pointer"
             >
               <span className="material-icon text-[16px]">arrow_upward</span>
               <span className="font-label-caps tracking-wider uppercase text-xs">Return to Macro Building View</span>
@@ -180,10 +180,10 @@ export default function ViewerWorkspace() {
                   setActiveFloorId('floor-gf');
                 }
               }}
-              className="bg-surface/95 backdrop-blur-md px-4 py-2.5 rounded-xl shadow-cadastre flex items-center gap-3 hover:bg-surface-container-high transition-all border border-primary/50 hover:border-primary text-primary cursor-pointer group hover:shadow-[0_0_25px_rgba(195,221,69,0.25)]"
+              className="bg-surface/95 backdrop-blur-md px-4 py-2.5 rounded-xl shadow-cadastre flex items-center gap-3 hover:bg-surface-container-high transition-all border border-primary/50 hover:border-primary text-primary cursor-pointer group/strata hover:shadow-[0_0_25px_rgba(195,221,69,0.25)]"
               title="Restore Strata & Layer Controls"
             >
-              <span className="material-icon text-[20px] group-hover:scale-110 transition-transform">layers</span>
+              <span className="material-icon text-[20px] group-hover/strata:scale-110 transition-transform">layers</span>
               <div className="flex flex-col text-left">
                 <span className="font-label-caps tracking-wider uppercase text-xs font-bold text-primary">Show Strata</span>
                 <span className="font-mono text-[9px] text-on-surface-variant">Restore floor navigation</span>
