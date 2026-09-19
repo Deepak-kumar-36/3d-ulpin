@@ -59,6 +59,10 @@ class FloorResponse(BaseModel):
     id: str
     floor_number: int
     footprint: List[List[float]]
+    label: Optional[str] = None
+    elevation_base: Optional[float] = None
+    elevation_top: Optional[float] = None
+    unit_count: Optional[int] = None
 
 
 class ValidationResult(BaseModel):
@@ -96,6 +100,8 @@ class FullProjectResponse(BaseModel):
     id: str
     name: str
     parcel: ParcelResponse
+    parcel_id: Optional[str] = None
+    parcel_boundary: Optional[List[List[float]]] = None
     building: BuildingResponse
     floors: List[FloorResponse]
     units: List[UnitResponse]

@@ -9,7 +9,7 @@ export default function MonoValue({ value, label, unit, className = '' }: Props)
   return (
     <div className={`flex flex-col gap-0.5 ${className}`}>
       {label && (
-        <span className="font-body text-[9px] font-semibold tracking-[0.08em] uppercase text-on-surface-variant">
+        <span className="font-mono text-[10px] font-semibold tracking-[0.08em] uppercase text-on-surface-variant">
           {label}
         </span>
       )}

@@ -273,6 +273,8 @@ def get_full_project(db: Session, project_id: str) -> Optional[Dict[str, Any]]:
     units_out = []
     all_validations = []
 
+    floor_height = building.floor_height
+
     for floor_rec in sorted(building.floors, key=lambda f: f.floor_number):
         fn = floor_rec.floor_number
         base_z = compute_elevation(fn, building.floor_height)
@@ -328,6 +330,8 @@ def get_full_project(db: Session, project_id: str) -> Optional[Dict[str, Any]]:
     return {
         "id": project.id,
         "name": project.name,
+        "parcel_id": parcel.id,
+        "parcel_boundary": json.loads(parcel.boundary),
         "parcel": {
             "id": parcel.id,
             "boundary": json.loads(parcel.boundary),

@@ -1,4 +1,3 @@
-
 """
 FastAPI Application — 3D ULPIN Vertical Property Mapping.
 
@@ -9,16 +8,31 @@ Single-service backend serving the complete pipeline:
   /validate  → validation engine
   /health    → health check
   /fallback  → demo fallback endpoint
+  /detect    → direct vision unit detection from 2D floor plan image/PDF
 """
+import asyncio
+from functools import partial
 import json
 import os
+from pathlib import Path
+import shutil
+import sys
 import uuid
 from typing import List, Optional
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy.orm import Session
+
+# ── Make sure the project root and backend are on sys.path ──
+_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_backend = os.path.join(_root, "backend")
+if _root not in sys.path:
+    sys.path.insert(0, _root)
+if _backend not in sys.path:
+    sys.path.insert(0, _backend)
 
 from app.storage.database import init_db, get_db, ProjectModel, UnitModel, FloorModel
 from app.schemas import (
@@ -34,6 +48,7 @@ from app.services import (
 from app.geometry.extrusion import extrude_polygon, compute_elevation, polygon_area
 from app.geometry.ulpin import generate_ulpin
 from app.validation.engine import summarize_validation
+from vision.export import process_floor
 
 
 # ── Lifespan ───────────────────────────────────────────────────────────────────
@@ -47,12 +62,8 @@ async def lifespan(app: FastAPI):
 # ── App init ───────────────────────────────────────────────────────────────────
 
 app = FastAPI(
-    title="3D ULPIN — Vertical Property Mapping",
-    description=(
-        "Converts 2D building floor plans into validated, uniquely-identified "
-        "3D representations of individual property units."
-    ),
-    version="0.1.0",
+    title="VERTA — 3D ULPIN Backend",
+    version="0.2.0",
     lifespan=lifespan,
 )
 
@@ -64,12 +75,86 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+OUT_DIR = Path("out")
+OUT_DIR.mkdir(exist_ok=True)
+
+ALLOWED_CONTENT_TYPES = {"image/png", "image/jpeg", "image/jpg", "application/pdf"}
+MAX_UPLOAD_BYTES = 50 * 1024 * 1024  # 50 MB
+
 
 # ── Health ─────────────────────────────────────────────────────────────────────
 
 @app.get("/health", response_model=HealthResponse, tags=["System"])
 def health():
-    return {"status": "ok", "version": "0.1.0"}
+    return {"status": "ok", "version": "0.2.0"}
+
+
+# ── Direct Vision Detection (Uploaded Image/PDF -> Polygons) ─────────────────
+
+@app.post("/detect", tags=["Vision"])
+async def detect(
+    file: UploadFile = File(...),
+    floor_id: str = Form(default=""),
+    detector: str = Form(default="auto"),
+):
+    """
+    Accept a floor-plan image, run the vision pipeline, return the floor JSON.
+
+    The JSON matches the vision contract:
+      { floor_id, image_size, px_per_meter, coord_system, units, doors, source }
+    """
+    ct = (file.content_type or "").lower()
+    if ct not in ALLOWED_CONTENT_TYPES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported file type '{ct}'. Upload a PNG, JPEG, or PDF.",
+        )
+
+    contents = await file.read()
+    if len(contents) > MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=400, detail="File too large (max 50 MB).")
+    if len(contents) < 100:
+        raise HTTPException(status_code=400, detail="File is too small or empty.")
+
+    if not floor_id:
+        name_no_ext = Path(file.filename or "upload").stem
+        floor_id = name_no_ext
+
+    ext = Path(file.filename or "upload.png").suffix or ".png"
+    request_id = uuid.uuid4().hex[:8]
+    temp_path = OUT_DIR / f"_upload_{request_id}{ext}"
+    temp_path.write_bytes(contents)
+
+    try:
+        loop = asyncio.get_running_loop()
+        result = await loop.run_in_executor(
+            None,
+            partial(
+                process_floor,
+                image_path=temp_path,
+                floor_id=floor_id,
+                out_dir=OUT_DIR,
+                use_cached=False,
+                save_cache=False,
+                debug=False,
+                detector=detector,
+            ),
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Detection failed: {e}")
+    finally:
+        if temp_path.exists():
+            temp_path.unlink(missing_ok=True)
+
+    if not result.get("units"):
+        raise HTTPException(
+            status_code=422,
+            detail="No units detected. Try a clearer, higher-contrast plan with dark walls on a white background.",
+        )
+
+    return JSONResponse(content=result)
 
 
 # ── Project CRUD ───────────────────────────────────────────────────────────────
@@ -95,6 +180,8 @@ def create_project_endpoint(body: ProjectCreate, db: Session = Depends(get_db)):
 @app.get("/project/{project_id}", tags=["Project"])
 def get_project_endpoint(project_id: str, db: Session = Depends(get_db)):
     """Retrieve the full project payload (floors, units, validation, 3D geometry)."""
+    if project_id in ("demo", "fallback"):
+        return run_fallback_pipeline(db)
     result = get_full_project(db, project_id)
     if result is None:
         raise HTTPException(status_code=404, detail="Project not found")
@@ -117,7 +204,6 @@ def upload_floor_plan(
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    # Save image to data/uploads/
     upload_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "uploads")
     os.makedirs(upload_dir, exist_ok=True)
     fp_id = str(uuid.uuid4())
@@ -169,80 +255,125 @@ def upload_floor_plan(
     }
 
 
-# ── Process: ingest detected polygons ─────────────────────────────────────────
+# ── CV Interface: Ingest 2D Polygons ──────────────────────────────────────────
 
-@app.post("/process/{project_id}", tags=["Processing"])
-def process_units(
+@app.post("/project/{project_id}/floor/{floor_number}/units", response_model=ProcessResponse, tags=["CV Interface"])
+def ingest_floor_units(
     project_id: str,
+    floor_number: int,
     body: FloorUnitsInput,
     db: Session = Depends(get_db),
 ):
     """
-    Ingest detected unit polygons into the project.
+    Accept 2D polygon data (from CV/Person 1) for a specific floor.
 
-    Accepts a list of {polygon, floor_number, unit_type} objects.
-    Runs extrusion + ULPIN generation.
+    Coordinates must be in METERS, exterior ring only, counter-clockwise.
+    Origin at floor plan bottom-left.
     """
     project = db.query(ProjectModel).filter_by(id=project_id).first()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    try:
-        units_data = [u.model_dump() for u in body.units]
-        unit_ids = ingest_units(db, project_id, units_data)
-        return {"units_created": len(unit_ids), "unit_ids": unit_ids}
-    except Exception as e:
-        raise HTTPException(status_code=422, detail=str(e))
+    units_data = [
+        {
+            "polygon": u.polygon,
+            "floor_number": floor_number,
+            "unit_type": u.unit_type,
+        }
+        for u in body.units
+    ]
+
+    unit_ids = ingest_units(db, project_id, units_data)
+    return {
+        "project_id": project_id,
+        "floor_number": floor_number,
+        "units_ingested": len(unit_ids),
+        "unit_ids": unit_ids,
+    }
 
 
-# ── Extrude: re-extrude all units (if needed) ─────────────────────────────────
+# ── Extrusion & ULPIN Generation ──────────────────────────────────────────────
 
-@app.post("/extrude/{project_id}", tags=["Processing"])
+@app.post("/project/{project_id}/extrude", response_model=ExtrudeResponse, tags=["Geometry"])
 def extrude_project(project_id: str, db: Session = Depends(get_db)):
-    """
-    Re-extrude all units in the project.
-
-    Normally extrusion happens during /process, but this endpoint allows
-    re-running after polygon corrections.
-    """
+    """Run 2D→3D extrusion and assign 3D ULPINs to all un-extruded units."""
     project = db.query(ProjectModel).filter_by(id=project_id).first()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    building = project.building
-    if not building:
-        raise HTTPException(status_code=409, detail="No building found for project")
+    floor_height = project.floor_height
+    units = (
+        db.query(UnitModel)
+        .join(FloorModel)
+        .filter(FloorModel.project_id == project_id)
+        .all()
+    )
 
-    floor_height = building.floor_height
-    updated = 0
+    extruded_count = 0
+    assigned_ulpins = []
 
-    for floor_rec in building.floors:
-        base_z = compute_elevation(floor_rec.floor_number, floor_height)
-        for unit_rec in floor_rec.units:
-            coords = json.loads(unit_rec.polygon_2d)
-            vertices, faces = extrude_polygon(coords, base_z, floor_height)
-            unit_rec.vertices = json.dumps(vertices)
-            unit_rec.faces = json.dumps(faces)
-            unit_rec.elevation = base_z
-            unit_rec.height = floor_height
-            unit_rec.area = round(polygon_area(coords), 2)
-            updated += 1
+    for unit in units:
+        polygon = json.loads(unit.polygon_2d)
+        floor_num = unit.floor.floor_number
+
+        base_z = compute_elevation(floor_num, floor_height)
+        vertices, faces = extrude_polygon(polygon, base_z, floor_height)
+
+        unit.vertices = json.dumps(vertices)
+        unit.faces = json.dumps(faces)
+        unit.elevation = base_z
+        unit.height = floor_height
+        unit.area = round(polygon_area(polygon), 2)
+
+        # Generate 3D ULPIN
+        center_x = sum(p[0] for p in polygon) / len(polygon)
+        center_y = sum(p[1] for p in polygon) / len(polygon)
+        ulpin = generate_ulpin(
+            parcel_id=project.parcel_id,
+            floor_number=floor_num,
+            centroid=(center_x, center_y),
+            elevation=base_z,
+            unit_index=int(unit.id.split("-")[-1]) if "-" in unit.id else 0,
+        )
+        unit.ulpin_3d = ulpin
+        assigned_ulpins.append(ulpin)
+        extruded_count += 1
 
     db.commit()
+    return {
+        "project_id": project_id,
+        "extruded_units": extruded_count,
+        "ulpins": assigned_ulpins,
+    }
 
-    result = get_full_project(db, project_id)
-    return {"units_updated": updated, "units_3d": result["units"]}
 
+# ── Validation Engine ─────────────────────────────────────────────────────────
 
-# ── Validate ───────────────────────────────────────────────────────────────────
-
-@app.post("/validate/{project_id}", tags=["Validation"])
+@app.post("/project/{project_id}/validate", response_model=ValidateResponse, tags=["Validation"])
 def validate_project(project_id: str, db: Session = Depends(get_db)):
-    """Run all validation rules on the project's units."""
+    """Run topology, boundary, volume, and ULPIN validation checks on all units."""
+    project = db.query(ProjectModel).filter_by(id=project_id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
     try:
         results = run_validation(db, project_id)
         summary = summarize_validation(results)
-        return {"results": results, "summary": summary}
+        return {
+            "project_id": project_id,
+            "results": [
+                {
+                    "id": r.id,
+                    "unit_id": r.unit_id,
+                    "rule": r.rule,
+                    "status": r.status,
+                    "message": r.message,
+                    "severity": r.severity,
+                }
+                for r in results
+            ],
+            "summary": summary,
+        }
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
@@ -293,11 +424,9 @@ def patch_unit(unit_id: str, body: UnitPatchInput, db: Session = Depends(get_db)
     floor_height = floor_rec.building.floor_height
     base_z = compute_elevation(floor_rec.floor_number, floor_height)
 
-    # Update polygon
     unit.polygon_2d = json.dumps(body.polygon)
     unit.area = round(polygon_area(body.polygon), 2)
 
-    # Re-extrude
     vertices, faces = extrude_polygon(body.polygon, base_z, floor_height)
     unit.vertices = json.dumps(vertices)
     unit.faces = json.dumps(faces)
@@ -313,15 +442,10 @@ def patch_unit(unit_id: str, body: UnitPatchInput, db: Session = Depends(get_db)
 def run_fallback(db: Session = Depends(get_db)):
     """
     Execute the full pipeline using synthetic fallback data.
-
-    This endpoint is the safety net: if the CV pipeline is unavailable,
-    the frontend can call this to get a fully processed demo project.
     """
     result = run_fallback_pipeline(db)
     return result
 
-
-# ── Static fallback JSON (for when the backend itself is down) ────────────────
 
 @app.get("/fallback/static", tags=["Demo"])
 def get_static_fallback():
@@ -330,31 +454,13 @@ def get_static_fallback():
     return get_fallback_project()
 
 
-# ── CV Integration (Person 1 → Person 2 handoff) ─────────────────────────────
+# ── CV Integration (Person 1 -> Person 2 handoff) ─────────────────────────────
 
 @app.post("/cv/ingest", tags=["CV Integration"])
 def ingest_cv_floors(
     body: dict,
     db: Session = Depends(get_db),
 ):
-    """
-    Ingest Person 1's floor-plan JSON files and run the full pipeline.
-
-    Accepts:
-    {
-      "floors": [
-        {"json": <L1.json content>, "floor_number": 0},
-        {"json": <L2.json content>, "floor_number": 1},
-        {"json": <L3.json content>, "floor_number": 2}
-      ],
-      "project_name": "CV-Detected Building",  // optional
-      "floor_height": 3.0,                     // optional
-      "px_per_meter": null                     // optional
-    }
-
-    Applies coordinate transforms (Y-flip, px→m scaling, centering),
-    then runs extrusion, ULPIN generation, validation, and persistence.
-    """
     from app.cv_adapter import transform_cv_floor
 
     floors_input = body.get("floors", [])
@@ -365,7 +471,6 @@ def ingest_cv_floors(
     floor_height = body.get("floor_height", 3.0)
     px_per_meter = body.get("px_per_meter", None)
 
-    # Create project
     parcel_id = f"CV-{project_name.replace(' ', '-').upper()[:20]}"
     floor_count = len(floors_input)
     basement_count = sum(1 for f in floors_input if f.get("floor_number", 0) < 0)
@@ -379,7 +484,6 @@ def ingest_cv_floors(
         basement_count=basement_count,
     )
 
-    # Transform and ingest each floor
     all_units = []
     floor_reports = []
 
@@ -408,9 +512,8 @@ def ingest_cv_floors(
                 "unit_type": u["unit_type"],
             })
 
-    # Run the pipeline
     unit_ids = ingest_units(db, project_id, all_units)
-    validation_results = run_validation(db, project_id)
+    run_validation(db, project_id)
     result = get_full_project(db, project_id)
 
     return {
@@ -429,11 +532,6 @@ def ingest_cv_file(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
-    """
-    Upload a single Person 1 floor JSON file and process it.
-
-    Simpler alternative to /cv/ingest — one floor at a time via file upload.
-    """
     import json as json_module
     from app.cv_adapter import transform_cv_floor
 
@@ -442,7 +540,6 @@ def ingest_cv_file(
 
     transformed = transform_cv_floor(cv_json, floor_number)
 
-    # Create a minimal project for this single floor
     parcel_id = f"CV-{cv_json.get('floor_id', 'FLOOR')}"
     project_id = create_project(
         db=db,
@@ -474,12 +571,6 @@ def ingest_cv_file(
 
 @app.post("/cv/preview", tags=["CV Integration"])
 def preview_cv_transform(body: dict):
-    """
-    Preview the coordinate transformation without persisting anything.
-
-    Useful for debugging: see what the backend produces from Person 1's JSON
-    before running the full pipeline.
-    """
     from app.cv_adapter import transform_cv_floor
 
     cv_json = body.get("json", body)
@@ -488,3 +579,11 @@ def preview_cv_transform(body: dict):
 
     transformed = transform_cv_floor(cv_json, floor_number, px_per_meter)
     return transformed
+
+
+@app.get("/")
+def root():
+    return {
+        "status": "VERTA backend running",
+        "endpoints": ["/detect", "/health", "/project", "/fallback/run", "/cv/ingest"]
+    }

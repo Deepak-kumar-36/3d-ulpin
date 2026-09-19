@@ -8,6 +8,7 @@ interface Props {
   onToggleLayer: (layer: string) => void;
   projectionMode: 'isometric' | 'exploded' | 'xray';
   onChangeProjection: (mode: 'isometric' | 'exploded' | 'xray') => void;
+  onCollapse?: () => void;
 }
 
 const LAYERS = [
@@ -26,6 +27,7 @@ export default function LayerPanel({
   onToggleLayer,
   projectionMode,
   onChangeProjection,
+  onCollapse,
 }: Props) {
   // Reverse floors so F3 is at top, B1 at bottom (like a real building)
   const displayFloors = [...floors].reverse();
@@ -36,13 +38,26 @@ export default function LayerPanel({
       {/* Floor Stack Navigation */}
       <section className="flex flex-col gap-2">
         <div className="flex items-center justify-between pb-2 border-b border-outline-variant/30">
-          <span className="font-label-caps uppercase text-on-surface-variant">Vertical Cadastre Strata</span>
-          <button 
-            onClick={() => onSelectFloor('all')}
-            className={`cadastre-chip cursor-pointer ${activeFloorId === 'all' ? 'bg-primary text-on-primary' : 'bg-surface-container hover:bg-surface-container-high text-primary'}`}
-          >
-            Show All
-          </button>
+          <div className="flex items-center gap-2">
+            <span className="font-label-caps uppercase text-on-surface-variant text-xs">Vertical Cadastre Strata</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => onSelectFloor('all')}
+              className={`cadastre-chip cursor-pointer ${activeFloorId === 'all' ? 'bg-primary text-on-primary' : 'bg-surface-container hover:bg-surface-container-high text-primary'}`}
+            >
+              Show All
+            </button>
+            {onCollapse && (
+              <button
+                onClick={onCollapse}
+                className="p-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors cursor-pointer"
+                title="Hide Strata Panel"
+              >
+                <span className="material-icon text-[18px]">keyboard_double_arrow_left</span>
+              </button>
+            )}
+          </div>
         </div>
         
         <div className="flex flex-col gap-2 mt-2">
@@ -52,7 +67,7 @@ export default function LayerPanel({
               <button
                 key={floor.id}
                 onClick={() => onSelectFloor(floor.id)}
-                className={`text-left p-3 rounded-lg transition-all duration-300 flex flex-col gap-1 border ${
+                className={`text-left p-3 rounded-lg transition-all duration-300 flex flex-col gap-1 border cursor-pointer ${
                   isActive 
                     ? 'bg-secondary-container/20 border-primary shadow-[0_0_15px_rgba(195,221,69,0.2)]' 
                     : 'bg-surface-container-low border-transparent hover:bg-surface-container hover:border-outline hover:shadow-cadastre-sm'
@@ -86,10 +101,10 @@ export default function LayerPanel({
             <button
               key={mode}
               onClick={() => onChangeProjection(mode as any)}
-              className={`py-1.5 rounded text-body-sm transition-colors ${
+              className={`py-1.5 rounded text-body-sm transition-all duration-200 cursor-pointer ${
                 projectionMode === mode
-                  ? 'bg-primary-container text-on-primary shadow-sm'
-                  : 'text-on-surface hover:bg-surface'
+                  ? 'bg-primary-container text-on-primary-container shadow-sm'
+                  : 'text-on-surface hover:bg-surface hover:text-primary'
               }`}
             >
               {mode.charAt(0).toUpperCase() + mode.slice(1)}

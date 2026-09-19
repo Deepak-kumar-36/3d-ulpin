@@ -42,7 +42,7 @@ export default function InfoPanel({ selectedUnit, onClose, projectId }: Props) {
         </div>
         <button 
           onClick={onClose}
-          className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container text-on-surface-variant transition-colors"
+          className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition-all duration-200 cursor-pointer"
         >
           <span className="material-icon text-[18px]">close</span>
         </button>
@@ -85,7 +85,7 @@ export default function InfoPanel({ selectedUnit, onClose, projectId }: Props) {
             <span className="font-label-caps uppercase text-on-surface-variant">Rule Engine Results</span>
             <button 
               onClick={() => navigate(`/project/${projectId}/validation`)}
-              className="text-[10px] font-semibold text-primary hover:underline flex items-center gap-1"
+              className="text-[10px] font-semibold text-primary hover:underline hover:text-primary-fixed flex items-center gap-1 transition-all duration-200 cursor-pointer"
             >
               FULL REPORT <span className="material-icon text-[12px]">open_in_new</span>
             </button>

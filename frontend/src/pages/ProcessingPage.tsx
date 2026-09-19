@@ -1,205 +1,214 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PROCESSING_STAGES } from '../data/types';
-import { runFallbackPipeline, getProject } from '../api/client';
+import { detectPlan, getDemoProject, buildProjectFromVision, ingestCvFloors } from '../api/client';
+import type { VisionFloor } from '../api/client';
+import type { Project } from '../data/types';
 
-type PipelineStatus = 'running' | 'complete' | 'error';
+type Status = 'detecting' | 'done' | 'error';
 
 export default function ProcessingPage() {
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
-  const [currentStageIdx, setCurrentStageIdx] = useState(0);
-  const [status, setStatus] = useState<PipelineStatus>('running');
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const mounted = useRef(true);
+  const location = useLocation();
 
-  useEffect(() => {
-    mounted.current = true;
-    return () => { mounted.current = false; };
-  }, []);
+  const projectName: string = location.state?.projectName || 'Untitled Project';
+  const files: File[] = location.state?.files || [];
+  const floorLabels: string[] = location.state?.floorLabels || files.map((_, i) => `L${i + 1}`);
+  const floorHeight: number = location.state?.floorHeight || 3.6;
 
-  useEffect(() => {
-    const run = async () => {
+  const [status, setStatus] = useState<Status>('detecting');
+  const [currentFileIdx, setCurrentFileIdx] = useState(0);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const runDetection = useCallback(async () => {
+    if (files.length === 0) {
+      setErrorMessage('No files were provided. Go back and upload floor plans.');
+      setStatus('error');
+      return;
+    }
+
+    setStatus('detecting');
+    setErrorMessage('');
+    const collected: VisionFloor[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      setCurrentFileIdx(i);
       try {
-        if (id === 'demo' || !id || id === 'new') {
-          // Run the fallback / demo pipeline
-          // Advance stages as pipeline progresses
-          for (let i = 0; i < PROCESSING_STAGES.length - 1; i++) {
-            if (!mounted.current) return;
-            setCurrentStageIdx(i);
-            // The first stage is "Uploading" — skip it for demo (no file)
-            if (i === 0) {
-              await new Promise((r) => setTimeout(r, 400));
-              continue;
-            }
-            // For the actual pipeline call, do it on stage 1 (detecting)
-            if (i === 1) {
-              const proj = await runFallbackPipeline();
-              if (!mounted.current) return;
-              // Fast-forward through remaining stages
-              for (let j = 2; j < PROCESSING_STAGES.length - 1; j++) {
-                setCurrentStageIdx(j);
-                await new Promise((r) => setTimeout(r, 600));
-                if (!mounted.current) return;
-              }
-              // Done
-              setCurrentStageIdx(PROCESSING_STAGES.length - 1);
-              setStatus('complete');
-              await new Promise((r) => setTimeout(r, 800));
-              if (mounted.current) {
-                navigate(`/project/${proj.id}/viewer`);
-              }
-              return;
-            }
-            await new Promise((r) => setTimeout(r, 800));
-          }
-        } else {
-          // Real project — try to fetch processing result
-          // The upload already happened, so skip the first stage
-          setCurrentStageIdx(1); // Detecting
-          await new Promise((r) => setTimeout(r, 600));
-
-          if (!mounted.current) return;
-          setCurrentStageIdx(2); // Generating 3D
-
-          // Try to get the project (which was already processed during upload)
-          const proj = await getProject(id);
-          if (!mounted.current) return;
-
-          setCurrentStageIdx(3); // Assigning ULPINs
-          await new Promise((r) => setTimeout(r, 500));
-          if (!mounted.current) return;
-
-          setCurrentStageIdx(4); // Validating
-          await new Promise((r) => setTimeout(r, 500));
-          if (!mounted.current) return;
-
-          setCurrentStageIdx(PROCESSING_STAGES.length - 1);
-          setStatus('complete');
-          await new Promise((r) => setTimeout(r, 800));
-          if (mounted.current) {
-            navigate(`/project/${proj.id}/viewer`);
-          }
-        }
-      } catch (err: unknown) {
-        if (!mounted.current) return;
-        const msg = err instanceof Error ? err.message : 'Processing failed';
-        setErrorMsg(msg);
+        const result = await detectPlan(files[i], floorLabels[i]);
+        collected.push(result);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Unknown detection error';
+        setErrorMessage(msg);
         setStatus('error');
+        return;
       }
-    };
+    }
 
-    run();
-  }, [id, navigate]);
+    // All floors detected successfully
+    sessionStorage.setItem('verta_vision_results', JSON.stringify(collected));
+
+    // Ingest into backend to extrude 3D solid geometries and generate 3D ULPINs
+    let finalProject: Project;
+    let finalProjectId = 'detected';
+
+    try {
+      const ingestRes = await ingestCvFloors(collected, projectName, floorHeight);
+      finalProject = ingestRes.project;
+      finalProjectId = ingestRes.project_id;
+    } catch (ingestErr) {
+      console.warn('Backend ingestion failed, falling back to client-side 3D synthesis:', ingestErr);
+      finalProject = buildProjectFromVision(collected, projectName);
+    }
+
+    sessionStorage.setItem('verta_detected_project', JSON.stringify(finalProject));
+    sessionStorage.setItem('verta_active_project_id', finalProjectId);
+
+    // Also store the image data URLs for the overlay page
+    const imageDataUrls: string[] = [];
+    for (const f of files) {
+      const dataUrl = await fileToDataUrl(f);
+      imageDataUrls.push(dataUrl);
+    }
+    sessionStorage.setItem('verta_uploaded_images', JSON.stringify(imageDataUrls));
+
+    setStatus('done');
+
+    // Brief pause on "done" then navigate
+    setTimeout(() => {
+      navigate('/project/detected/detected');
+    }, 800);
+  }, [files, floorLabels, projectName, floorHeight, navigate]);
+
+  useEffect(() => {
+    runDetection();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleRetry = () => {
-    setStatus('running');
-    setErrorMsg(null);
-    setCurrentStageIdx(0);
-    // Re-trigger by navigating to itself
-    navigate(0);
+    setStatus('detecting');
+    setCurrentFileIdx(0);
+    setErrorMessage('');
+    runDetection();
   };
+
+  const handleUseDemoData = () => {
+    const demo = getDemoProject();
+    sessionStorage.setItem('verta_detected_project', JSON.stringify(demo));
+    sessionStorage.removeItem('verta_vision_results');
+    sessionStorage.removeItem('verta_uploaded_images');
+    navigate(`/project/demo/detected`);
+  };
+
+  const stageLabel = status === 'detecting'
+    ? `Detecting floor ${floorLabels[currentFileIdx] || '?'} (${currentFileIdx + 1} of ${files.length})...`
+    : status === 'done'
+      ? 'Detection complete!'
+      : 'Detection failed';
+
+  const stageIcon = status === 'detecting' ? 'search' : status === 'done' ? 'check_circle' : 'error';
+  const progress = status === 'done' ? 1 : files.length > 0 ? currentFileIdx / files.length : 0;
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] bg-surface p-6"
     >
-      <div className="w-full max-w-lg bg-surface-container-lowest p-8 border border-outline-variant/20 relative overflow-hidden">
+      <div className="w-full max-w-lg bg-surface-container-lowest p-8 rounded-xl shadow-cadastre border border-outline-variant/20 relative overflow-hidden">
+        {/* Background glow */}
+        <div
+          className="absolute inset-0 bg-primary-fixed-dim/10 transition-opacity duration-1000"
+          style={{ opacity: progress }}
+        />
 
         <div className="relative z-10 flex flex-col items-center text-center gap-8">
-
           <div className="flex flex-col items-center gap-3">
             <span className="font-label-caps uppercase text-on-surface-variant tracking-widest">
-              {status === 'error' ? 'Processing Failed' : status === 'complete' ? 'Complete' : 'Processing'}
+              Step 2 of 4 &mdash; Processing
             </span>
             <h2 className="font-headline text-headline-md text-primary">
-              {id === 'demo' || !id || id === 'new' ? 'Demo Building' : `Project ${id.slice(0, 8)}…`}
+              {projectName}
             </h2>
           </div>
 
-          {/* Active Stage Display */}
+          {/* Stage display */}
           <div className="h-[120px] flex items-center justify-center w-full">
-            {status === 'error' ? (
-              <div className="flex flex-col items-center gap-4">
-                <div className="w-16 h-16 flex items-center justify-center bg-error/10">
-                  <span className="material-icon text-[32px] text-error">error</span>
-                </div>
-                <span className="font-body text-body-md text-error max-w-sm">
-                  {errorMsg || 'An unexpected error occurred.'}
-                </span>
-              </div>
-            ) : (
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentStageIdx}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className="flex flex-col items-center gap-4"
-                >
-                  <div
-                    className={`w-16 h-16 flex items-center justify-center ${
-                      status === 'complete'
-                        ? 'bg-tertiary text-on-tertiary'
-                        : 'bg-surface-container-high text-primary'
-                    }`}
-                  >
-                    <span
-                      className={`material-icon text-[32px] ${
-                        status !== 'complete' ? 'animate-pulse' : ''
-                      }`}
-                    >
-                      {PROCESSING_STAGES[currentStageIdx].icon}
-                    </span>
-                  </div>
-                  <span className="font-body text-body-lg text-on-surface font-medium">
-                    {PROCESSING_STAGES[currentStageIdx].label}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={stageLabel}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="flex flex-col items-center gap-4"
+              >
+                <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-sm ${
+                  status === 'error'
+                    ? 'bg-error/20 text-error'
+                    : status === 'done'
+                      ? 'bg-primary text-on-primary'
+                      : 'bg-surface-container-high text-primary'
+                }`}>
+                  <span className={`material-icon text-[32px] ${status === 'detecting' ? 'animate-pulse' : ''}`}>
+                    {stageIcon}
                   </span>
-                </motion.div>
-              </AnimatePresence>
-            )}
+                </div>
+                <span className="font-body text-body-lg text-on-surface font-medium">
+                  {stageLabel}
+                </span>
+              </motion.div>
+            </AnimatePresence>
           </div>
 
-          {/* Progress Bar */}
-          {status !== 'error' && (
-            <div className="w-full flex flex-col gap-2 mt-4">
-              <div className="h-1.5 w-full bg-surface-container-high overflow-hidden">
-                <motion.div
-                  className={`h-full ${status === 'complete' ? 'bg-tertiary' : 'bg-primary'}`}
-                  initial={{ width: '0%' }}
-                  animate={{
-                    width: `${(currentStageIdx / (PROCESSING_STAGES.length - 1)) * 100}%`,
-                  }}
-                  transition={{ duration: 0.5, ease: 'easeOut' }}
-                />
-              </div>
-              <div className="flex justify-between font-mono text-[10px] text-on-surface-variant">
-                <span>STAGE {currentStageIdx + 1} / {PROCESSING_STAGES.length}</span>
-                <span>{Math.round((currentStageIdx / (PROCESSING_STAGES.length - 1)) * 100)}%</span>
-              </div>
+          {/* Progress bar */}
+          <div className="w-full flex flex-col gap-2 mt-4">
+            <div className="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+              <motion.div
+                className={`h-full ${status === 'error' ? 'bg-error' : 'bg-primary'}`}
+                initial={{ width: '0%' }}
+                animate={{ width: `${progress * 100}%` }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+              />
             </div>
-          )}
+          </div>
 
-          {/* Error actions */}
+          {/* Error state */}
           {status === 'error' && (
-            <div className="flex gap-3 mt-2">
-              <button onClick={handleRetry} className="cadastre-btn-primary">
-                <span className="material-icon text-[16px]">refresh</span>
-                Retry
-              </button>
-              <button onClick={() => navigate('/project/new/upload')} className="cadastre-btn-secondary">
-                <span className="material-icon text-[16px]">arrow_back</span>
-                Back to Upload
-              </button>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="w-full flex flex-col gap-4"
+            >
+              <div className="bg-error/10 border border-error/30 rounded-lg p-4 text-left">
+                <p className="text-error text-body-sm font-medium mb-1">Detection Error</p>
+                <p className="text-on-surface-variant text-body-sm">{errorMessage}</p>
+              </div>
+
+              <div className="flex gap-3 justify-center">
+                <button onClick={handleRetry} className="cadastre-btn-primary">
+                  <span className="material-icon text-[18px]">refresh</span>
+                  Retry
+                </button>
+                <button onClick={handleUseDemoData} className="cadastre-btn-secondary">
+                  <span className="material-icon text-[18px]">science</span>
+                  Use demo data
+                </button>
+              </div>
+
+              <p className="text-on-surface-variant text-body-sm mt-2">
+                <strong>Tips for better detection:</strong> Use a top-down scan or photo with clear dark walls on a white background. Avoid tilted photos, blurry images, or colored blueprints.
+              </p>
+            </motion.div>
           )}
         </div>
       </div>
     </motion.div>
   );
+}
+
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }

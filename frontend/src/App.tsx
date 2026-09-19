@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import AppLayout from './layouts/AppLayout';
 import LandingPage from './pages/LandingPage';
@@ -13,13 +13,14 @@ import { SplashScreen } from './components/ui/SplashScreen';
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
+  const location = useLocation();
 
   return (
     <>
       {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
       <AppLayout>
         <AnimatePresence mode="wait">
-          <Routes>
+          <Routes location={location} key={location.pathname}>
             <Route path="/" element={<LandingPage />} />
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/project/:id/upload" element={<UploadPage />} />

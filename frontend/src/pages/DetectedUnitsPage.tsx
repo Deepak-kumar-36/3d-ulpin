@@ -1,117 +1,221 @@
-import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ScrollReveal from '../components/ui/ScrollReveal';
+import type { VisionFloor } from '../api/client';
 
 export default function DetectedUnitsPage() {
-  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [activeFloor, setActiveFloor] = useState(2); // Mock F2 is active
+  const [activeFloorIdx, setActiveFloorIdx] = useState(0);
+  const [hoveredUnit, setHoveredUnit] = useState<string | null>(null);
+  const [scale, setScale] = useState(1);
 
-  // Mock detection data for demo
-  const mockPolygons = [
-    { id: 1, type: 'Commercial', area: '120.4', status: 'detected', style: { top: '20%', left: '20%', width: '30%', height: '25%' } },
-    { id: 2, type: 'Commercial', area: '145.2', status: 'detected', style: { top: '20%', left: '55%', width: '25%', height: '25%' } },
-    { id: 3, type: 'Commercial', area: '210.8', status: 'needs_review', style: { top: '55%', left: '20%', width: '35%', height: '25%' } },
-  ];
+  // Read detection results from sessionStorage
+  const visionResults: VisionFloor[] = useMemo(() => {
+    try {
+      const raw = sessionStorage.getItem('verta_vision_results');
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  }, []);
+
+  const uploadedImages: string[] = useMemo(() => {
+    try {
+      const raw = sessionStorage.getItem('verta_uploaded_images');
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  }, []);
+
+  const isDemo = visionResults.length === 0;
+  const activeFloor = visionResults[activeFloorIdx] || null;
+  const activeImage = uploadedImages[activeFloorIdx] || null;
+  const imageSize = activeFloor?.image_size || [800, 600];
+
+  const handleConfirm = () => {
+    const activeId = sessionStorage.getItem('verta_active_project_id') || 'detected';
+    navigate(`/project/${activeId}/viewer`);
+  };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       className="max-w-7xl mx-auto p-6 pt-12 pb-24 h-[calc(100vh-64px)] flex flex-col"
     >
       <div className="flex items-center justify-between mb-6">
         <ScrollReveal direction="up" delay={0}>
           <div className="flex flex-col gap-1">
-            <span className="font-label-caps uppercase text-on-surface-variant">Step 2 of 4</span>
-            <h1 className="font-headline text-headline-lg text-primary tracking-tight">Review Detected Polygons</h1>
+            <span className="font-label-caps uppercase text-on-surface-variant">Step 3 of 4</span>
+            <h1 className="font-headline text-headline-md text-primary tracking-tight">
+              Review Detected Polygons
+            </h1>
+            {isDemo && (
+              <span className="inline-block mt-1 px-2 py-0.5 rounded bg-tertiary/20 text-tertiary text-[11px] font-mono uppercase tracking-wider">
+                DEMO DATA
+              </span>
+            )}
           </div>
         </ScrollReveal>
         <ScrollReveal direction="left" delay={100}>
-          <button 
-            onClick={() => navigate(`/project/${id}/viewer`)}
-            className="cadastre-btn-primary"
-          >
-            Confirm & Extrude 3D
+          <button onClick={handleConfirm} className="cadastre-btn-primary">
+            Confirm &amp; Extrude 3D
             <span className="material-icon text-[18px]">view_in_ar</span>
           </button>
         </ScrollReveal>
       </div>
 
       <div className="flex-1 flex gap-6 overflow-hidden">
-        
+
         {/* Left: Floor Selector & Unit List */}
         <div className="w-[320px] flex flex-col gap-4">
           <div className="cadastre-card p-4 overflow-y-auto">
             <h3 className="font-label-caps uppercase text-on-surface-variant mb-3">Strata Levels</h3>
             <div className="flex flex-col gap-1">
-              {[3, 2, 1, 0, -1].map((f) => (
+              {visionResults.length > 0 ? visionResults.map((vf, idx) => (
                 <button
-                  key={f}
-                  onClick={() => setActiveFloor(f)}
+                  key={vf.floor_id}
+                  onClick={() => setActiveFloorIdx(idx)}
                   className={`p-3 rounded text-left transition-colors flex justify-between items-center ${
-                    activeFloor === f ? 'bg-primary-container text-on-primary' : 'hover:bg-surface-container text-on-surface'
+                    activeFloorIdx === idx
+                      ? 'bg-primary-container text-on-primary-container'
+                      : 'hover:bg-surface-container text-on-surface'
                   }`}
                 >
-                  <span className="font-body font-semibold">
-                    {f === -1 ? 'B1 - Parking' : f === 0 ? 'Ground - Lobby' : `Floor 0${f} - Workspace`}
+                  <span className="font-body font-semibold">{vf.floor_id}</span>
+                  <span className="font-mono text-[11px] text-on-surface-variant">
+                    {vf.units.length} units
                   </span>
-                  {f === 2 && <span className="w-2 h-2 rounded-full bg-tertiary-fixed" />}
                 </button>
-              ))}
+              )) : (
+                <p className="text-on-surface-variant text-body-sm p-3">
+                  No detection results. Using demo data.
+                </p>
+              )}
             </div>
           </div>
 
           <div className="cadastre-card p-4 flex-1 flex flex-col overflow-hidden">
-            <h3 className="font-label-caps uppercase text-on-surface-variant mb-3">Detected Units (F0{activeFloor})</h3>
+            <h3 className="font-label-caps uppercase text-on-surface-variant mb-3">
+              Detected Units {activeFloor ? `(${activeFloor.floor_id})` : ''}
+            </h3>
             <div className="flex-1 overflow-y-auto flex flex-col gap-2 pr-2">
-              {mockPolygons.map((poly) => (
-                <div key={poly.id} className="p-3 rounded border border-outline-variant/30 bg-surface flex flex-col gap-1">
+              {activeFloor?.units.map((u) => (
+                <div
+                  key={u.id}
+                  className={`p-3 rounded border transition-colors flex flex-col gap-1 cursor-pointer ${
+                    hoveredUnit === u.id
+                      ? 'border-primary bg-primary/10'
+                      : 'border-outline-variant/30 bg-surface hover:bg-surface-container'
+                  }`}
+                  onMouseEnter={() => setHoveredUnit(u.id)}
+                  onMouseLeave={() => setHoveredUnit(null)}
+                >
                   <div className="flex justify-between items-start">
-                    <span className="font-mono text-primary font-medium">Polygon #{poly.id}</span>
-                    <span className={`material-icon text-[16px] ${poly.status === 'needs_review' ? 'text-on-tertiary-fixed-variant' : 'text-primary-fixed-dim'}`}>
-                      {poly.status === 'needs_review' ? 'warning' : 'check_circle'}
-                    </span>
+                    <span className="font-mono text-primary font-medium text-[13px]">{u.id}</span>
+                    <span className="material-icon text-[16px] text-primary-fixed-dim">check_circle</span>
                   </div>
-                  <span className="text-body-sm text-on-surface-variant">{poly.type}</span>
-                  <span className="font-mono text-[11px] mt-1">{poly.area} m²</span>
+                  <span className="font-mono text-[11px] text-on-surface-variant">
+                    {u.area_px.toFixed(0)} px² · {u.polygon.length} vertices
+                  </span>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Right: Plan Canvas */}
-        <div className="flex-1 cadastre-card overflow-hidden flex flex-col relative bg-[#e5e5e5] items-center justify-center">
-           {/* Mock Blueprint Background */}
-           <div className="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+CjxwYXRoIGQ9Ik00MCAwaC00MHY0MGg0MHpNMSAxaDM4djM4aC0zOHoiIGZpbGw9IiMzMzMiLz4KPC9zdmc+')]"></div>
-           
-           <div className="relative w-[80%] h-[80%] border-2 border-primary/20 bg-white/50 backdrop-blur-sm shadow-xl rounded-sm">
-             {/* Detected Overlay Polygons */}
-             {mockPolygons.map((poly) => (
-               <div 
-                 key={poly.id}
-                 className={`absolute border-2 flex items-center justify-center group cursor-pointer transition-colors ${
-                   poly.status === 'needs_review' ? 'border-tertiary-fixed bg-tertiary-fixed/20' : 'border-primary bg-primary/10'
-                 }`}
-                 style={poly.style}
-               >
-                 <div className="bg-surface/90 px-2 py-1 rounded shadow-sm opacity-0 group-hover:opacity-100 transition-opacity absolute -top-8 font-mono text-[10px] text-primary whitespace-nowrap">
-                   Area: {poly.area}m²
-                 </div>
-               </div>
-             ))}
-           </div>
+        {/* Right: Plan Canvas with SVG overlay */}
+        <div className="flex-1 cadastre-card overflow-hidden flex flex-col relative bg-[#1a1a1a] items-center justify-center">
+          <div
+            className="relative origin-center transition-transform duration-200"
+            style={{
+              transform: `scale(${scale})`,
+              width: '90%',
+              aspectRatio: `${imageSize[0]} / ${imageSize[1]}`,
+              maxHeight: '90%',
+            }}
+          >
+            {/* Uploaded image background */}
+            {activeImage && (
+              <img
+                src={activeImage}
+                alt={`Floor plan ${activeFloor?.floor_id}`}
+                className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+              />
+            )}
+            {!activeImage && (
+              <div className="absolute inset-0 bg-surface-container flex items-center justify-center">
+                <span className="text-on-surface-variant font-mono text-sm">No image available</span>
+              </div>
+            )}
 
-           {/* Toolbar overlay */}
-           <div className="absolute top-4 right-4 bg-surface rounded-lg shadow-cadastre flex items-center p-1 border border-outline-variant/30">
-              <button className="w-8 h-8 rounded hover:bg-surface-container flex items-center justify-center text-on-surface-variant"><span className="material-icon text-[18px]">zoom_in</span></button>
-              <button className="w-8 h-8 rounded hover:bg-surface-container flex items-center justify-center text-on-surface-variant"><span className="material-icon text-[18px]">zoom_out</span></button>
-              <div className="w-[1px] h-4 bg-outline-variant/30 mx-1"></div>
-              <button className="w-8 h-8 rounded hover:bg-surface-container flex items-center justify-center text-on-surface-variant"><span className="material-icon text-[18px]">edit</span></button>
-           </div>
+            {/* SVG polygon overlay */}
+            {activeFloor && (
+              <svg
+                viewBox={`0 0 ${imageSize[0]} ${imageSize[1]}`}
+                className="absolute inset-0 w-full h-full z-10"
+                style={{ pointerEvents: 'none' }}
+              >
+                {activeFloor.units.map((u) => {
+                  const points = u.polygon.map(p => `${p[0]},${p[1]}`).join(' ');
+                  const isHovered = hoveredUnit === u.id;
+                  return (
+                    <g key={u.id} style={{ pointerEvents: 'all' }}>
+                      <polygon
+                        points={points}
+                        fill={isHovered ? 'rgba(102,187,255,0.35)' : 'rgba(102,187,255,0.15)'}
+                        stroke={isHovered ? '#66bbff' : '#4a9eff'}
+                        strokeWidth="2"
+                        onMouseEnter={() => setHoveredUnit(u.id)}
+                        onMouseLeave={() => setHoveredUnit(null)}
+                        className="cursor-pointer"
+                      />
+                      <text
+                        x={u.centroid[0]}
+                        y={u.centroid[1]}
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                        fill={isHovered ? '#fff' : '#ccc'}
+                        fontSize="14"
+                        fontFamily="monospace"
+                        fontWeight="bold"
+                        style={{ pointerEvents: 'none' }}
+                      >
+                        {u.id}
+                      </text>
+                    </g>
+                  );
+                })}
+              </svg>
+            )}
+          </div>
+
+          {/* Toolbar overlay */}
+          <div className="absolute top-4 right-4 bg-surface rounded-lg shadow-cadastre flex items-center p-1 border border-outline-variant/30">
+            <button
+              onClick={() => setScale(s => Math.min(s + 0.2, 3))}
+              className="w-8 h-8 rounded hover:bg-surface-container flex items-center justify-center text-on-surface-variant"
+            >
+              <span className="material-icon text-[18px]">zoom_in</span>
+            </button>
+            <button
+              onClick={() => setScale(s => Math.max(s - 0.2, 0.5))}
+              className="w-8 h-8 rounded hover:bg-surface-container flex items-center justify-center text-on-surface-variant"
+            >
+              <span className="material-icon text-[18px]">zoom_out</span>
+            </button>
+          </div>
+
+          {/* Unit count badge */}
+          {activeFloor && (
+            <div className="absolute bottom-4 left-4 bg-surface/90 rounded-lg px-3 py-1.5 border border-outline-variant/30">
+              <span className="font-mono text-[11px] text-primary">
+                {activeFloor.units.length} units detected · {activeFloor.source}
+              </span>
+            </div>
+          )}
         </div>
-
       </div>
     </motion.div>
   );

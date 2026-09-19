@@ -1,0 +1,36 @@
+{
+  "model_name": "verta_seg",
+  "architecture": "Unet",
+  "encoder": "resnet34",
+  "input": {
+    "channels": 3,
+    "color_space": "RGB",
+    "target_long_side": 768,
+    "dimension_multiple": 32,
+    "normalization": {
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ]
+    }
+  },
+  "classes": {
+    "0": "background_outside",
+    "1": "separator_walls_doors_windows",
+    "2": "room_interior"
+  },
+  "training_dataset": "phungpx/cubicasa5k-coco / CubiCasa5K",
+  "export_date": "2026-09-19 17:38:16Z",
+  "opset_version": 17,
+  "metrics": {
+    "validation_miou_target": 0.82,
+    "class_1_separator_iou": 0.78,
+    "class_2_room_iou": 0.86
+  }
+}

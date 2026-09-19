@@ -105,6 +105,10 @@ def init_db():
     Base.metadata.create_all(bind=engine)
 
 
+# Ensure tables are created immediately upon module load
+init_db()
+
+
 def drop_db():
     """Drop all tables (test helper)."""
     Base.metadata.drop_all(bind=engine)
