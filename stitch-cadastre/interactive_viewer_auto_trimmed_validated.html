@@ -1,0 +1,747 @@
+﻿<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><title>Cadastre 3D: Vertical Property Registry</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300..800;1,300..800&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"inverse-on-surface":"#f4f0e7","surface":"#fdf9f0","primary-container":"#1b3b2b","on-error":"#ffffff","inverse-surface":"#31302b","primary-fixed":"#c7ebd4","surface-variant":"#e6e2d9","on-primary-fixed-variant":"#2d4d3c","tertiary":"#1c2300","on-secondary":"#ffffff","outline":"#727973","background":"#fdf9f0","on-surface":"#1c1c16","on-background":"#1c1c16","outline-variant":"#c1c8c2","tertiary-fixed":"#d4ef55","primary":"#032517","on-error-container":"#93000a","on-tertiary-fixed":"#181e00","on-secondary-fixed":"#001e2b","surface-container-low":"#f7f3ea","on-secondary-container":"#2d657f","on-primary":"#ffffff","surface-container-high":"#ece8df","error-container":"#ffdad6","surface-container-lowest":"#ffffff","surface-bright":"#fdf9f0","surface-dim":"#dddad1","tertiary-container":"#303900","secondary":"#2c657e","on-surface-variant":"#424843","on-primary-fixed":"#002113","primary-fixed-dim":"#abcfb8","on-secondary-fixed-variant":"#084d65","on-tertiary-fixed-variant":"#404c00","secondary-fixed-dim":"#98ceeb","surface-container":"#f1eee5","inverse-primary":"#abcfb8","secondary-container":"#abe1ff","error":"#ba1a1a","on-tertiary-container":"#90a804","surface-container-highest":"#e6e2d9","on-primary-container":"#83a590","surface-tint":"#456553","on-tertiary":"#ffffff","secondary-fixed":"#c1e8ff","tertiary-fixed-dim":"#b8d23b"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-md":"1rem","gutter-sm":"1rem","margin-lg":"3rem","gutter-lg":"2rem","space-sm":"0.5rem","gutter":"1.5rem","space-2xs":"0.125rem","margin-sm":"1rem","space-xl":"2.5rem","margin":"2rem","space-xs":"0.25rem","space-22xl":"4rem","space-lg":"1.5rem"},fontFamily:{"body-lg":["Hanken Grotesk"],"body-md":["Hanken Grotesk"],"data-mono-sm":["JetBrains Mono"],"label-caps":["Hanken Grotesk"],"headline-sm":["Newsreader"],"body-sm":["Hanken Grotesk"],"data-mono":["JetBrains Mono"],"headline-lg":["Newsreader"],"display-hero-mobile":["Newsreader"],"headline-lg-mobile":["Newsreader"],"display-hero":["Newsreader"],"headline-md":["Newsreader"]},fontSize:{"body-lg":["17px",{"lineHeight":"26px","letterSpacing":"-0.005em","fontWeight":"400"}],"body-md":["14px",{"lineHeight":"22px","fontWeight":"400"}],"data-mono-sm":["11px",{"lineHeight":"16px","letterSpacing":"0.02em","fontWeight":"400"}],"label-caps":["11px",{"lineHeight":"14px","letterSpacing":"0.08em","fontWeight":"600"}],"headline-sm":["20px",{"lineHeight":"28px","fontWeight":"600"}],"body-sm":["12px",{"lineHeight":"18px","fontWeight":"400"}],"data-mono":["13px",{"lineHeight":"18px","letterSpacing":"0.01em","fontWeight":"500"}],"headline-lg":["40px",{"lineHeight":"48px","letterSpacing":"-0.02em","fontWeight":"500"}],"display-hero-mobile":["36px",{"lineHeight":"44px","letterSpacing":"-0.01em","fontWeight":"400"}],"headline-lg-mobile":["28px",{"lineHeight":"36px","letterSpacing":"-0.01em","fontWeight":"500"}],"display-hero":["56px",{"lineHeight":"64px","letterSpacing":"-0.01em","fontWeight":"400"}],"headline-md":["28px",{"lineHeight":"36px","letterSpacing":"-0.01em","fontWeight":"500"}]}}}}</script></head><body class="bg-surface font-body-md text-on-surface antialiased selection:bg-tertiary-fixed selection:text-on-tertiary-fixed"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-md shadow-[0_1px_8px_rgba(27,59,43,0.04)]"><div class="h-20 w-full px-gutter flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md min-w-[280px]"><div class="w-9 h-9 rounded-DEFAULT bg-primary flex items-center justify-center text-on-primary shadow-[0_1px_3px_rgba(27,59,43,0.1)]"><span class="material-symbols-outlined text-[20px]">layers</span></div><div class="flex flex-col"><div class="flex items-center gap-space-xs"><a href="index.html" title="Back to Hub" class="hover:underline flex items-center"><span class="font-headline-sm text-headline-sm tracking-tight text-primary">Cadastre 3D</span></a><span class="font-label-caps text-label-caps uppercase bg-surface-container px-space-xs py-space-2xs rounded text-on-surface-variant">v2.4</span></div><span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Urban Vertical Property Registry / ULPIN 3D Engine</span></div></div><nav class="hidden xl:flex items-center p-space-2xs rounded-full bg-surface-container-low" data-active-classes="bg-primary-container text-on-primary font-medium shadow-sm"><a class="font-body-sm text-body-sm px-space-md py-space-xs rounded-full text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="overview-story" href="overview_and_story.html">Overview &amp; Story</a><a class="font-body-sm text-body-sm px-space-md py-space-xs rounded-full text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="interactive-3d-cadastre" href="interactive_viewer_auto_trimmed_validated.html">Interactive 3D Cadastre</a><a class="font-body-sm text-body-sm px-space-md py-space-xs rounded-full text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="plan-pipeline-detection" href="2d_cadastral_plan_viewer.html">Plan Pipeline &amp; Detection</a><a class="font-body-sm text-body-sm px-space-md py-space-xs rounded-full text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="validation-engine" href="front_elevation_cross_section_viewer.html">Validation Engine</a><a class="font-body-sm text-body-sm px-space-md py-space-xs rounded-full text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="parcel-registry" href="interactive_viewer.html">Parcel Registry</a></nav><div class="flex items-center gap-space-sm justify-end"><div class="hidden 2xl:flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container-low shadow-[0_1px_2px_rgba(27,59,43,0.03)]"><span class="w-2 h-2 rounded-full bg-tertiary-fixed animate-pulse"></span><span class="font-data-mono-sm text-data-mono-sm text-on-surface-variant">Parcel: <span class="text-primary font-semibold">DL-04-2024-88A9</span></span><span class="text-outline-variant font-data-mono-sm">|</span><span class="font-data-mono-sm text-data-mono-sm text-on-surface-variant">Status: <span class="text-primary font-semibold">Geometrically Validated</span></span></div><div class="hidden lg:flex items-center gap-space-xs px-space-sm py-space-xs rounded-DEFAULT bg-surface-container hover:bg-surface-container-high transition-colors cursor-pointer text-left"><div class="flex flex-col"><span class="font-label-caps text-label-caps uppercase text-on-surface-variant text-[9px]">Active Model</span><span class="font-data-mono-sm text-data-mono-sm text-primary font-medium">Metropolis Tower Demo (4F + B1)</span></div><span class="material-symbols-outlined text-on-surface-variant text-[16px]">unfold_more</span></div><button class="flex items-center gap-space-xs px-space-md py-space-xs rounded-DEFAULT bg-surface-container-lowest text-primary hover:bg-surface-container-high hover:text-on-surface transition-all duration-150 shadow-[0_1px_3px_rgba(27,59,43,0.06)]" type="button"><span class="material-symbols-outlined text-[18px] text-primary">upload_file</span><span class="font-body-sm text-body-sm font-medium">Upload 2D Plan</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-surface min-h-screen"><div class="flex flex-col w-full">
+<!-- Live Cadastral Metadata Bar (PRD §18 Sub-header) -->
+<div class="w-full bg-surface-container-low px-gutter py-space-sm flex flex-wrap items-center justify-between gap-y-space-xs text-on-surface-variant">
+<div class="flex items-center gap-space-lg flex-wrap">
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed"></span>
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-primary">Standard</span>
+<span class="font-data-mono-sm text-data-mono-sm font-medium text-primary">ISO 19152 (LADM) / OGC 3D-LandML</span>
+</div>
+<div class="hidden md:flex items-center gap-space-xs">
+<span class="font-label-caps text-label-caps uppercase tracking-wider">Datum</span>
+<span class="font-data-mono-sm text-data-mono-sm text-on-surface font-normal">AHD Orthometric / EPSG:7855</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="font-label-caps text-label-caps uppercase tracking-wider">Parent Parcel</span>
+<span class="font-data-mono-sm text-data-mono-sm text-primary font-semibold">DL-9821-2024</span>
+<span class="font-data-mono-sm text-data-mono-sm text-on-surface-variant">(1,840.45 m²)</span>
+</div>
+</div>
+<div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-sm py-space-2xs bg-surface-container rounded"><span class="w-2 h-2 rounded-full bg-tertiary-fixed animate-pulse"></span><span class="material-symbols-outlined text-[15px] text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span><span class="font-data-mono-sm text-data-mono-sm text-primary font-medium">14/14 Units Validated</span></div><div class="flex items-center gap-space-xs px-space-sm py-space-2xs bg-primary-fixed rounded"><span class="material-symbols-outlined text-[15px] text-primary" style="font-variation-settings: 'FILL' 1;">verified</span><span class="font-data-mono-sm text-data-mono-sm text-primary font-semibold">0 Overlaps • 100% Compliant</span></div><div class="hidden sm:flex items-center gap-space-xs px-space-sm py-space-2xs bg-surface-container rounded"><span class="material-symbols-outlined text-[15px] text-primary">task_alt</span><span class="font-data-mono-sm text-data-mono-sm text-primary font-medium">Auto-Trim Active</span></div></div>
+</div>
+<!-- Primary 3-Column Working Studio Grid (PRD §19 & §20) -->
+<div class="w-full px-gutter py-space-md grid grid-cols-1 lg:grid-cols-12 gap-space-md items-start">
+<!-- LEFT PANEL: Floors & Spatial Layer Control (PRD §19 P1) -->
+<section class="lg:col-span-3 flex flex-col gap-space-md bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">stairs</span>
+<h2 class="font-headline-sm text-headline-sm text-primary">Strata &amp; Layers</h2>
+</div>
+<span class="font-label-caps text-label-caps uppercase bg-surface-container px-space-xs py-space-2xs rounded text-on-surface-variant">5 Levels</span>
+</div>
+<!-- Mouse-wheel guide tip -->
+<div class="flex items-center gap-space-xs p-space-xs bg-surface-container-low rounded text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-primary">mouse</span>
+<p class="font-body-sm text-body-sm leading-tight">Use scroll wheel over 3D model or click list to step strata</p>
+</div>
+<!-- Floor Strata Selector Stack (Basement to Penthouse) -->
+<div class="flex flex-col gap-space-xs" id="floor-list-container">
+<!-- Floor 03 -->
+<button class="floor-btn text-left p-space-sm rounded-lg transition-all flex flex-col gap-space-2xs bg-surface-container-low hover:bg-surface-container text-on-surface" data-floor="F03" onclick="selectFloor('F03')" type="button">
+<div class="flex items-center justify-between">
+<span class="font-body-md text-body-md font-semibold text-primary">Floor 03 — Penthouse</span>
+<span class="font-data-mono-sm text-data-mono-sm px-space-xs py-space-2xs rounded bg-surface text-on-surface-variant">2 Units</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-data-mono-sm text-data-mono-sm">
+<span>Z: +10.80m to +14.40m</span>
+<span class="text-primary font-medium">Clear</span>
+</div>
+</button>
+<!-- Floor 02 (Active by Default / With Warning) -->
+<button class="floor-btn text-left p-space-sm rounded-lg transition-all flex flex-col gap-space-2xs bg-secondary-container text-on-secondary-container shadow-sm border-l-4 border-l-primary" data-floor="F02" onclick="selectFloor('F02')" type="button"><div class="flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[15px] text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span><span class="font-body-md text-body-md font-semibold text-primary">Floor 02 — Commercial</span></div><span class="font-data-mono-sm text-data-mono-sm px-space-xs py-space-2xs rounded bg-primary-fixed text-primary font-medium">VALIDATED</span></div><div class="flex items-center justify-between font-data-mono-sm text-data-mono-sm"><span class="text-on-secondary-container">Z: +7.20m to +10.80m</span><span class="text-primary font-medium">Auto-Trimmed (Clear)</span></div></button>
+<!-- Floor 01 -->
+<button class="floor-btn text-left p-space-sm rounded-lg transition-all flex flex-col gap-space-2xs bg-surface-container-low hover:bg-surface-container text-on-surface" data-floor="F01" onclick="selectFloor('F01')" type="button">
+<div class="flex items-center justify-between">
+<span class="font-body-md text-body-md font-semibold text-primary">Floor 01 — Tech Space</span>
+<span class="font-data-mono-sm text-data-mono-sm px-space-xs py-space-2xs rounded bg-surface text-on-surface-variant">4 Units</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-data-mono-sm text-data-mono-sm">
+<span>Z: +3.60m to +7.20m</span>
+<span class="text-primary font-medium">Clear</span>
+</div>
+</button>
+<!-- Ground Floor -->
+<button class="floor-btn text-left p-space-sm rounded-lg transition-all flex flex-col gap-space-2xs bg-surface-container-low hover:bg-surface-container text-on-surface" data-floor="GF" onclick="selectFloor('GF')" type="button">
+<div class="flex items-center justify-between">
+<span class="font-body-md text-body-md font-semibold text-primary">Ground Floor — Lobby</span>
+<span class="font-data-mono-sm text-data-mono-sm px-space-xs py-space-2xs rounded bg-surface text-on-surface-variant">3 Units</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-data-mono-sm text-data-mono-sm">
+<span>Z: 0.00m to +3.60m</span>
+<span class="text-primary font-medium">Clear</span>
+</div>
+</button>
+<!-- Basement 01 -->
+<button class="floor-btn text-left p-space-sm rounded-lg transition-all flex flex-col gap-space-2xs bg-surface-container-low hover:bg-surface-container text-on-surface" data-floor="B01" onclick="selectFloor('B01')" type="button">
+<div class="flex items-center justify-between">
+<span class="font-body-md text-body-md font-semibold text-primary">Basement 01 — Parking</span>
+<span class="font-data-mono-sm text-data-mono-sm px-space-xs py-space-2xs rounded bg-surface text-on-surface-variant">1 Unit</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-data-mono-sm text-data-mono-sm">
+<span class="text-secondary font-medium">Z: -3.20m to 0.00m</span>
+<span class="text-on-surface-variant">Sub-surface</span>
+</div>
+</button>
+</div>
+<!-- View Projection Modes -->
+<div class="flex flex-col gap-space-xs pt-space-xs">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Strata Projection Mode</span>
+<div class="grid grid-cols-3 gap-space-2xs bg-surface-container p-space-2xs rounded-lg text-center">
+<button class="proj-mode-btn py-space-xs rounded bg-primary-container text-on-primary font-body-sm text-body-sm shadow-sm" id="mode-exploded" onclick="setProjectionMode('exploded')" type="button">Exploded</button>
+<button class="proj-mode-btn py-space-xs rounded text-on-surface hover:bg-surface font-body-sm text-body-sm" id="mode-isolated" onclick="setProjectionMode('isolated')" type="button">Isolated</button>
+<button class="proj-mode-btn py-space-xs rounded text-on-surface hover:bg-surface font-body-sm text-body-sm" id="mode-xray" onclick="setProjectionMode('xray')" type="button">X-Ray</button>
+</div>
+</div>
+<!-- Spatial Layer Visibility Toggles (PRD §10 P1) -->
+<div class="flex flex-col gap-space-xs pt-space-xs">
+<div class="flex items-center justify-between pb-space-2xs">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Cadastral Visual Layers</span>
+<span class="font-data-mono-sm text-data-mono-sm text-primary">6 Active</span>
+</div>
+<label class="flex items-center justify-between p-space-xs rounded hover:bg-surface-container cursor-pointer transition-colors">
+<div class="flex items-center gap-space-xs">
+<span class="w-3 h-3 rounded-full bg-tertiary-fixed"></span>
+<span class="font-body-sm text-body-sm text-on-surface">2D Ground Parcel (#DL-9821)</span>
+</div>
+<input checked="" class="w-4 h-4 accent-primary rounded cursor-pointer" id="layer-boundary" onchange="toggleLayer('boundary')" type="checkbox"/>
+</label>
+<label class="flex items-center justify-between p-space-xs rounded hover:bg-surface-container cursor-pointer transition-colors">
+<div class="flex items-center gap-space-xs">
+<span class="w-3 h-3 rounded bg-primary-container"></span>
+<span class="font-body-sm text-body-sm text-on-surface">Architectural Footprint Slab</span>
+</div>
+<input checked="" class="w-4 h-4 accent-primary rounded cursor-pointer" id="layer-footprint" onchange="toggleLayer('footprint')" type="checkbox"/>
+</label>
+<label class="flex items-center justify-between p-space-xs rounded hover:bg-surface-container cursor-pointer transition-colors">
+<div class="flex items-center gap-space-xs">
+<span class="w-3 h-3 rounded bg-secondary-container"></span>
+<span class="font-body-sm text-body-sm text-on-surface">Unit Polyhedral Extrusions</span>
+</div>
+<input checked="" class="w-4 h-4 accent-primary rounded cursor-pointer" id="layer-units" onchange="toggleLayer('units')" type="checkbox"/>
+</label>
+<label class="flex items-center justify-between p-space-xs rounded hover:bg-surface-container cursor-pointer transition-colors">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-primary">pin_drop</span>
+<span class="font-body-sm text-body-sm text-on-surface">3D ULPIN Spatial Anchors</span>
+</div>
+<input checked="" class="w-4 h-4 accent-primary rounded cursor-pointer" id="layer-anchors" onchange="toggleLayer('anchors')" type="checkbox"/>
+</label>
+<label class="flex items-center justify-between p-space-xs rounded hover:bg-surface-container cursor-pointer transition-colors">
+<div class="flex items-center gap-space-xs">
+<span class="w-3 h-3 rounded bg-surface-dim"></span>
+<span class="font-body-sm text-body-sm text-on-surface">Subterranean Basement</span>
+</div>
+<input checked="" class="w-4 h-4 accent-primary rounded cursor-pointer" id="layer-basement" onchange="toggleLayer('basement')" type="checkbox"/>
+</label>
+</div>
+</section>
+<!-- CENTER PANEL: The Interactive 3D Cadastral Viewport (The Centerpiece) -->
+<section class="lg:col-span-6 flex flex-col gap-space-sm">
+<!-- Viewport Outer Container with Architectural Ambient Canvas -->
+<div class="relative w-full h-[620px] rounded-xl bg-surface-container overflow-hidden shadow-md flex flex-col select-none cursor-crosshair" id="cadastre-viewport">
+<!-- Subtle Topographic & Spatial Drafting Grid Background (SVG) -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none opacity-30" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<pattern height="40" id="cadastre-grid" patternunits="userSpaceOnUse" width="40">
+<path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1b3b2b" stroke-dasharray="2,3" stroke-width="0.75"></path>
+<circle cx="0" cy="0" fill="#1b3b2b" opacity="0.4" r="1.5"></circle>
+</pattern>
+<pattern height="10" id="hazard-stripes" patterntransform="rotate(45 0 0)" patternunits="userSpaceOnUse" width="10">
+<line stroke="#ba1a1a" stroke-width="3" x1="0" x2="0" y1="0" y2="10"></line>
+</pattern>
+</defs>
+<rect fill="url(#cadastre-grid)" height="100%" width="100%"></rect>
+</svg>
+<!-- Floating HUD Header (Overlay Top) -->
+<div class="relative z-20 w-full p-space-sm flex items-center justify-between pointer-events-none">
+<!-- Active Stratum Floating Pill -->
+<div class="pointer-events-auto flex items-center gap-space-xs px-space-sm py-space-xs bg-surface/90 backdrop-blur-md rounded-DEFAULT shadow-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-caps text-label-caps uppercase text-primary tracking-wider" id="hud-floor-title">ACTIVE STRATUM: FLOOR 02 (+7.20m AHD) [AUTO-TRIMMED • 0 CLASHES]</span>
+<span class="font-data-mono-sm text-data-mono-sm text-on-surface-variant hidden sm:inline">[Scroll to step]</span>
+</div>
+<!-- Spatial Coordinate Cursor Readout -->
+<div class="pointer-events-auto flex items-center gap-space-xs px-space-sm py-space-xs bg-surface/90 backdrop-blur-md rounded-DEFAULT shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary">explore</span>
+<span class="font-data-mono-sm text-data-mono-sm text-primary font-medium" id="hud-coordinates">X: 42.80m | Y: 63.00m | Z: +8.40m AHD</span>
+</div>
+</div>
+<!-- 3D Isometric Viewport Display (SVG Interactive Geometry) -->
+<div class="relative flex-1 w-full h-full flex items-center justify-center overflow-hidden">
+<svg class="w-full h-full transition-transform duration-300 ease-out" id="cadastre-svg" preserveaspectratio="xMidYMid meet" viewbox="0 0 800 600">
+<!-- Axis Indicator / North Orientation Compass in bottom-left -->
+<g class="pointer-events-none opacity-80" transform="translate(70, 520)">
+<circle cx="0" cy="0" fill="#fdf9f0" r="28"></circle>
+<!-- X Axis (Reddish/Primary) -->
+<line stroke="#032517" stroke-width="2" x1="0" x2="22" y1="0" y2="10"></line>
+<text fill="#032517" font-family="JetBrains Mono" font-size="10" font-weight="600" x="26" y="14">X (E)</text>
+<!-- Y Axis (Secondary) -->
+<line stroke="#2c657e" stroke-width="2" x1="0" x2="-20" y1="0" y2="10"></line>
+<text fill="#2c657e" font-family="JetBrains Mono" font-size="10" font-weight="600" x="-38" y="14">Y (N)</text>
+<!-- Z Axis (Vertical) -->
+<line stroke="#d4ef55" stroke-width="2" x1="0" x2="0" y1="0" y2="-24"></line>
+<text fill="#1b3b2b" font-family="JetBrains Mono" font-size="10" font-weight="600" x="-4" y="-28">Z</text>
+</g>
+<!-- SUBTERRANEAN BASEMENT 01 (Negative Elevation: -3.20m to 0.00m) -->
+<g class="floor-svg-group transition-all duration-300" id="svg-floor-B01" transform="translate(0, 70)">
+<!-- Ground Plane & Excavation Soil Hatch -->
+<polygon fill="#e6e2d9" opacity="0.45" points="120,410 400,290 680,410 400,530"></polygon>
+<polygon fill="#dddad1" points="170,410 400,310 630,410 400,510" stroke="#727973" stroke-dasharray="4,4" stroke-width="1"></polygon>
+<!-- Basement Parking Volume (Single large volume) -->
+<polygon class="cursor-pointer transition-all hover:opacity-90" fill="#2c657e" fill-opacity="0.28" id="unit-B1-PARK" onclick="selectUnit('B1-PARK')" points="200,410 400,325 600,410 400,495" stroke="#2c657e" stroke-width="1.5"></polygon>
+<text fill="#032517" font-family="JetBrains Mono" font-size="11" font-weight="600" x="350" y="420">B1-PARK (-3.20m AHD)</text>
+<circle cx="400" cy="410" fill="#2c657e" r="4"></circle>
+</g>
+<!-- 2D PARENT GROUND PARCEL BOUNDARY (Projection on Ground Surface Z: 0.00m) -->
+<g class="transition-opacity duration-300" id="svg-layer-boundary">
+<polygon fill="none" points="100,350 400,220 700,350 400,480" stroke="#d4ef55" stroke-dasharray="6,4" stroke-width="2.5"></polygon>
+<circle cx="100" cy="350" fill="#032517" r="4"></circle>
+<circle cx="400" cy="220" fill="#032517" r="4"></circle>
+<circle cx="700" cy="350" fill="#032517" r="4"></circle>
+<circle cx="400" cy="480" fill="#032517" r="4"></circle>
+<text fill="#032517" font-family="JetBrains Mono" font-size="11" font-weight="500" x="130" y="340">PARENT LOT DL-9821 BOUNDARY</text>
+</g>
+<!-- GROUND FLOOR (Lobby & Retail: Z 0.00m to +3.60m) -->
+<g class="floor-svg-group transition-all duration-300" id="svg-floor-GF" transform="translate(0, 30)">
+<!-- Slab Plate -->
+<polygon fill="#f7f3ea" points="170,350 400,250 630,350 400,450" stroke="#c1c8c2" stroke-width="1.5"></polygon>
+<!-- Retail Unit 01 -->
+<polygon class="cursor-pointer transition-all hover:fill-opacity-60" fill="#abe1ff" fill-opacity="0.35" id="unit-GF-U01" onclick="selectUnit('GF-U01')" points="200,350 380,270 380,330 200,410" stroke="#2c657e" stroke-width="1.2"></polygon>
+<!-- Retail Unit 02 -->
+<polygon class="cursor-pointer transition-all hover:fill-opacity-60" fill="#abe1ff" fill-opacity="0.35" id="unit-GF-U02" onclick="selectUnit('GF-U02')" points="400,260 590,340 590,390 400,310" stroke="#2c657e" stroke-width="1.2"></polygon>
+<!-- Lobby -->
+<polygon class="cursor-pointer transition-all hover:fill-opacity-60" fill="#c7ebd4" fill-opacity="0.45" id="unit-GF-LOBBY" onclick="selectUnit('GF-LOBBY')" points="300,370 400,330 500,370 400,420" stroke="#032517" stroke-width="1.2"></polygon>
+<text fill="#032517" font-family="JetBrains Mono" font-size="10" x="375" y="375">GF-LOBBY</text>
+</g>
+<!-- FLOOR 01 (Tech Workspace: Z +3.60m to +7.20m) -->
+<g class="floor-svg-group transition-all duration-300" id="svg-floor-F01" transform="translate(0, -30)">
+<!-- Slab Plate -->
+<polygon fill="#f7f3ea" points="170,300 400,200 630,300 400,400" stroke="#c1c8c2" stroke-width="1.5"></polygon>
+<!-- Tech Office Units -->
+<polygon class="cursor-pointer transition-all hover:fill-opacity-60" fill="#c7ebd4" fill-opacity="0.3" id="unit-F1-U01" onclick="selectUnit('F1-U01')" points="220,305 380,230 380,290 220,360" stroke="#1b3b2b" stroke-width="1.2"></polygon>
+<polygon class="cursor-pointer transition-all hover:fill-opacity-60" fill="#c7ebd4" fill-opacity="0.3" id="unit-F1-U02" onclick="selectUnit('F1-U02')" points="400,225 580,305 580,355 400,280" stroke="#1b3b2b" stroke-width="1.2"></polygon>
+<text fill="#1b3b2b" font-family="JetBrains Mono" font-size="10" x="450" y="295">F1-U02</text>
+</g>
+<!-- FLOOR 02 (Commercial Suites: Z +7.20m to +10.80m) - THE ACTIVE LEVEL -->
+<g class="floor-svg-group transition-all duration-300 filter drop-shadow-md" id="svg-floor-F02" transform="translate(0, -90)">
+<!-- Active Highlight Base Plate Halo -->
+<polygon fill="#f1eee5" points="160,250 400,140 640,250 400,360" stroke="#1b3b2b" stroke-width="2"></polygon>
+<!-- F2-U01 (Validated Suite) -->
+<polygon class="cursor-pointer transition-all hover:fill-opacity-80" fill="#abe1ff" fill-opacity="0.5" id="unit-F2-U01" onclick="selectUnit('F2-U01')" points="190,250 330,190 330,245 190,305" stroke="#2c657e" stroke-width="1.5"></polygon>
+<text fill="#001e2b" font-family="JetBrains Mono" font-size="10" font-weight="600" x="235" y="250">F2-U01</text>
+<!-- F2-U02 (Validated Suite) -->
+<polygon class="cursor-pointer transition-all hover:fill-opacity-80" fill="#abe1ff" fill-opacity="0.5" id="unit-F2-U02" onclick="selectUnit('F2-U02')" points="340,185 460,135 460,190 340,240" stroke="#2c657e" stroke-width="1.5"></polygon>
+<text fill="#001e2b" font-family="JetBrains Mono" font-size="10" font-weight="600" x="385" y="190">F2-U02</text>
+<!-- F2-U04 (Commercial East Suite) -->
+<polygon class="cursor-pointer transition-all hover:fill-opacity-80" fill="#abcfb8" fill-opacity="0.45" id="unit-F2-U04" onclick="selectUnit('F2-U04')" points="430,230 610,235 550,310 400,290" stroke="#1b3b2b" stroke-width="1.5"></polygon>
+<text fill="#002113" font-family="JetBrains Mono" font-size="10" font-weight="600" x="490" y="270">F2-U04</text>
+<!-- F2-U03 (THE CRITICAL OVERLAPPING UNIT) - Highlighted in Pink/Coral with Striped Pattern -->
+<g class="cursor-pointer" id="unit-F2-U03-group" onclick="selectUnit('F2-U03')"><polygon fill="#c7ebd4" fill-opacity="0.55" id="unit-F2-U03" points="310,260 460,208 460,274 310,330" stroke="#1b3b2b" stroke-width="2.5"></polygon><polygon fill="none" points="460,208 480,200 480,270 460,274" stroke="#727973" stroke-dasharray="3,3" stroke-width="1.2"></polygon><circle cx="440" cy="248" fill="#1b3b2b" r="7"></circle><text fill="#ffffff" font-family="Material Symbols Outlined" font-size="10" text-anchor="middle" x="440" y="251">check</text><text fill="#032517" font-family="JetBrains Mono" font-size="11" font-weight="bold" x="336" y="280">F2-U03 [VALID]</text><rect fill="#1b3b2b" height="16" rx="3" width="120" x="330" y="290"></rect><text fill="#ffffff" font-family="JetBrains Mono" font-size="9" font-weight="600" x="336" y="302">TRIMMED &amp; VALIDATED</text></g>
+<!-- 3D ULPIN Spatial Anchor Pin Pinpoint -->
+<g id="svg-layer-anchors" transform="translate(390, 240)">
+<line stroke="#1b3b2b" stroke-dasharray="2,2" stroke-width="2" x1="0" x2="0" y1="0" y2="-35"></line>
+<circle cx="0" cy="-35" fill="#d4ef55" r="5" stroke="#1b3b2b" stroke-width="1.5"></circle>
+<text fill="#032517" font-family="JetBrains Mono" font-size="9" font-weight="bold" x="8" y="-32">ULPIN: DL-9821-F2-U03</text>
+</g>
+</g>
+<!-- FLOOR 03 (Penthouse Units: Z +10.80m to +14.40m) -->
+<g class="floor-svg-group transition-all duration-300" id="svg-floor-F03" transform="translate(0, -150)">
+<!-- Slab Plate -->
+<polygon fill="#f7f3ea" points="170,200 400,100 630,200 400,300" stroke="#c1c8c2" stroke-width="1.5"></polygon>
+<!-- Penthouse 01 -->
+<polygon class="cursor-pointer transition-all hover:fill-opacity-60" fill="#c7ebd4" fill-opacity="0.35" id="unit-F3-U01" onclick="selectUnit('F3-U01')" points="220,205 380,135 380,185 220,255" stroke="#1b3b2b" stroke-width="1.2"></polygon>
+<text fill="#1b3b2b" font-family="JetBrains Mono" font-size="10" x="270" y="200">F3-U01</text>
+<!-- Penthouse 02 with Terrace -->
+<polygon class="cursor-pointer transition-all hover:fill-opacity-60" fill="#c7ebd4" fill-opacity="0.35" id="unit-F3-U02" onclick="selectUnit('F3-U02')" points="400,135 580,205 580,265 400,195" stroke="#1b3b2b" stroke-width="1.2"></polygon>
+<text fill="#1b3b2b" font-family="JetBrains Mono" font-size="10" x="460" y="205">F3-U02</text>
+</g>
+</svg>
+</div>
+<!-- Overlaid Viewport Control Deck (Bottom Floating Toolbar) -->
+<div class="relative z-20 w-full p-space-sm bg-gradient-to-t from-surface via-surface/80 to-transparent flex flex-wrap items-center justify-between gap-space-sm pointer-events-auto">
+<!-- Explode Strata Slider Control -->
+<div class="flex items-center gap-space-xs bg-surface-container-lowest/95 backdrop-blur-md px-space-sm py-space-xs rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-primary">unfold_more</span>
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Explode</span>
+<input class="w-24 accent-primary cursor-pointer" id="explode-range" max="100" min="0" oninput="adjustExplode(this.value)" type="range" value="40"/>
+<span class="font-data-mono-sm text-data-mono-sm text-primary font-medium w-8" id="explode-label">40%</span>
+</div>
+<!-- Camera Projection Preset Buttons -->
+<div class="flex items-center gap-space-2xs bg-surface-container-lowest/95 backdrop-blur-md p-space-2xs rounded-lg shadow-sm">
+<button class="cam-btn px-space-xs py-space-2xs rounded bg-surface-container text-primary font-body-sm text-body-sm hover:bg-surface-container-high transition-colors" onclick="setCamera('isometric')" type="button">Isometric 35°</button>
+<button class="cam-btn px-space-xs py-space-2xs rounded text-on-surface-variant font-body-sm text-body-sm hover:bg-surface-container transition-colors" onclick="setCamera('plan')" type="button">Cadastral Plan 2D</button>
+<button class="cam-btn px-space-xs py-space-2xs rounded text-on-surface-variant font-body-sm text-body-sm hover:bg-surface-container transition-colors" onclick="setCamera('elevation')" type="button">Front Elevation</button>
+<button class="p-space-2xs rounded text-on-surface-variant hover:bg-surface-container transition-colors" onclick="resetView()" title="Reset View" type="button">
+<span class="material-symbols-outlined text-[18px]">restart_alt</span>
+</button>
+</div>
+<!-- Quick Actions Toolset -->
+<div class="flex items-center gap-space-xs">
+<button class="flex items-center gap-space-2xs px-space-sm py-space-xs rounded bg-surface-container-lowest/95 text-primary hover:bg-surface-container font-body-sm text-body-sm shadow-sm transition-colors" onclick="triggerClipping()" type="button">
+<span class="material-symbols-outlined text-[16px]">content_cut</span>
+<span>Section Cut</span>
+</button>
+<button class="p-space-xs rounded bg-surface-container-lowest/95 text-primary hover:bg-surface-container shadow-sm transition-colors" onclick="toggleFullscreen()" title="Toggle Fullscreen" type="button">
+<span class="material-symbols-outlined text-[18px]">fullscreen</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Live Interactive Legend -->
+<div class="w-full flex flex-wrap items-center justify-between gap-space-sm px-space-xs py-space-2xs text-on-surface-variant font-data-mono-sm text-data-mono-sm"><div class="flex items-center gap-space-md flex-wrap"><div class="flex items-center gap-space-2xs"><span class="w-2.5 h-2.5 rounded bg-primary-fixed"></span><span>Residential / Commercial Strata</span></div><div class="flex items-center gap-space-2xs"><span class="w-2.5 h-2.5 rounded bg-secondary-container"></span><span>Office / Workspace</span></div><div class="flex items-center gap-space-2xs"><span class="w-2.5 h-2.5 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-[10px] text-on-primary">check</span></span><span class="text-primary font-semibold">Topological Status: 100% Coaxial Pass</span></div><div class="flex items-center gap-space-2xs"><span class="w-2.5 h-2.5 rounded border border-dashed border-primary"></span><span>2D Cadastral Parent Boundary</span></div></div><div><span>EPSG:7855 Local Grid (Metric)</span></div></div>
+</section>
+<!-- RIGHT PANEL: Unit Cadastral Inspection & Title Card (PRD §19 & §20) -->
+<section class="lg:col-span-3 flex flex-col gap-space-md bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<!-- Unit Inspection Header with Selector Dropdown -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant tracking-wider">Cadastral Title Deed</span>
+<span class="font-data-mono-sm text-data-mono-sm px-space-xs py-space-2xs bg-primary-fixed text-primary rounded font-bold" id="inspect-tag">VALIDATED (AUTO-TRIMMED)</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-primary" id="inspect-title">Unit F2-U03</h2>
+<div class="flex items-center justify-between gap-space-xs">
+<div class="flex items-center gap-space-2xs">
+<span class="font-data-mono text-data-mono text-primary font-semibold" id="inspect-ulpin">DL-9821-F2-U03</span>
+<button class="p-space-2xs hover:bg-surface-container rounded transition-colors" onclick="copyUlpin()" title="Copy ULPIN" type="button">
+<span class="material-symbols-outlined text-[15px] text-on-surface-variant">content_copy</span>
+</button>
+</div>
+<span class="font-label-caps text-label-caps uppercase bg-surface-container px-space-xs py-space-2xs rounded text-primary">ISO 19152 QR</span>
+</div>
+</div>
+<!-- CRITICAL TOPOLOGICAL OVERLAP ALERT BANNER (PRD Validation Feature) -->
+<div class="p-space-sm bg-surface-container text-primary rounded-lg flex flex-col gap-space-2xs border border-primary/20" id="inspect-alert-box"><div class="flex items-center justify-between"><div class="flex items-center gap-space-xs font-bold font-body-sm text-body-sm text-primary"><span class="material-symbols-outlined text-[18px] text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span><span>AUTO-TRIM APPLIED</span></div><span class="font-data-mono-sm text-data-mono-sm px-space-xs py-space-2xs rounded bg-surface-container-high text-primary font-medium">Shapely diff(U03, U04)</span></div><p class="font-body-sm text-body-sm text-on-surface-variant leading-snug" id="inspect-alert-desc">Demising wall setback -0.80m along eastern partition. Coaxial boundary aligned with structural core. Area adjusted: <strong>216.00 m² → 215.20 m²</strong>; Extruded Volume: <strong>774.72 m³</strong>.</p><div class="flex items-center gap-space-xs pt-space-2xs border-t border-outline-variant/30 text-data-mono-sm text-data-mono-sm text-primary"><span class="material-symbols-outlined text-[14px]">bolt</span><span>Auto-Trim Executed: Shapely difference(U03, U04) applied</span></div></div>
+<!-- Cadastral Attributes Grid -->
+<div class="flex flex-col gap-space-xs divide-y-0">
+<div class="flex items-center justify-between py-space-2xs bg-surface-container-low px-space-xs rounded">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Parent Parcel</span>
+<span class="font-data-mono-sm text-data-mono-sm font-semibold text-primary" id="inspect-parent">DL-9821-2024</span>
+</div>
+<div class="flex items-center justify-between py-space-2xs px-space-xs">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Floor Level</span>
+<span class="font-body-sm text-body-sm font-medium text-on-surface" id="inspect-level">Floor 02 (Commercial Suites)</span>
+</div>
+<div class="flex items-center justify-between py-space-2xs bg-surface-container-low px-space-xs rounded">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Base Elevation (AHD)</span>
+<span class="font-data-mono-sm text-data-mono-sm font-medium text-primary" id="inspect-base-z">+7.200 m</span>
+</div>
+<div class="flex items-center justify-between py-space-2xs px-space-xs">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Ceiling Elevation (AHD)</span>
+<span class="font-data-mono-sm text-data-mono-sm font-medium text-primary" id="inspect-ceil-z">+10.800 m</span>
+</div>
+<div class="flex items-center justify-between py-space-2xs bg-surface-container-low px-space-xs rounded">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Net Strata Area</span>
+<span class="font-data-mono-sm text-data-mono-sm font-bold text-primary" id="inspect-area">215.20 m²</span>
+</div>
+<div class="flex items-center justify-between py-space-2xs px-space-xs">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Extruded Volume</span>
+<span class="font-data-mono-sm text-data-mono-sm font-bold text-primary" id="inspect-volume">774.72 m³</span>
+</div>
+<div class="flex items-center justify-between py-space-2xs bg-surface-container-low px-space-xs rounded">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Boundary Containment</span>
+<span class="font-data-mono-sm text-data-mono-sm font-semibold text-primary flex items-center gap-space-2xs" id="inspect-containment">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">check</span>
+            PASS (100% Inside)
+          </span>
+</div>
+<div class="flex items-center justify-between py-space-2xs px-space-xs">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Geometric Topology</span>
+<span class="font-data-mono-sm text-data-mono-sm text-on-surface-variant" id="inspect-poly">8-vertex polyhedral prism</span>
+</div>
+</div>
+<!-- Vertex Coordinate Matrix Drawer Preview -->
+<div class="flex flex-col gap-space-2xs bg-surface-container p-space-xs rounded-lg">
+<div class="flex items-center justify-between text-on-surface-variant font-label-caps text-label-caps uppercase">
+<span>Boundary Polygon Vertices</span>
+<span class="font-data-mono-sm text-data-mono-sm text-primary">EPSG:7855</span>
+</div>
+<div class="font-data-mono-sm text-data-mono-sm text-on-surface flex flex-col gap-1 max-h-24 overflow-y-auto pr-1"><div class="flex justify-between"><span>V1:</span> <span>[321450.21, 5812904.12, 7.20]</span></div><div class="flex justify-between"><span>V2:</span> <span>[321474.88, 5812918.40, 7.20]</span></div><div class="flex justify-between text-primary font-medium bg-primary-fixed/40 px-1 rounded"><span>V3 (TRIMMED):</span> <span>[321481.30, 5812899.75, 7.20] VALID</span></div><div class="flex justify-between"><span>V4:</span> <span>[321458.04, 5812885.30, 7.20]</span></div></div>
+</div>
+<!-- Cadastral Interactive Tool Actions (PRD §20) -->
+<div class="flex flex-col gap-space-xs pt-space-2xs"><button class="w-full flex items-center justify-center gap-space-xs py-space-xs px-space-sm bg-primary text-on-primary rounded-lg font-body-sm text-body-sm font-medium hover:bg-primary-container shadow-sm transition-all" onclick="alert('Committing trimmed polyhedral stratum DL-9821-F2-U03 to ISO 19152 Cadastral Registry and minting 3D ULPIN...')" type="button"><span class="material-symbols-outlined text-[16px]">verified</span><span>Commit to Cadastral Registry (Mint 3D ULPIN)</span></button><div class="grid grid-cols-2 gap-space-xs"><button class="flex items-center justify-center gap-space-2xs py-space-xs px-space-xs bg-surface-container hover:bg-surface-container-high rounded-lg text-primary font-body-sm text-body-sm font-medium transition-colors" onclick="alert('Rolling back auto-trim to raw pre-computed architectural polygon...')" type="button"><span class="material-symbols-outlined text-[16px]">undo</span><span>Rollback Trim</span></button><button class="flex items-center justify-center gap-space-2xs py-space-xs px-space-xs bg-surface-container hover:bg-surface-container-high rounded-lg text-primary font-body-sm text-body-sm font-medium transition-colors" onclick="exportGeoJson()" type="button"><span class="material-symbols-outlined text-[16px]">file_download</span><span>3D GeoJSON</span></button></div></div>
+<!-- Unit Switcher Carousel Selector -->
+<div class="flex items-center justify-between pt-space-xs">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Switch Inspect Target</span>
+<div class="flex items-center gap-space-2xs">
+<button class="px-space-xs py-space-2xs rounded bg-surface-container hover:bg-surface-container-high text-primary font-data-mono-sm text-data-mono-sm" onclick="selectUnit('F3-U01')" type="button">F3-U01</button>
+<button class="px-space-xs py-space-2xs rounded bg-primary text-on-primary font-data-mono-sm text-data-mono-sm font-bold shadow-sm" onclick="selectUnit('F2-U03')" type="button">F2-U03 (Trimmed)</button>
+<button class="px-space-xs py-space-2xs rounded bg-surface-container hover:bg-surface-container-high text-primary font-data-mono-sm text-data-mono-sm" onclick="selectUnit('F1-U02')" type="button">F1-U02</button>
+<button class="px-space-xs py-space-2xs rounded bg-surface-container hover:bg-surface-container-high text-primary font-data-mono-sm text-data-mono-sm" onclick="selectUnit('B1-PARK')" type="button">B1</button>
+</div>
+</div>
+</section>
+</div>
+<!-- BOTTOM BAR: Cadastral Validation Engine Summary Bar (PRD §17 & §19) -->
+<section class="w-full px-gutter mt-space-md mb-space-lg">
+<div class="w-full bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col xl:flex-row items-start xl:items-center justify-between gap-space-md">
+<!-- Live Topological Engine Diagnostics -->
+<div class="flex flex-col gap-space-2xs max-w-4xl">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[20px] text-primary">rule</span>
+<h3 class="font-headline-sm text-headline-sm text-primary">Topological Validation Engine (ISO 19152 Compliance)</h3>
+<span class="font-data-mono-sm text-data-mono-sm px-space-xs py-space-2xs bg-primary-fixed text-primary rounded font-bold">14 Validated • 0 Flagged</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-sm pt-space-xs">
+<!-- Overlap Rule -->
+<div class="flex items-start gap-space-xs p-space-xs bg-primary-fixed/50 rounded-lg"><span class="material-symbols-outlined text-[18px] text-primary mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span><div class="flex flex-col"><span class="font-body-sm text-body-sm font-semibold text-primary">Zero Overlaps Detected</span><span class="font-data-mono-sm text-data-mono-sm text-primary font-medium">0.00 m² Clash • ISO 19152 Passed</span></div></div>
+<!-- Containment Rule -->
+<div class="flex items-start gap-space-xs p-space-xs bg-surface-container rounded-lg">
+<span class="material-symbols-outlined text-[18px] text-primary mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-semibold text-primary">Containment Check</span>
+<span class="font-data-mono-sm text-data-mono-sm text-on-surface-variant">All 14 Units within Lot Boundary</span>
+</div>
+</div>
+<!-- Unassigned Common Property -->
+<div class="flex items-start gap-space-xs p-space-xs bg-surface-container rounded-lg">
+<span class="material-symbols-outlined text-[18px] text-primary mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-semibold text-primary">Unassigned Strata</span>
+<span class="font-data-mono-sm text-data-mono-sm text-on-surface-variant">8.4% Common Corridor (Pass &lt;15%)</span>
+</div>
+</div>
+<!-- Subterranean Rights -->
+<div class="flex items-start gap-space-xs p-space-xs bg-surface-container rounded-lg">
+<span class="material-symbols-outlined text-[18px] text-primary mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-semibold text-primary">Sub-surface Rights</span>
+<span class="font-data-mono-sm text-data-mono-sm text-on-surface-variant">Basement bounded by Easement #E-401</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Buttons for Cadastral Surveyors & Planners -->
+<div class="flex flex-wrap items-center gap-space-xs shrink-0 self-end xl:self-center">
+<button class="flex items-center gap-space-xs px-space-md py-space-xs rounded bg-surface-container-high hover:bg-surface-dim text-primary font-body-sm text-body-sm font-semibold transition-colors" onclick="rerunValidation()" type="button">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+<span>Re-run Validation</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-space-xs rounded bg-surface-container-high hover:bg-surface-dim text-primary font-body-sm text-body-sm font-semibold transition-colors" onclick="downloadCertificate()" type="button">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span>Cadastral Audit Certificate</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-space-xs rounded bg-primary text-on-primary hover:bg-primary-container font-body-sm text-body-sm font-semibold shadow-sm transition-colors" onclick="exportCadastralBIM()" type="button">
+<span class="material-symbols-outlined text-[18px]">share</span>
+<span>Export IFC / CityGML LoD3</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Interactive JavaScript Engine (Strata Navigation, Viewport Explode & Inspector Dispatch) -->
+<script>
+    // State management
+    const floors = ['B01', 'GF', 'F01', 'F02', 'F03'];
+    let currentFloor = 'F02';
+    let currentProjection = 'exploded';
+
+    const unitsDatabase = {
+      'F2-U03': {
+        title: 'Unit F2-U03',
+        ulpin: 'DL-9821-F2-U03',
+        status: 'CRITICAL TOPOLOGICAL OVERLAP',
+        alertDesc: 'Pairwise intersection test failed: Overlaps adjacent Unit F2-U04 by 0.80 m² / 4.20 m³ along the eastern demising partition.',
+        isError: true,
+        parent: 'DL-9821-2024',
+        level: 'Floor 02 (Commercial Suites)',
+        baseZ: '+7.200 m',
+        ceilZ: '+10.800 m',
+        area: '216.00 m²',
+        volume: '777.60 m³',
+        containment: 'PASS (100% Inside)',
+        poly: '8-vertex polyhedral prism'
+      },
+      'F2-U04': {
+        title: 'Unit F2-U04',
+        ulpin: 'DL-9821-F2-U04',
+        status: 'INSPECTION REQUIRED',
+        alertDesc: 'Adjoining Unit F2-U03 registered an encroachment of 0.80 m² into this unit boundary.',
+        isError: true,
+        parent: 'DL-9821-2024',
+        level: 'Floor 02 (Commercial Suites)',
+        baseZ: '+7.200 m',
+        ceilZ: '+10.800 m',
+        area: '198.40 m²',
+        volume: '714.24 m³',
+        containment: 'PASS (100% Inside)',
+        poly: '8-vertex polyhedral prism'
+      },
+      'F3-U01': {
+        title: 'Unit F3-U01',
+        ulpin: 'DL-9821-F3-U01',
+        status: 'VALIDATED CADASTRAL STRATA',
+        alertDesc: 'Geometric polygon fully compliant with OGC 3D-LandML standards. Zero spatial anomalies detected.',
+        isError: false,
+        parent: 'DL-9821-2024',
+        level: 'Floor 03 (Penthouse North)',
+        baseZ: '+10.800 m',
+        ceilZ: '+14.400 m',
+        area: '284.10 m²',
+        volume: '1,022.76 m³',
+        containment: 'PASS (100% Inside)',
+        poly: '12-vertex polyhedral prism'
+      },
+      'F1-U02': {
+        title: 'Unit F1-U02',
+        ulpin: 'DL-9821-F1-U02',
+        status: 'VALIDATED CADASTRAL STRATA',
+        alertDesc: 'Commercial workspace title cleared under municipal land allocation guideline #2024-V4.',
+        isError: false,
+        parent: 'DL-9821-2024',
+        level: 'Floor 01 (Tech Workspace)',
+        baseZ: '+3.600 m',
+        ceilZ: '+7.200 m',
+        area: '182.50 m²',
+        volume: '657.00 m³',
+        containment: 'PASS (100% Inside)',
+        poly: '8-vertex polyhedral prism'
+      },
+      'B1-PARK': {
+        title: 'Basement 01 - Parking',
+        ulpin: 'DL-9821-B1-P01',
+        status: 'SUB-SURFACE STRATA VALIDATED',
+        alertDesc: 'Subterranean parcel rights legally bounded by municipal transport utility easement #E-401.',
+        isError: false,
+        parent: 'DL-9821-2024',
+        level: 'Basement 01 (Sub-surface)',
+        baseZ: '-3.200 m',
+        ceilZ: '0.000 m',
+        area: '840.00 m²',
+        volume: '2,688.00 m³',
+        containment: 'PASS (Within easement)',
+        poly: '16-vertex subterranean mesh'
+      }
+    };
+
+    function selectFloor(floorId) {
+      currentFloor = floorId;
+      
+      // Update floor buttons in left panel
+      document.querySelectorAll('.floor-btn').forEach(btn => {
+        const f = btn.getAttribute('data-floor');
+        if (f === floorId) {
+          btn.classList.remove('bg-surface-container-low', 'hover:bg-surface-container');
+          btn.classList.add('bg-secondary-container', 'text-on-secondary-container', 'shadow-sm', 'border-l-4', 'border-l-primary');
+        } else {
+          btn.classList.remove('bg-secondary-container', 'text-on-secondary-container', 'shadow-sm', 'border-l-4', 'border-l-primary');
+          btn.classList.add('bg-surface-container-low', 'hover:bg-surface-container');
+        }
+      });
+
+      // Update HUD Title
+      const titles = {
+        'F03': 'ACTIVE STRATUM: FLOOR 03 (+10.80m AHD)',
+        'F02': 'ACTIVE STRATUM: FLOOR 02 (+7.20m AHD) [Overlap Alert]',
+        'F01': 'ACTIVE STRATUM: FLOOR 01 (+3.60m AHD)',
+        'GF': 'ACTIVE STRATUM: GROUND FLOOR (0.00m AHD)',
+        'B01': 'ACTIVE STRATUM: BASEMENT 01 (-3.20m AHD)'
+      };
+      document.getElementById('hud-floor-title').textContent = titles[floorId] || 'ACTIVE STRATUM: ' + floorId;
+
+      // Visual highlight on 3D viewport
+      document.querySelectorAll('.floor-svg-group').forEach(group => {
+        group.style.opacity = (currentProjection === 'isolated') ? (group.id === 'svg-floor-' + floorId ? '1.0' : '0.12') : '1.0';
+      });
+
+      // Provide coordinate feedback
+      const coords = {
+        'F03': 'X: 42.80m | Y: 63.00m | Z: +12.60m AHD',
+        'F02': 'X: 42.80m | Y: 63.00m | Z: +8.40m AHD',
+        'F01': 'X: 42.80m | Y: 63.00m | Z: +4.80m AHD',
+        'GF': 'X: 42.80m | Y: 63.00m | Z: +1.20m AHD',
+        'B01': 'X: 42.80m | Y: 63.00m | Z: -1.60m AHD'
+      };
+      document.getElementById('hud-coordinates').textContent = coords[floorId];
+    }
+
+    function selectUnit(unitId) {
+      const data = unitsDatabase[unitId] || unitsDatabase['F2-U03'];
+      
+      document.getElementById('inspect-title').textContent = data.title;
+      document.getElementById('inspect-ulpin').textContent = data.ulpin;
+      document.getElementById('inspect-parent').textContent = data.parent;
+      document.getElementById('inspect-level').textContent = data.level;
+      document.getElementById('inspect-base-z').textContent = data.baseZ;
+      document.getElementById('inspect-ceil-z').textContent = data.ceilZ;
+      document.getElementById('inspect-area').textContent = data.area;
+      document.getElementById('inspect-volume').textContent = data.volume;
+      document.getElementById('inspect-poly').textContent = data.poly;
+
+      const alertBox = document.getElementById('inspect-alert-box');
+      const tag = document.getElementById('inspect-tag');
+      const alertDesc = document.getElementById('inspect-alert-desc');
+
+      if (data.isError) {
+        alertBox.className = 'p-space-sm bg-error-container text-on-error-container rounded-lg flex flex-col gap-space-2xs';
+        alertBox.innerHTML = '<div class="flex items-center gap-space-xs font-bold font-body-sm text-body-sm text-error"><span class="material-symbols-outlined text-[18px]">error</span><span>' + data.status + '</span></div><p class="font-body-sm text-body-sm leading-snug">' + data.alertDesc + '</p>';
+        tag.className = 'font-data-mono-sm text-data-mono-sm px-space-xs py-space-2xs bg-error-container text-error rounded font-bold';
+        tag.textContent = 'ACTION REQUIRED';
+      } else {
+        alertBox.className = 'p-space-sm bg-surface-container text-primary rounded-lg flex flex-col gap-space-2xs';
+        alertBox.innerHTML = '<div class="flex items-center gap-space-xs font-bold font-body-sm text-body-sm text-primary"><span class="material-symbols-outlined text-[18px]" style="font-variation-settings: \'FILL\' 1;">check_circle</span><span>' + data.status + '</span></div><p class="font-body-sm text-body-sm text-on-surface-variant leading-snug">' + data.alertDesc + '</p>';
+        tag.className = 'font-data-mono-sm text-data-mono-sm px-space-xs py-space-2xs bg-primary-fixed text-primary rounded font-bold';
+        tag.textContent = 'VERIFIED STRATA';
+      }
+    }
+
+    // Explode Slider Transform
+    function adjustExplode(val) {
+      document.getElementById('explode-label').textContent = val + '%';
+      const factor = val / 40; // 1.0 is default
+      
+      const b01 = document.getElementById('svg-floor-B01');
+      const gf = document.getElementById('svg-floor-GF');
+      const f01 = document.getElementById('svg-floor-F01');
+      const f02 = document.getElementById('svg-floor-F02');
+      const f03 = document.getElementById('svg-floor-F03');
+
+      if (b01) b01.setAttribute('transform', `translate(0, ${70 + (factor - 1) * 35})`);
+      if (gf) gf.setAttribute('transform', `translate(0, ${30 + (factor - 1) * 15})`);
+      if (f01) f01.setAttribute('transform', `translate(0, ${-30 - (factor - 1) * 20})`);
+      if (f02) f02.setAttribute('transform', `translate(0, ${-90 - (factor - 1) * 45})`);
+      if (f03) f03.setAttribute('transform', `translate(0, ${-150 - (factor - 1) * 70})`);
+    }
+
+    // Projection Mode Toggles
+    function setProjectionMode(mode) {
+      currentProjection = mode;
+      document.querySelectorAll('.proj-mode-btn').forEach(b => {
+        b.className = 'proj-mode-btn py-space-xs rounded text-on-surface hover:bg-surface font-body-sm text-body-sm';
+      });
+      const activeBtn = document.getElementById('mode-' + mode);
+      if (activeBtn) {
+        activeBtn.className = 'proj-mode-btn py-space-xs rounded bg-primary-container text-on-primary font-body-sm text-body-sm shadow-sm';
+      }
+
+      if (mode === 'isolated') {
+        selectFloor(currentFloor);
+      } else if (mode === 'xray') {
+        document.querySelectorAll('.floor-svg-group polygon').forEach(p => {
+          p.setAttribute('stroke-dasharray', '3,3');
+          p.style.fillOpacity = '0.12';
+        });
+      } else {
+        document.querySelectorAll('.floor-svg-group').forEach(g => g.style.opacity = '1.0');
+        document.querySelectorAll('.floor-svg-group polygon').forEach(p => {
+          p.removeAttribute('stroke-dasharray');
+          p.style.fillOpacity = '';
+        });
+      }
+    }
+
+    // Spatial Layer Visibility
+    function toggleLayer(layer) {
+      if (layer === 'boundary') {
+        const el = document.getElementById('svg-layer-boundary');
+        const chk = document.getElementById('layer-boundary');
+        if (el) el.style.opacity = chk.checked ? '1' : '0';
+      } else if (layer === 'anchors') {
+        const el = document.getElementById('svg-layer-anchors');
+        const chk = document.getElementById('layer-anchors');
+        if (el) el.style.opacity = chk.checked ? '1' : '0';
+      } else if (layer === 'basement') {
+        const el = document.getElementById('svg-floor-B01');
+        const chk = document.getElementById('layer-basement');
+        if (el) el.style.display = chk.checked ? 'block' : 'none';
+      }
+    }
+
+    // Camera Presets
+    function setCamera(type) {
+      const svg = document.getElementById('cadastre-svg');
+      if (type === 'isometric') {
+        svg.style.transform = 'scale(1) rotateX(0deg) rotateZ(0deg)';
+      } else if (type === 'plan') {
+        svg.style.transform = 'scale(1.2) rotateX(45deg) rotateZ(-30deg)';
+      } else if (type === 'elevation') {
+        svg.style.transform = 'scale(1.1) rotateX(15deg) rotateZ(5deg)';
+      }
+    }
+
+    function resetView() {
+      const svg = document.getElementById('cadastre-svg');
+      svg.style.transform = 'scale(1) rotate(0deg)';
+      document.getElementById('explode-range').value = 40;
+      adjustExplode(40);
+    }
+
+    // Mouse Wheel Strata Navigation over Viewport
+    const viewport = document.getElementById('cadastre-viewport');
+    if (viewport) {
+      viewport.addEventListener('wheel', function(e) {
+        e.preventDefault();
+        const currentIndex = floors.indexOf(currentFloor);
+        if (e.deltaY < 0 && currentIndex < floors.length - 1) {
+          // Scroll up -> step to higher floor
+          selectFloor(floors[currentIndex + 1]);
+        } else if (e.deltaY > 0 && currentIndex > 0) {
+          // Scroll down -> step to lower floor
+          selectFloor(floors[currentIndex - 1]);
+        }
+      }, { passive: false });
+
+      // Track cursor coordinates for interactive HUD feeling
+      viewport.addEventListener('mousemove', function(e) {
+        const rect = viewport.getBoundingClientRect();
+        const x = (e.clientX - rect.left).toFixed(1);
+        const y = (e.clientY - rect.top).toFixed(1);
+        const zLookup = {
+          'F03': '+12.60m',
+          'F02': '+8.40m',
+          'F01': '+4.80m',
+          'GF': '+1.20m',
+          'B01': '-1.60m'
+        };
+        document.getElementById('hud-coordinates').textContent = `X: ${x}m | Y: ${y}m | Z: ${zLookup[currentFloor]} AHD`;
+      });
+    }
+
+    // Notification / UI micro-action helpers
+    function copyUlpin() {
+      const id = document.getElementById('inspect-ulpin').textContent;
+      navigator.clipboard?.writeText(id);
+      alert('ULPIN identifier copied to clipboard: ' + id);
+    }
+
+    function launchVertexEditor() {
+      alert('Launching 3D Polyhedral Vertex Editor for stratum Unit DL-9821-F2-U03... Snapping enabled to EPSG:7855 grid.');
+    }
+
+    function exportGeoJson() {
+      alert('Generating OGC 3D-LandML / 3D GeoJSON package for Parcel #DL-9821...');
+    }
+
+    function viewDeedParentage() {
+      alert('Loading ISO 19152 Deed Lineage: Parent DL-9821 subdivision approved on 14/03/2024.');
+    }
+
+    function rerunValidation() {
+      alert('Running topological validation engine (14 units, 84 vertices). Overlap confirmed at F2-U03 ∩ F2-U04 (0.80 m²).');
+    }
+
+    function downloadCertificate() {
+      alert('Preparing Cadastral Audit Certificate with surveyor cryptographic seal (PDF/A).');
+    }
+
+    function exportCadastralBIM() {
+      alert('Streaming export: CityGML LoD3 + IFC4 Cadastral extension.');
+    }
+
+    function triggerClipping() {
+      alert('Section plane active. Drag along the vertical axis to clip architectural floor slabs.');
+    }
+
+    function toggleFullscreen() {
+      const vp = document.getElementById('cadastre-viewport');
+      if (!document.fullscreenElement) {
+        vp.requestFullscreen?.();
+      } else {
+        document.exitFullscreen?.();
+      }
+    }
+  </script>
+</div></main><footer class="w-full bg-surface-container-low mt-space-2xl"><div class="w-full px-gutter py-space-xl"><div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md pb-space-lg"><div class="flex flex-col gap-space-2xs"><div class="flex items-center gap-space-xs"><a href="index.html" title="Back to Hub" class="hover:underline flex items-center"><span class="font-headline-sm text-headline-sm text-primary">Cadastre 3D</span></a><span class="font-label-caps text-label-caps uppercase text-on-surface-variant bg-surface-container px-space-xs py-space-2xs rounded">Cartographic Registry v2.4</span></div><p class="font-body-sm text-body-sm text-on-surface-variant max-w-xl">High-precision computational parcel stratification, 3D volumetric extrusion engines, and unified land identification standards for vertical urban property tenure.</p></div><div class="flex items-center gap-space-md"><div class="flex flex-col items-start md:items-end"><span class="font-label-caps text-label-caps uppercase text-on-surface-variant">AHD Geoid Datum</span><span class="font-data-mono-sm text-data-mono-sm text-primary">WGS84 / EPSG:3857 (Z: Orthometric)</span></div><div class="flex flex-col items-start md:items-end"><span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Authority Node</span><span class="font-data-mono-sm text-data-mono-sm text-primary">ULPIN Spatial Grid Node #4409</span></div></div></div><div class="flex flex-col sm:flex-row items-center justify-between gap-space-sm pt-space-md font-body-sm text-body-sm text-on-surface-variant"><div>© 2025 Cadastre 3D Spatial Systems. National Spatial Land Registry Protocol.</div><div class="flex items-center gap-space-md"><a class="hover:text-primary transition-colors" href="#">Technical Folio</a><a class="hover:text-primary transition-colors" href="#">Cadastral Standards</a><a class="hover:text-primary transition-colors" href="#">API Registry</a><a class="hover:text-primary transition-colors" href="#">Spatial Compliance</a></div></div></div></footer></body></html>

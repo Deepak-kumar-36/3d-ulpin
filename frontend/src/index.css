@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body { margin: 0; padding: 0; background-color: #050505; color: #ffffff; }
+  body { overscroll-behavior: none; }
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #333333; }
+  ::-webkit-scrollbar-thumb:hover { background: #555555; }
+}
+
+@layer components {
+  .cadastre-card {
+    @apply bg-surface-container border border-outline relative overflow-hidden;
+  }
+  .cadastre-btn-primary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary font-body text-body-sm font-semibold
+           hover:bg-primary-fixed-dim transition-all duration-300
+           active:scale-[0.98] relative overflow-hidden border border-primary;
+  }
+  .cadastre-btn-secondary {
+    @apply inline-flex items-center gap-2 px-4 py-2 bg-transparent text-on-surface font-body text-body-sm font-medium
+           border border-outline hover:bg-surface-container-high transition-all duration-300
+           active:scale-[0.98];
+  }
+  .cadastre-btn-ghost {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 text-on-surface-variant text-body-sm
+           hover:bg-surface-container-high hover:text-on-surface transition-all duration-300;
+  }
+  .cadastre-chip {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 font-mono text-data-mono-sm uppercase tracking-widest border border-outline;
+  }
+  .cadastre-input {
+    @apply w-full px-3 py-2.5 bg-surface-container-high border border-outline font-mono text-data-mono text-on-surface
+           placeholder:text-on-surface-variant/50 focus:outline-none focus:border-on-surface focus:ring-1 focus:ring-on-surface/20
+           transition-all duration-300;
+  }
+  .material-icon {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 20px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Cursor glow - make it a subtle white/cyan glow for the dark theme */
+.cursor-glow {
+  position: fixed;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 60%);
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  transition: opacity 0.3s ease;
+  will-change: left, top;
+}
+
+@media (pointer: coarse) {
+  .cursor-glow { display: none; }
+}
+
+/* Scroll reveal animation */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.scroll-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.floor-transition {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* Grid background for the dark theme */
+.grid-bg {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+}

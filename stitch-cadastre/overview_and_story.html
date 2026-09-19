@@ -1,0 +1,720 @@
+﻿<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><title>Cadastre 3D: Vertical Property Registry</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300..800;1,300..800&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"inverse-on-surface":"#f4f0e7","surface":"#fdf9f0","primary-container":"#1b3b2b","on-error":"#ffffff","inverse-surface":"#31302b","primary-fixed":"#c7ebd4","surface-variant":"#e6e2d9","on-primary-fixed-variant":"#2d4d3c","tertiary":"#1c2300","on-secondary":"#ffffff","outline":"#727973","background":"#fdf9f0","on-surface":"#1c1c16","on-background":"#1c1c16","outline-variant":"#c1c8c2","tertiary-fixed":"#d4ef55","primary":"#032517","on-error-container":"#93000a","on-tertiary-fixed":"#181e00","on-secondary-fixed":"#001e2b","surface-container-low":"#f7f3ea","on-secondary-container":"#2d657f","on-primary":"#ffffff","surface-container-high":"#ece8df","error-container":"#ffdad6","surface-container-lowest":"#ffffff","surface-bright":"#fdf9f0","surface-dim":"#dddad1","tertiary-container":"#303900","secondary":"#2c657e","on-surface-variant":"#424843","on-primary-fixed":"#002113","primary-fixed-dim":"#abcfb8","on-secondary-fixed-variant":"#084d65","on-tertiary-fixed-variant":"#404c00","secondary-fixed-dim":"#98ceeb","surface-container":"#f1eee5","inverse-primary":"#abcfb8","secondary-container":"#abe1ff","error":"#ba1a1a","on-tertiary-container":"#90a804","surface-container-highest":"#e6e2d9","on-primary-container":"#83a590","surface-tint":"#456553","on-tertiary":"#ffffff","secondary-fixed":"#c1e8ff","tertiary-fixed-dim":"#b8d23b"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-md":"1rem","gutter-sm":"1rem","margin-lg":"3rem","gutter-lg":"2rem","space-sm":"0.5rem","gutter":"1.5rem","space-2xs":"0.125rem","margin-sm":"1rem","space-xl":"2.5rem","margin":"2rem","space-xs":"0.25rem","space-22xl":"4rem","space-lg":"1.5rem"},fontFamily:{"body-lg":["Hanken Grotesk"],"body-md":["Hanken Grotesk"],"data-mono-sm":["JetBrains Mono"],"label-caps":["Hanken Grotesk"],"headline-sm":["Newsreader"],"body-sm":["Hanken Grotesk"],"data-mono":["JetBrains Mono"],"headline-lg":["Newsreader"],"display-hero-mobile":["Newsreader"],"headline-lg-mobile":["Newsreader"],"display-hero":["Newsreader"],"headline-md":["Newsreader"]},fontSize:{"body-lg":["17px",{"lineHeight":"26px","letterSpacing":"-0.005em","fontWeight":"400"}],"body-md":["14px",{"lineHeight":"22px","fontWeight":"400"}],"data-mono-sm":["11px",{"lineHeight":"16px","letterSpacing":"0.02em","fontWeight":"400"}],"label-caps":["11px",{"lineHeight":"14px","letterSpacing":"0.08em","fontWeight":"600"}],"headline-sm":["20px",{"lineHeight":"28px","fontWeight":"600"}],"body-sm":["12px",{"lineHeight":"18px","fontWeight":"400"}],"data-mono":["13px",{"lineHeight":"18px","letterSpacing":"0.01em","fontWeight":"500"}],"headline-lg":["40px",{"lineHeight":"48px","letterSpacing":"-0.02em","fontWeight":"500"}],"display-hero-mobile":["36px",{"lineHeight":"44px","letterSpacing":"-0.01em","fontWeight":"400"}],"headline-lg-mobile":["28px",{"lineHeight":"36px","letterSpacing":"-0.01em","fontWeight":"500"}],"display-hero":["56px",{"lineHeight":"64px","letterSpacing":"-0.01em","fontWeight":"400"}],"headline-md":["28px",{"lineHeight":"36px","letterSpacing":"-0.01em","fontWeight":"500"}]}}}}</script></head><body class="bg-surface font-body-md text-on-surface antialiased selection:bg-tertiary-fixed selection:text-on-tertiary-fixed"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-md shadow-[0_1px_8px_rgba(27,59,43,0.04)]"><div class="h-20 w-full px-gutter flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md min-w-[280px]"><div class="w-9 h-9 rounded-DEFAULT bg-primary flex items-center justify-center text-on-primary shadow-[0_1px_3px_rgba(27,59,43,0.1)]"><span class="material-symbols-outlined text-[20px]">layers</span></div><div class="flex flex-col"><div class="flex items-center gap-space-xs"><a href="index.html" title="Back to Hub" class="hover:underline flex items-center"><span class="font-headline-sm text-headline-sm tracking-tight text-primary">Cadastre 3D</span></a><span class="font-label-caps text-label-caps uppercase bg-surface-container px-space-xs py-space-2xs rounded text-on-surface-variant">v2.4</span></div><span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Urban Vertical Property Registry / ULPIN 3D Engine</span></div></div><nav class="hidden xl:flex items-center p-space-2xs rounded-full bg-surface-container-low" data-active-classes="bg-primary-container text-on-primary font-medium shadow-sm"><a class="font-body-sm text-body-sm px-space-md py-space-xs rounded-full text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="overview-story" href="overview_and_story.html">Overview &amp; Story</a><a class="font-body-sm text-body-sm px-space-md py-space-xs rounded-full text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="interactive-3d-cadastre" href="interactive_viewer_auto_trimmed_validated.html">Interactive 3D Cadastre</a><a class="font-body-sm text-body-sm px-space-md py-space-xs rounded-full text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="plan-pipeline-detection" href="2d_cadastral_plan_viewer.html">Plan Pipeline &amp; Detection</a><a class="font-body-sm text-body-sm px-space-md py-space-xs rounded-full text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="validation-engine" href="front_elevation_cross_section_viewer.html">Validation Engine</a><a class="font-body-sm text-body-sm px-space-md py-space-xs rounded-full text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="parcel-registry" href="interactive_viewer.html">Parcel Registry</a></nav><div class="flex items-center gap-space-sm justify-end"><div class="hidden 2xl:flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container-low shadow-[0_1px_2px_rgba(27,59,43,0.03)]"><span class="w-2 h-2 rounded-full bg-tertiary-fixed animate-pulse"></span><span class="font-data-mono-sm text-data-mono-sm text-on-surface-variant">Parcel: <span class="text-primary font-semibold">DL-04-2024-88A9</span></span><span class="text-outline-variant font-data-mono-sm">|</span><span class="font-data-mono-sm text-data-mono-sm text-on-surface-variant">Status: <span class="text-primary font-semibold">Geometrically Validated</span></span></div><div class="hidden lg:flex items-center gap-space-xs px-space-sm py-space-xs rounded-DEFAULT bg-surface-container hover:bg-surface-container-high transition-colors cursor-pointer text-left"><div class="flex flex-col"><span class="font-label-caps text-label-caps uppercase text-on-surface-variant text-[9px]">Active Model</span><span class="font-data-mono-sm text-data-mono-sm text-primary font-medium">Metropolis Tower Demo (4F + B1)</span></div><span class="material-symbols-outlined text-on-surface-variant text-[16px]">unfold_more</span></div><button class="flex items-center gap-space-xs px-space-md py-space-xs rounded-DEFAULT bg-surface-container-lowest text-primary hover:bg-surface-container-high hover:text-on-surface transition-all duration-150 shadow-[0_1px_3px_rgba(27,59,43,0.06)]" type="button"><span class="material-symbols-outlined text-[18px] text-primary">upload_file</span><span class="font-body-sm text-body-sm font-medium">Upload 2D Plan</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-surface min-h-screen"><div class="flex flex-col w-full">
+<!-- Subtle Architectural Drafting Canvas Ambient Background Overlay -->
+<div class="relative w-full overflow-hidden">
+<!-- Ambient spatial glows -->
+<div class="absolute -top-40 -right-40 w-[640px] h-[640px] rounded-full bg-secondary-container/20 blur-[130px] pointer-events-none -z-10"></div>
+<div class="absolute top-[480px] -left-32 w-[520px] h-[520px] rounded-full bg-tertiary-fixed/25 blur-[120px] pointer-events-none -z-10"></div>
+<!-- Editorial Hero Section -->
+<section class="w-full px-gutter pt-space-xl pb-space-2xl">
+<div class="max-w-7xl mx-auto flex flex-col gap-space-xl">
+<!-- Top Metadata & Authority Protocol Bar -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm pb-space-sm border-b border-outline-variant/30">
+<div class="flex items-center gap-space-xs">
+<span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-tertiary-fixed text-[12px] font-bold">§</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant tracking-wider uppercase">Cadastral Technical Standard • ISO 19152 (LADM) / OGC 3D-LandML</span>
+</div>
+<div class="flex items-center gap-space-md font-data-mono-sm text-data-mono-sm text-on-surface-variant">
+<span class="hidden sm:inline-flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed"></span>
+              Spatial Extrusion Engine v2.48
+            </span>
+<span class="text-outline-variant">/</span>
+<span>Datum: EPSG 7855 + AHD Orthometric</span>
+<span class="text-outline-variant">/</span>
+<span class="text-primary font-medium">Cadastre-ULPIN Linked</span>
+</div>
+</div>
+<!-- Headline & Editorial Narrative Split -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg lg:gap-space-xl items-start">
+<div class="lg:col-span-8 flex flex-col gap-space-md">
+<div class="inline-flex items-center gap-space-xs px-space-sm py-space-2xs rounded-full bg-surface-container w-fit">
+<span class="material-symbols-outlined text-secondary text-[16px]">domain_verification</span>
+<span class="font-label-caps text-label-caps uppercase text-secondary tracking-widest font-semibold">Vertical Tenure Modernization</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-tight max-w-4xl">
+              The ground parcel ends at the soil. <span class="italic font-normal text-on-surface-variant">Vertical property starts here.</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+              Converting legacy 2D architectural building plans into topologically validated, volumetric 3D cadastral land parcels. Minting immutable 3D ULPIN registry identifiers directly bound to parent surface coordinates.
+            </p>
+<div class="flex flex-wrap items-center gap-space-md pt-space-xs">
+<a class="group inline-flex items-center gap-space-sm px-space-lg py-space-sm rounded-DEFAULT bg-primary text-on-primary hover:bg-primary-container transition-all duration-200 shadow-sm hover:shadow-md" data-path="interactive-3d-cadastre" href="interactive_viewer_auto_trimmed_validated.html">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed group-hover:scale-125 transition-transform duration-200"></span>
+<span class="font-body-md text-body-md font-semibold text-on-primary">Open Interactive 3D Cadastre</span>
+<span class="material-symbols-outlined text-[18px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+</a>
+<a class="inline-flex items-center gap-space-xs px-space-lg py-space-sm rounded-DEFAULT bg-surface-container hover:bg-surface-container-high text-primary transition-colors duration-150" data-path="plan-pipeline-detection" href="2d_cadastral_plan_viewer.html">
+<span class="material-symbols-outlined text-[18px] text-secondary">account_tree</span>
+<span class="font-body-md text-body-md font-medium">Explore Detection Pipeline</span>
+</a>
+<span class="font-data-mono-sm text-data-mono-sm text-on-surface-variant pl-space-xs hidden md:inline">
+                Spatial Accuracy &lt; 12mm RMS
+              </span>
+</div>
+</div>
+<!-- Editorial Sidebar Stamp & Quick Audit Card -->
+<div class="lg:col-span-4 flex flex-col gap-space-md bg-surface-container-low p-space-md rounded-xl shadow-[0_1px_4px_rgba(27,59,43,0.05)]">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Cadastral Validation Stamp</span>
+<span class="inline-flex items-center gap-1 font-data-mono-sm text-data-mono-sm text-primary font-semibold bg-tertiary-fixed/40 px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+                PASSED MUNICIPAL GIS
+              </span>
+</div>
+<div class="flex flex-col gap-space-xs font-data-mono-sm text-data-mono-sm text-on-surface-variant border-t border-b border-surface-variant py-space-sm">
+<div class="flex justify-between">
+<span>Parent Parcel ULPIN:</span>
+<span class="font-semibold text-primary">DL-ND-9821-2024</span>
+</div>
+<div class="flex justify-between">
+<span>Centroid Coordinates:</span>
+<span class="font-semibold text-primary">28.6139° N, 77.2090° E</span>
+</div>
+<div class="flex justify-between">
+<span>Footprint Surface Area:</span>
+<span class="font-semibold text-primary">1,840.45 m²</span>
+</div>
+<div class="flex justify-between">
+<span>Vertical Elevation Span:</span>
+<span class="font-semibold text-primary">-3.20m to +14.40m AHD</span>
+</div>
+<div class="flex justify-between">
+<span>Certified Strata Units:</span>
+<span class="font-semibold text-secondary">14 Spatial Volumes</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant italic">
+              "The shift from 2D horizontal land titling to 3D volumetric airspace delimitation provides definitive legal proof against encroachment and duplicate airspace allocation."
+            </p>
+</div>
+</div>
+<!-- HERO TECHNICAL VISUAL CENTERPIECE: The 3D Strata Stack & Vector Overlay -->
+<div class="relative w-full rounded-xl bg-surface-container-lowest p-space-md md:p-space-lg shadow-[0_2px_12px_rgba(27,59,43,0.06)] overflow-hidden">
+<!-- Technical Drawing Header Metadata -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm mb-space-md pb-space-xs border-b border-surface-container">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[22px]">view_in_ar</span>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-primary">Volumetric Parcel Strata Model #DL-9821</h2>
+<p class="font-data-mono-sm text-data-mono-sm text-on-surface-variant">Exploded Vertical Isometric Projection · OpenCV Vector Reconstruction</p>
+</div>
+</div>
+<!-- Floor Stack Selector Tabs -->
+<div class="flex items-center gap-1 bg-surface-container-low p-1 rounded-DEFAULT font-data-mono-sm text-data-mono-sm">
+<button class="px-2.5 py-1 rounded bg-primary text-on-primary font-medium">All Strata (Exploded)</button>
+<button class="px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface transition-colors">Floor 3 (+10.8m)</button>
+<button class="px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface transition-colors">Floor 2 (+7.2m)</button>
+<button class="px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface transition-colors">Floor 1 (+3.6m)</button>
+<button class="px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface transition-colors">Ground (±0.0m)</button>
+<button class="px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface transition-colors">Basement (-3.2m)</button>
+</div>
+</div>
+<!-- Main Technical Drawing / Isometric Visualization Area -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-stretch">
+<!-- Left: Vertical Stack Dimension Strip -->
+<div class="lg:col-span-3 flex flex-col justify-between bg-surface-container-low rounded-lg p-space-md font-data-mono text-data-mono text-on-surface">
+<div class="flex items-center justify-between border-b border-surface-variant pb-space-xs">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Elevation Benchmarks</span>
+<span class="text-tertiary font-bold text-[11px] bg-tertiary-fixed px-1.5 py-0.5 rounded">AHD Datum</span>
+</div>
+<!-- Stack Benchmarks -->
+<div class="flex flex-col gap-space-md my-auto py-space-sm">
+<!-- Level 4: Penthouse / Roof Assets -->
+<div class="flex items-start gap-space-sm pl-space-xs border-l-2 border-primary">
+<div class="flex flex-col">
+<span class="font-semibold text-primary">Floor 03 (Penthouse Units)</span>
+<span class="font-data-mono-sm text-data-mono-sm text-on-surface-variant">Z: +10.80m to +14.40m • 420.10 m²</span>
+<span class="font-data-mono-sm text-data-mono-sm text-secondary">ULPIN-3D: DL-9821-F3-U01..02</span>
+</div>
+</div>
+<!-- Level 3: Floor 2 -->
+<div class="flex items-start gap-space-sm pl-space-xs border-l-2 border-secondary">
+<div class="flex flex-col">
+<span class="font-semibold text-primary">Floor 02 (Commercial Suites)</span>
+<span class="font-data-mono-sm text-data-mono-sm text-on-surface-variant">Z: +7.20m to +10.80m • 440.00 m²</span>
+<span class="font-data-mono-sm text-data-mono-sm text-secondary">ULPIN-3D: DL-9821-F2-U01..03</span>
+</div>
+</div>
+<!-- Level 2: Floor 1 -->
+<div class="flex items-start gap-space-sm pl-space-xs border-l-2 border-secondary">
+<div class="flex flex-col">
+<span class="font-semibold text-primary">Floor 01 (Tech Workspace)</span>
+<span class="font-data-mono-sm text-data-mono-sm text-on-surface-variant">Z: +3.60m to +7.20m • 440.00 m²</span>
+<span class="font-data-mono-sm text-data-mono-sm text-secondary">ULPIN-3D: DL-9821-F1-U01..04</span>
+</div>
+</div>
+<!-- Level 1: Ground Floor -->
+<div class="flex items-start gap-space-sm pl-space-xs border-l-2 border-primary">
+<div class="flex flex-col">
+<span class="font-semibold text-primary">Ground Floor (Lobby &amp; Retail)</span>
+<span class="font-data-mono-sm text-data-mono-sm text-on-surface-variant">Z: +0.00m to +3.60m • 460.35 m²</span>
+<span class="font-data-mono-sm text-data-mono-sm text-primary font-medium">ULPIN-3D: DL-9821-G0-U01..03</span>
+</div>
+</div>
+<!-- Level 0: Subterranean Basement -->
+<div class="flex items-start gap-space-sm pl-space-xs border-l-2 border-outline">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface-variant">Basement 01 (Sub-surface Parking)</span>
+<span class="font-data-mono-sm text-data-mono-sm text-on-surface-variant">Z: -3.20m to 0.00m • 510.00 m²</span>
+<span class="font-data-mono-sm text-data-mono-sm text-on-surface-variant">ULPIN-3D: DL-9821-B1-PARK</span>
+</div>
+</div>
+</div>
+<div class="pt-space-xs border-t border-surface-variant text-[11px] text-on-surface-variant">
+<span class="text-primary font-medium">• Vertical Alignment:</span> 99.8% Coaxial match with Parent Ground Parcel boundary.
+              </div>
+</div>
+<!-- Center/Right: Visual Technical Strata Drawing (SVG Canvas) -->
+<div class="lg:col-span-9 relative min-h-[460px] flex items-center justify-center bg-surface-container rounded-lg p-space-sm overflow-hidden">
+<!-- Cartographic grid hash pattern behind SVG -->
+<div class="absolute inset-0 opacity-10 bg-[radial-gradient(#1b3b2b_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none"></div>
+<!-- Technical Interactive Isometric Strata Stack Illustration -->
+<svg class="w-full h-auto max-h-[500px] select-none" viewbox="0 0 860 520" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<!-- Floor 3 Lime Gradient -->
+<lineargradient id="gradFloor3" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#d4ef55" stop-opacity="0.9"></stop>
+<stop offset="100%" stop-color="#b8d23b" stop-opacity="0.8"></stop>
+</lineargradient>
+<!-- Floor 2 Blue Gradient -->
+<lineargradient id="gradFloor2" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#abe1ff" stop-opacity="0.85"></stop>
+<stop offset="100%" stop-color="#2c657e" stop-opacity="0.75"></stop>
+</lineargradient>
+<!-- Floor 1 Light Blue Gradient -->
+<lineargradient id="gradFloor1" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#c1e8ff" stop-opacity="0.75"></stop>
+<stop offset="100%" stop-color="#98ceeb" stop-opacity="0.65"></stop>
+</lineargradient>
+<!-- Ground Neutral Gradient -->
+<lineargradient id="gradGround" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#fdf9f0" stop-opacity="0.95"></stop>
+<stop offset="100%" stop-color="#e6e2d9" stop-opacity="0.85"></stop>
+</lineargradient>
+<!-- Basement Grey-Brown Gradient -->
+<lineargradient id="gradBasement" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#ece8df" stop-opacity="0.8"></stop>
+<stop offset="100%" stop-color="#dddad1" stop-opacity="0.9"></stop>
+</lineargradient>
+<!-- Shadow filter for clean architectural floating cards -->
+<filter height="130%" id="draftShadow" width="120%" x="-10%" y="-10%">
+<fedropshadow dx="0" dy="6" flood-color="#1b3b2b" flood-opacity="0.08" stddeviation="6"></fedropshadow>
+</filter>
+</defs>
+<!-- Central Vertical Extrusion Guide Axis (Dotted Line) -->
+<line opacity="0.45" stroke="#1b3b2b" stroke-dasharray="5,5" stroke-width="2" x1="430" x2="430" y1="40" y2="470"></line>
+<!-- LEVEL 3: ROOF / PENTHOUSE (+10.8m) -->
+<g class="hover:opacity-95 transition-opacity cursor-pointer" transform="translate(0, -10)">
+<!-- Prism Base Top -->
+<polygon fill="url(#gradFloor3)" filter="url(#draftShadow)" points="430,70 630,140 430,210 230,140" stroke="#1b3b2b" stroke-width="1.5"></polygon>
+<!-- Prism Left Face -->
+<polygon fill="#a4be30" opacity="0.95" points="230,140 430,210 430,230 230,160" stroke="#1b3b2b" stroke-width="1.5"></polygon>
+<!-- Prism Right Face -->
+<polygon fill="#8f9c21" opacity="0.95" points="430,210 630,140 630,160 430,230" stroke="#1b3b2b" stroke-width="1.5"></polygon>
+<!-- Interior Unit Partitions on Floor 3 -->
+<line opacity="0.6" stroke="#1b3b2b" stroke-dasharray="3,3" stroke-width="1" x1="430" x2="430" y1="70" y2="210"></line>
+<line opacity="0.6" stroke="#1b3b2b" stroke-dasharray="3,3" stroke-width="1" x1="330" x2="530" y1="105" y2="175"></line>
+<!-- Unit Tag Badge -->
+<g transform="translate(640, 110)">
+<rect fill="#fdf9f0" height="24" opacity="0.9" rx="4" stroke="#1b3b2b" stroke-width="1" width="180" x="0" y="0"></rect>
+<circle cx="10" cy="12" fill="#d4ef55" r="4"></circle>
+<text fill="#032517" font-family="JetBrains Mono" font-size="10" font-weight="600" x="22" y="16">ULPIN: DL-9821-F3-U01</text>
+</g>
+<line opacity="0.5" stroke="#1b3b2b" stroke-width="1" x1="560" x2="640" y1="140" y2="122"></line>
+<circle cx="560" cy="140" fill="#1b3b2b" r="2.5"></circle>
+</g>
+<!-- LEVEL 2: FLOOR 02 (+7.2m) -->
+<g class="hover:opacity-95 transition-opacity cursor-pointer" transform="translate(0, 80)">
+<!-- Prism Top Surface -->
+<polygon fill="url(#gradFloor2)" filter="url(#draftShadow)" points="430,70 630,140 430,210 230,140" stroke="#1b3b2b" stroke-width="1.5"></polygon>
+<!-- Left Side -->
+<polygon fill="#245468" points="230,140 430,210 430,230 230,160" stroke="#1b3b2b" stroke-width="1.5"></polygon>
+<!-- Right Side -->
+<polygon fill="#1c4151" points="430,210 630,140 630,160 430,230" stroke="#1b3b2b" stroke-width="1.5"></polygon>
+<!-- Interior Divisions -->
+<line opacity="0.7" stroke="#ffffff" stroke-dasharray="2,2" stroke-width="1" x1="360" x2="490" y1="95" y2="190"></line>
+<!-- Unit Tag Badge -->
+<g transform="translate(30, 175)">
+<rect fill="#fdf9f0" height="24" opacity="0.9" rx="4" stroke="#1b3b2b" stroke-width="1" width="180" x="0" y="0"></rect>
+<circle cx="10" cy="12" fill="#2c657e" r="4"></circle>
+<text fill="#032517" font-family="JetBrains Mono" font-size="10" font-weight="600" x="22" y="16">ULPIN: DL-9821-F2-U02</text>
+</g>
+<line opacity="0.5" stroke="#1b3b2b" stroke-width="1" x1="210" x2="310" y1="187" y2="165"></line>
+<circle cx="310" cy="165" fill="#1b3b2b" r="2.5"></circle>
+</g>
+<!-- LEVEL 1: FLOOR 01 (+3.6m) -->
+<g class="hover:opacity-95 transition-opacity cursor-pointer" transform="translate(0, 170)">
+<!-- Prism Top Surface -->
+<polygon fill="url(#gradFloor1)" filter="url(#draftShadow)" points="430,70 630,140 430,210 230,140" stroke="#1b3b2b" stroke-width="1.5"></polygon>
+<!-- Left Side -->
+<polygon fill="#7baec9" points="230,140 430,210 430,230 230,160" stroke="#1b3b2b" stroke-width="1.5"></polygon>
+<!-- Right Side -->
+<polygon fill="#6292ac" points="430,210 630,140 630,160 430,230" stroke="#1b3b2b" stroke-width="1.5"></polygon>
+<!-- Interior Subdivisions -->
+<line opacity="0.5" stroke="#1b3b2b" stroke-dasharray="2,2" stroke-width="0.75" x1="430" x2="430" y1="70" y2="210"></line>
+<!-- Unit Tag Badge -->
+<g transform="translate(640, 280)">
+<rect fill="#fdf9f0" height="24" opacity="0.9" rx="4" stroke="#1b3b2b" stroke-width="1" width="180" x="0" y="0"></rect>
+<circle cx="10" cy="12" fill="#98ceeb" r="4"></circle>
+<text fill="#032517" font-family="JetBrains Mono" font-size="10" font-weight="600" x="22" y="16">ULPIN: DL-9821-F1-U04</text>
+</g>
+<line opacity="0.5" stroke="#1b3b2b" stroke-width="1" x1="530" x2="640" y1="280" y2="292"></line>
+<circle cx="530" cy="280" fill="#1b3b2b" r="2.5"></circle>
+</g>
+<!-- LEVEL 0: GROUND LEVEL (±0.00m) with 2D Parcel Footprint & Survey Beacons -->
+<g class="hover:opacity-95 transition-opacity cursor-pointer" transform="translate(0, 260)">
+<!-- Ground Cadastral Boundary (Surrounding Land) -->
+<polygon fill="#f1eee5" opacity="0.7" points="430,30 710,130 430,230 150,130" stroke="#727973" stroke-dasharray="4,4" stroke-width="1"></polygon>
+<!-- Ground Unit Slab -->
+<polygon fill="url(#gradGround)" filter="url(#draftShadow)" points="430,70 630,140 430,210 230,140" stroke="#1b3b2b" stroke-width="2"></polygon>
+<!-- Left Side -->
+<polygon fill="#c1c8c2" points="230,140 430,210 430,230 230,160" stroke="#1b3b2b" stroke-width="1.5"></polygon>
+<!-- Right Side -->
+<polygon fill="#a8b1a9" points="430,210 630,140 630,160 430,230" stroke="#1b3b2b" stroke-width="1.5"></polygon>
+<!-- Cadastral Boundary Boundary Survey Pins (Crosshairs) -->
+<circle cx="430" cy="70" fill="#1b3b2b" r="4"></circle>
+<circle cx="630" cy="140" fill="#1b3b2b" r="4"></circle>
+<circle cx="430" cy="210" fill="#1b3b2b" r="4"></circle>
+<circle cx="230" cy="140" fill="#1b3b2b" r="4"></circle>
+<!-- Ground Parcel Identifier -->
+<g transform="translate(430, 150)">
+<rect fill="#032517" height="24" rx="12" width="180" x="-90" y="-12"></rect>
+<text fill="#ffffff" font-family="JetBrains Mono" font-size="10" font-weight="600" text-anchor="middle" x="0" y="4">GROUND: PARCEL-DL-9821</text>
+</g>
+<!-- Land Dimension Hash Notation -->
+<text fill="#1b3b2b" font-family="JetBrains Mono" font-size="9" opacity="0.7" x="320" y="100">42.80 m</text>
+<text fill="#1b3b2b" font-family="JetBrains Mono" font-size="9" opacity="0.7" x="540" y="100">43.00 m</text>
+</g>
+<!-- LEVEL -1: SUBTERRANEAN BASEMENT (-3.20m) -->
+<g class="hover:opacity-100 transition-opacity cursor-pointer" opacity="0.8" transform="translate(0, 330)">
+<!-- Basement Slab -->
+<polygon fill="url(#gradBasement)" points="430,70 630,140 430,210 230,140" stroke="#727973" stroke-dasharray="3,1" stroke-width="1.5"></polygon>
+<polygon fill="#dddad1" points="230,140 430,210 430,230 230,160" stroke="#727973" stroke-width="1.5"></polygon>
+<polygon fill="#c7c3ba" points="430,210 630,140 630,160 430,230" stroke="#727973" stroke-width="1.5"></polygon>
+<text fill="#424843" font-family="JetBrains Mono" font-size="10" font-weight="500" text-anchor="middle" x="430" y="145">SUBTERRANEAN BASEMENT -3.20m</text>
+</g>
+<!-- Technical Legend in Corner -->
+<g transform="translate(20, 20)">
+<rect fill="#fdf9f0" fill-opacity="0.85" height="64" rx="4" width="140" x="0" y="0"></rect>
+<text fill="#032517" font-family="Hanken Grotesk" font-size="10" font-weight="600" x="8" y="16">STRATA HIERARCHY</text>
+<circle cx="14" cy="28" fill="#d4ef55" r="3"></circle>
+<text fill="#424843" font-family="Hanken Grotesk" font-size="9" x="24" y="31">Residential Strata</text>
+<circle cx="14" cy="42" fill="#2c657e" r="3"></circle>
+<text fill="#424843" font-family="Hanken Grotesk" font-size="9" x="24" y="45">Commercial Volumes</text>
+<circle cx="14" cy="56" fill="#83a590" r="3"></circle>
+<text fill="#424843" font-family="Hanken Grotesk" font-size="9" x="24" y="59">Ground / Servitudes</text>
+</g>
+</svg>
+<!-- Absolute Badge Bottom Right -->
+<div class="absolute bottom-3 right-3 flex items-center gap-1.5 px-space-sm py-1 rounded bg-surface/90 backdrop-blur-sm shadow-sm font-data-mono-sm text-data-mono-sm text-primary">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed"></span>
+<span>Active 3D Projection · 35° Isometric</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Problem vs Solution: Technical Contrast Architecture -->
+<section class="w-full px-gutter py-space-xl bg-surface-container-low">
+<div class="max-w-7xl mx-auto flex flex-col gap-space-xl">
+<div class="flex flex-col gap-space-2xs max-w-2xl">
+<span class="font-label-caps text-label-caps uppercase text-secondary font-semibold">The Spatial Tenure Dilemma</span>
+<h2 class="font-headline-md text-headline-md text-primary">The 2D Cadastral Failure vs. The 3D Volumetric Standard</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Flat parcel polygon registries date to 19th-century cartography. They cannot legally distinguish between basement parking rights, ground commercial retail, and 20-story air condominiums sharing identical surface footprints.
+          </p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-space-lg">
+<!-- LEFT: The 2D Cadastral Failure -->
+<div class="flex flex-col bg-surface-container rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between pb-space-sm border-b border-outline-variant/30">
+<div class="flex items-center gap-space-xs">
+<div class="w-7 h-7 rounded-full bg-error-container text-error flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary">The 2D Cadastral Failure</h3>
+</div>
+<span class="font-data-mono-sm text-data-mono-sm text-error font-semibold">LEGACY BOUNDARY LOSS</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant my-space-md">
+              Current land revenue offices compress all vertical ownership into a single flat XY boundary, leading to intractable boundary disputes, unregistered basements, and unmortgageable vertical airspace rights.
+            </p>
+<div class="flex flex-col gap-space-sm font-body-sm text-body-sm">
+<div class="flex items-start gap-space-sm p-space-sm rounded bg-surface-container-high">
+<span class="material-symbols-outlined text-error text-[18px] shrink-0 mt-0.5">warning</span>
+<div>
+<strong class="text-primary font-medium">Vertical Overlap Blindness:</strong>
+<span class="text-on-surface-variant"> If two owners possess units at Floor 2 and Floor 6, flat GIS engines record them as 100% boundary overlap errors.</span>
+</div>
+</div>
+<div class="flex items-start gap-space-sm p-space-sm rounded bg-surface-container-high">
+<span class="material-symbols-outlined text-error text-[18px] shrink-0 mt-0.5">layers_clear</span>
+<div>
+<strong class="text-primary font-medium">Phantom Sub-surface Encroachment:</strong>
+<span class="text-on-surface-variant"> Basements extending beneath municipal roads or adjacent private parcels remain invisible on statutory 2D property cards.</span>
+</div>
+</div>
+<div class="flex items-start gap-space-sm p-space-sm rounded bg-surface-container-high">
+<span class="material-symbols-outlined text-error text-[18px] shrink-0 mt-0.5">history_edu</span>
+<div>
+<strong class="text-primary font-medium">Disjointed Architectural Blueprints:</strong>
+<span class="text-on-surface-variant"> Building plans exist as static scanned PDFs/drawings with zero coordinate connection to national spatial cadastral datums.</span>
+</div>
+</div>
+</div>
+<!-- Visual comparison mini chart -->
+<div class="mt-space-lg p-space-sm rounded bg-surface-container-lowest flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-on-surface-variant text-[28px]">crop_square</span>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Traditional Land Record</span>
+<span class="font-data-mono text-data-mono text-primary font-semibold">2D Polyline: (X, Y) Coordinates only</span>
+</div>
+</div>
+<span class="font-data-mono-sm text-data-mono-sm text-error bg-error-container/40 px-2 py-1 rounded">No Z-Elevation</span>
+</div>
+</div>
+<!-- RIGHT: The Cadastre 3D Pipeline -->
+<div class="flex flex-col bg-surface-container-lowest rounded-xl p-space-lg shadow-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary-container/20 rounded-bl-full pointer-events-none"></div>
+<div class="flex items-center justify-between pb-space-sm border-b border-surface-container">
+<div class="flex items-center gap-space-xs">
+<div class="w-7 h-7 rounded-full bg-primary text-tertiary-fixed flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary">The Cadastre 3D Pipeline</h3>
+</div>
+<span class="font-data-mono-sm text-data-mono-sm text-primary font-semibold">AUTOMATED RECONSTRUCTION</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant my-space-md">
+              Our automated computational pipeline parses architectural drawings, extracts structural vectors, extrudes certified 3D solids, and binds them to the National Spatial Data Infrastructure.
+            </p>
+<!-- 5-Step Process Pipeline Strip -->
+<div class="flex flex-col gap-space-sm font-data-mono-sm text-data-mono-sm">
+<div class="flex items-center justify-between p-space-xs rounded bg-surface-container-low hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="w-5 h-5 rounded-full bg-primary text-on-primary flex items-center justify-center text-[10px]">01</span>
+<span class="font-medium text-primary">2D Architectural Plan Ingestion</span>
+</div>
+<span class="text-on-surface-variant text-[11px]">PDF / DXF / High-Res Raster</span>
+</div>
+<div class="flex items-center justify-between p-space-xs rounded bg-surface-container-low hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="w-5 h-5 rounded-full bg-primary text-on-primary flex items-center justify-center text-[10px]">02</span>
+<span class="font-medium text-primary">OpenCV Boundary Contour Detection</span>
+</div>
+<span class="text-secondary font-semibold text-[11px]">Canny &amp; Hough Transform</span>
+</div>
+<div class="flex items-center justify-between p-space-xs rounded bg-surface-container-low hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="w-5 h-5 rounded-full bg-primary text-on-primary flex items-center justify-center text-[10px]">03</span>
+<span class="font-medium text-primary">Shapely Polyhedral Geometry Engine</span>
+</div>
+<span class="text-on-surface-variant text-[11px]">Polygon Simplification &lt; 2cm</span>
+</div>
+<div class="flex items-center justify-between p-space-xs rounded bg-surface-container-low hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="w-5 h-5 rounded-full bg-primary text-on-primary flex items-center justify-center text-[10px]">04</span>
+<span class="font-medium text-primary">2.5D Volumetric Prism Extrusion</span>
+</div>
+<span class="text-primary font-semibold text-[11px]">AHD Orthometric Height Injection</span>
+</div>
+<div class="flex items-center justify-between p-space-xs rounded bg-primary text-on-primary">
+<div class="flex items-center gap-space-sm">
+<span class="w-5 h-5 rounded-full bg-tertiary-fixed text-primary flex items-center justify-center text-[10px] font-bold">05</span>
+<span class="font-medium text-on-primary">Unique 3D ULPIN Minting</span>
+</div>
+<span class="text-tertiary-fixed font-semibold text-[11px]">ISO 19152 Validated</span>
+</div>
+</div>
+<!-- Visual comparison mini chart -->
+<div class="mt-space-lg p-space-sm rounded bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[28px]">view_in_ar</span>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Cadastre 3D Tenure Solid</span>
+<span class="font-data-mono text-data-mono text-primary font-semibold">Polyhedral Solid: (X, Y, Z_min, Z_max)</span>
+</div>
+</div>
+<span class="font-data-mono-sm text-data-mono-sm text-primary bg-primary-fixed font-medium px-2 py-1 rounded">Topologically Sealed</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- LIVE CADASTRE DEMO & AUDIT EXPLORER -->
+<section class="w-full px-gutter py-space-xl">
+<div class="max-w-7xl mx-auto flex flex-col gap-space-lg">
+<!-- Header & Action Row -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div class="flex flex-col gap-space-2xs">
+<span class="font-label-caps text-label-caps uppercase text-secondary font-semibold">Live Municipal Demonstration</span>
+<h2 class="font-headline-md text-headline-md text-primary">Metropolis Civic Centre: 3D Strata Registry</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xl">
+              Real-time cadastral verification inspection for Parcel DL-9821. 14 multi-story property parcels evaluated for boundary overlap, airspace intrusion, and title continuity.
+            </p>
+</div>
+<div class="flex items-center gap-space-xs">
+<div class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container text-on-surface-variant font-data-mono-sm text-data-mono-sm">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed"></span>
+<span>12 Validated</span>
+<span class="text-outline-variant">|</span>
+<span class="text-error font-medium">1 Overlap Flagged</span>
+<span class="text-outline-variant">|</span>
+<span class="text-secondary font-medium">1 Advisory Warning</span>
+</div>
+</div>
+</div>
+<!-- Master Bento Grid: Interactive Units & Architectural Plan View -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+<!-- Bento Col 1: 2D Floor Plan Planimetry Scan & Vector Snapping (5 Cols) -->
+<div class="lg:col-span-5 flex flex-col bg-surface-container-low rounded-xl p-space-md shadow-sm">
+<div class="flex items-center justify-between pb-space-xs border-b border-surface-variant mb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">architecture</span>
+<span class="font-label-caps text-label-caps uppercase text-primary">Vectorized 2D Plan Mode</span>
+</div>
+<span class="font-data-mono-sm text-data-mono-sm text-on-surface-variant">Level 02 Plan (CAD-VEC-092)</span>
+</div>
+<!-- Architectural Blueprint Simulation SVG -->
+<div class="relative w-full h-[280px] bg-surface-container-lowest rounded-lg p-3 flex items-center justify-center overflow-hidden">
+<svg class="w-full h-full select-none" viewbox="0 0 360 240" xmlns="http://www.w3.org/2000/svg">
+<!-- Blueprint drafting fine grid -->
+<defs>
+<pattern height="20" id="planGrid" patternunits="userSpaceOnUse" width="20">
+<path d="M 20 0 L 0 0 0 20" fill="none" opacity="0.15" stroke="#1b3b2b" stroke-width="0.3"></path>
+</pattern>
+</defs>
+<rect fill="url(#planGrid)" height="100%" width="100%"></rect>
+<!-- External Boundary Wall -->
+<rect fill="#f5f1e8" height="200" stroke="#032517" stroke-width="2.5" width="300" x="30" y="20"></rect>
+<!-- Unit 201 (North East) -->
+<rect fill="#abe1ff" fill-opacity="0.35" height="110" stroke="#032517" stroke-width="1.5" width="160" x="30" y="20"></rect>
+<text fill="#032517" font-family="JetBrains Mono" font-size="9" font-weight="600" x="50" y="55">UNIT 201 [VALID]</text>
+<text fill="#424843" font-family="JetBrains Mono" font-size="8" x="50" y="70">Area: 148.2 m²</text>
+<text fill="#2c657e" font-family="JetBrains Mono" font-size="7" x="50" y="82">ULPIN: F2-U01</text>
+<!-- Unit 202 (North West) -->
+<rect fill="#abe1ff" fill-opacity="0.2" height="110" stroke="#032517" stroke-width="1.5" width="140" x="190" y="20"></rect>
+<text fill="#032517" font-family="JetBrains Mono" font-size="9" font-weight="600" x="205" y="55">UNIT 202 [VALID]</text>
+<text fill="#424843" font-family="JetBrains Mono" font-size="8" x="205" y="70">Area: 132.6 m²</text>
+<text fill="#2c657e" font-family="JetBrains Mono" font-size="7" x="205" y="82">ULPIN: F2-U02</text>
+<!-- Corridor (Central East-West) -->
+<rect fill="#fdf9f0" height="30" stroke="#727973" stroke-dasharray="3,3" stroke-width="1" width="300" x="30" y="130"></rect>
+<text fill="#727973" font-family="JetBrains Mono" font-size="8" font-weight="500" x="135" y="150">COMMON CORRIDOR (SERVITUDE)</text>
+<!-- Unit 203 (South-West: Overlap Warning area) -->
+<rect fill="#ffdad6" fill-opacity="0.4" height="60" stroke="#ba1a1a" stroke-width="1.5" width="170" x="30" y="160"></rect>
+<text fill="#ba1a1a" font-family="JetBrains Mono" font-size="9" font-weight="600" x="45" y="185">UNIT 203 [OVERLAP 0.8m²]</text>
+<text fill="#93000a" font-family="JetBrains Mono" font-size="7" x="45" y="198">Intrudes on Shaft Cavity</text>
+<!-- Unit 204 (South-East) -->
+<rect fill="#abe1ff" fill-opacity="0.35" height="60" stroke="#032517" stroke-width="1.5" width="130" x="200" y="160"></rect>
+<text fill="#032517" font-family="JetBrains Mono" font-size="9" font-weight="600" x="215" y="185">UNIT 204 [VALID]</text>
+<text fill="#2c657e" font-family="JetBrains Mono" font-size="7" x="215" y="198">ULPIN: F2-U04</text>
+<!-- Snapping Crosshair Micro-indicator -->
+<circle cx="190" cy="130" fill="#d4ef55" r="4" stroke="#032517" stroke-width="1.5"></circle>
+<line stroke="#032517" stroke-width="1" x1="182" x2="198" y1="130" y2="130"></line>
+<line stroke="#032517" stroke-width="1" x1="190" x2="190" y1="122" y2="138"></line>
+</svg>
+<!-- Dimension Legend Indicator -->
+<div class="absolute bottom-2 left-2 font-data-mono-sm text-data-mono-sm text-primary bg-surface/80 px-2 py-0.5 rounded">
+                Vector Precision: ±0.015m
+              </div>
+</div>
+<!-- Inferred Vector Nodes -->
+<div class="grid grid-cols-2 gap-space-xs mt-space-sm pt-space-xs border-t border-surface-variant font-data-mono-sm text-data-mono-sm text-on-surface-variant">
+<div>Closed Vector Loops: <span class="font-semibold text-primary">4 Identified</span></div>
+<div>Wall Thickness Model: <span class="font-semibold text-primary">230mm Structural</span></div>
+<div>Balcony Cantilever: <span class="font-semibold text-primary">+1.2m Extruded</span></div>
+<div>CAD Layer Match: <span class="font-semibold text-secondary">A-WALL-EXTRUDE</span></div>
+</div>
+</div>
+<!-- Bento Col 2: Volumetric Registry Table & Topological Verification (7 Cols) -->
+<div class="lg:col-span-7 flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-sm">
+<div class="flex items-center justify-between pb-space-xs border-b border-surface-container mb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[18px]">table_rows</span>
+<span class="font-label-caps text-label-caps uppercase text-primary">Minted 3D Strata Records</span>
+</div>
+<span class="font-data-mono-sm text-data-mono-sm text-on-surface-variant">Showing 5 of 14 Strata Units</span>
+</div>
+<!-- Interactive Cadastral Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left font-data-mono-sm text-data-mono-sm">
+<thead>
+<tr class="text-on-surface-variant bg-surface-container-low border-b border-surface-container">
+<th class="py-2 px-3">3D ULPIN IDENTIFIER</th>
+<th class="py-2 px-3">LEVEL</th>
+<th class="py-2 px-3">ELEVATION (Z)</th>
+<th class="py-2 px-3">VOLUME</th>
+<th class="py-2 px-3 text-right">STATUS</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container text-on-surface">
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-2.5 px-3 font-semibold text-primary">DL-9821-F3-U01</td>
+<td class="py-2.5 px-3">Floor 03</td>
+<td class="py-2.5 px-3 text-on-surface-variant">+10.8m to +14.4m</td>
+<td class="py-2.5 px-3">648.3 m³</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-flex items-center gap-1 text-primary bg-primary-fixed px-2 py-0.5 rounded font-medium text-[10px]">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> VALIDATED
+                      </span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-2.5 px-3 font-semibold text-primary">DL-9821-F2-U01</td>
+<td class="py-2.5 px-3">Floor 02</td>
+<td class="py-2.5 px-3 text-on-surface-variant">+7.2m to +10.8m</td>
+<td class="py-2.5 px-3">533.5 m³</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-flex items-center gap-1 text-primary bg-primary-fixed px-2 py-0.5 rounded font-medium text-[10px]">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> VALIDATED
+                      </span>
+</td>
+</tr>
+<!-- Overlap flagged row -->
+<tr class="bg-error-container/20 hover:bg-error-container/30 transition-colors">
+<td class="py-2.5 px-3 font-semibold text-error">DL-9821-F2-U03</td>
+<td class="py-2.5 px-3 text-error">Floor 02</td>
+<td class="py-2.5 px-3 text-error">+7.2m to +10.8m</td>
+<td class="py-2.5 px-3 text-error">216.0 m³</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-flex items-center gap-1 text-error bg-error-container px-2 py-0.5 rounded font-medium text-[10px]">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span> OVERLAP 0.8m²
+                      </span>
+</td>
+</tr>
+<!-- Advisory row -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-2.5 px-3 font-semibold text-primary">DL-9821-F1-U02</td>
+<td class="py-2.5 px-3">Floor 01</td>
+<td class="py-2.5 px-3 text-on-surface-variant">+3.6m to +7.2m</td>
+<td class="py-2.5 px-3">410.4 m³</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-flex items-center gap-1 text-secondary bg-secondary-container/40 px-2 py-0.5 rounded font-medium text-[10px]">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> ADVISORY
+                      </span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-2.5 px-3 font-semibold text-primary">DL-9821-B1-PARK</td>
+<td class="py-2.5 px-3">Basement 01</td>
+<td class="py-2.5 px-3 text-on-surface-variant">-3.2m to 0.00m</td>
+<td class="py-2.5 px-3">1,632.0 m³</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-flex items-center gap-1 text-primary bg-primary-fixed px-2 py-0.5 rounded font-medium text-[10px]">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> VALIDATED
+                      </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Bottom Inspector Trigger -->
+<div class="mt-auto pt-space-md flex flex-wrap items-center justify-between gap-space-sm border-t border-surface-container">
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+                Topological Rule: <strong class="text-primary font-medium">Zero-Intersection 3D Polyhedral Boundary Check</strong>
+</span>
+<a class="inline-flex items-center gap-1 text-primary font-body-sm text-body-sm font-semibold hover:underline" data-path="validation-engine" href="front_elevation_cross_section_viewer.html">
+                Launch Topological Engine Audit →
+              </a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Technical Architecture & Operational Stakeholders Section -->
+<section class="w-full px-gutter py-space-xl bg-surface-container">
+<div class="max-w-7xl mx-auto flex flex-col gap-space-xl">
+<div class="flex flex-col gap-space-2xs text-center max-w-2xl mx-auto">
+<span class="font-label-caps text-label-caps uppercase text-secondary font-semibold">Institutional Stakeholders</span>
+<h2 class="font-headline-md text-headline-md text-primary">Engineered for Cadastral Authorities &amp; Spatial Governance</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Built directly against the requirements of Municipal Land Revenue Commissioners, Urban Development Authorities, and Structural GIS Engineers.
+          </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+<!-- Card 1: Municipal Land Officials -->
+<div class="flex flex-col gap-space-sm p-space-lg rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-shadow">
+<div class="w-10 h-10 rounded-lg bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">gavel</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary">Land-Record Commissioners</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Eliminate double-mortgaging and strata disputes. Every 3D unit possesses an indisputable parent-child relationship with the ground cadastral sheet.
+            </p>
+<div class="mt-auto pt-space-xs font-data-mono-sm text-data-mono-sm text-secondary font-medium">
+              • Standard Land Registry Titling
+            </div>
+</div>
+<!-- Card 2: Urban Planners & Building Regulators -->
+<div class="flex flex-col gap-space-sm p-space-lg rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-shadow">
+<div class="w-10 h-10 rounded-lg bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">apartment</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary">Urban Planners &amp; Regulators</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Track FAR/FSI utilization vertically. Automatically detect unapproved additional stories, unauthorized penthouse cantilevers, and fire safety access servitudes.
+            </p>
+<div class="mt-auto pt-space-xs font-data-mono-sm text-data-mono-sm text-secondary font-medium">
+              • 3D FSI / FAR Compliance Audit
+            </div>
+</div>
+<!-- Card 3: Spatial GIS Computational Engineers -->
+<div class="flex flex-col gap-space-sm p-space-lg rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-shadow">
+<div class="w-10 h-10 rounded-lg bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">polyline</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary">GIS &amp; Survey Engineers</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Direct CityGML, GeoJSON-3D, and IFC BIM export. Seamlessly integrates with national spatial data infrastructure (NSDI) and ArcGIS / QGIS workflows.
+            </p>
+<div class="mt-auto pt-space-xs font-data-mono-sm text-data-mono-sm text-secondary font-medium">
+              • CityGML LoD3 &amp; IFC Strata Export
+            </div>
+</div>
+</div>
+<!-- Architectural Call to Action Strip -->
+<div class="flex flex-col md:flex-row items-center justify-between gap-space-md p-space-lg rounded-xl bg-primary text-on-primary shadow-md">
+<div class="flex flex-col gap-space-2xs">
+<h3 class="font-headline-sm text-headline-sm text-on-primary">Ready to test plan conversion?</h3>
+<p class="font-body-sm text-body-sm text-on-primary-container max-w-xl">
+              Upload any standard municipal architectural floor plan (PDF, DWG, or TIFF) to trigger instantaneous automated wall vectorization, room identification, and 3D ULPIN generation.
+            </p>
+</div>
+<div class="flex items-center gap-space-sm shrink-0">
+<a class="inline-flex items-center gap-space-xs px-space-lg py-space-sm rounded-DEFAULT bg-tertiary-fixed text-on-tertiary-fixed hover:bg-tertiary-fixed-dim transition-colors font-body-md text-body-md font-semibold" data-path="plan-pipeline-detection" href="2d_cadastral_plan_viewer.html">
+<span class="material-symbols-outlined text-[18px]">cloud_upload</span>
+<span>Upload Plan Document</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Client-side Interactive Script for Isometric Tab Switch & Micro-Hover Highlights -->
+<script>
+    (function() {
+      // Allow quick interactive preview toggle on the Strata Selector Buttons
+      const strataButtons = document.querySelectorAll('button');
+      strataButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          if (this.textContent.includes('Floor') || this.textContent.includes('Basement') || this.textContent.includes('Strata')) {
+            // Visual feedback indicator
+            strataButtons.forEach(b => {
+              if (b.classList.contains('bg-primary')) {
+                b.classList.remove('bg-primary', 'text-on-primary', 'font-medium');
+                b.classList.add('text-on-surface-variant');
+              }
+            });
+            this.classList.add('bg-primary', 'text-on-primary', 'font-medium');
+            this.classList.remove('text-on-surface-variant');
+          }
+        });
+      });
+    })();
+  </script>
+</div></main><footer class="w-full bg-surface-container-low mt-space-2xl"><div class="w-full px-gutter py-space-xl"><div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md pb-space-lg"><div class="flex flex-col gap-space-2xs"><div class="flex items-center gap-space-xs"><a href="index.html" title="Back to Hub" class="hover:underline flex items-center"><span class="font-headline-sm text-headline-sm text-primary">Cadastre 3D</span></a><span class="font-label-caps text-label-caps uppercase text-on-surface-variant bg-surface-container px-space-xs py-space-2xs rounded">Cartographic Registry v2.4</span></div><p class="font-body-sm text-body-sm text-on-surface-variant max-w-xl">High-precision computational parcel stratification, 3D volumetric extrusion engines, and unified land identification standards for vertical urban property tenure.</p></div><div class="flex items-center gap-space-md"><div class="flex flex-col items-start md:items-end"><span class="font-label-caps text-label-caps uppercase text-on-surface-variant">AHD Geoid Datum</span><span class="font-data-mono-sm text-data-mono-sm text-primary">WGS84 / EPSG:3857 (Z: Orthometric)</span></div><div class="flex flex-col items-start md:items-end"><span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Authority Node</span><span class="font-data-mono-sm text-data-mono-sm text-primary">ULPIN Spatial Grid Node #4409</span></div></div></div><div class="flex flex-col sm:flex-row items-center justify-between gap-space-sm pt-space-md font-body-sm text-body-sm text-on-surface-variant"><div>© 2025 Cadastre 3D Spatial Systems. National Spatial Land Registry Protocol.</div><div class="flex items-center gap-space-md"><a class="hover:text-primary transition-colors" href="#">Technical Folio</a><a class="hover:text-primary transition-colors" href="#">Cadastral Standards</a><a class="hover:text-primary transition-colors" href="#">API Registry</a><a class="hover:text-primary transition-colors" href="#">Spatial Compliance</a></div></div></div></footer></body></html>

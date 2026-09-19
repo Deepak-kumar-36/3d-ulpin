@@ -1,0 +1,242 @@
+﻿{
+    "name":  "projects/5216024575605869770",
+    "title":  "Editorial 3D Cadastre Platform",
+    "visibility":  "PRIVATE",
+    "createTime":  "2026-09-19T11:46:34.137191Z",
+    "updateTime":  "2026-09-19T11:58:19.512509Z",
+    "projectType":  "TEXT_TO_UI_PRO",
+    "thumbnailScreenshot":  {
+                                "name":  "projects/5216024575605869770/screens/a2a40f62206646a2ce0bdaa34a0d5c0bfbcd721c204554bf1c02cbd0694d0b84/fileEntries/screenshot",
+                                "downloadUrl":  "https://lh3.googleusercontent.com/aida/AEtjO1WQUlnuv97O1aSWn-47gwv3DlXIbMsSok7Gw_lnphF0E-YQ6uBSzH55l-nzYyocm42JlfB8HBvtTzHJeO2SpgwjypepEQxcrQ3f--eAm0oElryU5HtNlzL9hwy_yL51bxZ9347MhyN7_WrllNSr6DOZk7eSJ_CgyTY3a7IlcJEHLGkGklZqVUAVm4dMGjREGZJoSLY9ryMiQ82Ipj6TUyfEPdeBeGLlIIxgt7ATzik96iAU6k-FauEsvhg"
+                            },
+    "origin":  "STITCH",
+    "deviceType":  "DESKTOP",
+    "designTheme":  {
+                        "colorMode":  "LIGHT",
+                        "font":  "NEWSREADER",
+                        "roundness":  "ROUND_EIGHT",
+                        "customColor":  "#1b3b2b",
+                        "headlineFont":  "NEWSREADER",
+                        "bodyFont":  "HANKEN_GROTESK",
+                        "labelFont":  "JETBRAINS_MONO",
+                        "namedColors":  {
+                                            "on_surface_variant":  "#424843",
+                                            "surface":  "#fdf9f0",
+                                            "primary_fixed_dim":  "#abcfb8",
+                                            "primary_fixed":  "#c7ebd4",
+                                            "on_tertiary":  "#ffffff",
+                                            "error":  "#ba1a1a",
+                                            "inverse_primary":  "#abcfb8",
+                                            "on_primary_container":  "#83a590",
+                                            "tertiary_container":  "#303900",
+                                            "surface_tint":  "#456553",
+                                            "surface_container_highest":  "#e6e2d9",
+                                            "secondary":  "#2c657e",
+                                            "inverse_on_surface":  "#f4f0e7",
+                                            "on_background":  "#1c1c16",
+                                            "on_primary_fixed_variant":  "#2d4d3c",
+                                            "on_secondary_fixed":  "#001e2b",
+                                            "tertiary_fixed":  "#d4ef55",
+                                            "outline_variant":  "#c1c8c2",
+                                            "surface_bright":  "#fdf9f0",
+                                            "on_secondary":  "#ffffff",
+                                            "on_surface":  "#1c1c16",
+                                            "secondary_fixed":  "#c1e8ff",
+                                            "primary_container":  "#1b3b2b",
+                                            "on_secondary_container":  "#2d657f",
+                                            "secondary_container":  "#abe1ff",
+                                            "primary":  "#032517",
+                                            "on_primary_fixed":  "#002113",
+                                            "on_tertiary_fixed":  "#181e00",
+                                            "surface_container":  "#f1eee5",
+                                            "surface_variant":  "#e6e2d9",
+                                            "surface_container_lowest":  "#ffffff",
+                                            "inverse_surface":  "#31302b",
+                                            "surface_container_high":  "#ece8df",
+                                            "outline":  "#727973",
+                                            "surface_dim":  "#dddad1",
+                                            "surface_container_low":  "#f7f3ea",
+                                            "background":  "#fdf9f0",
+                                            "on_error_container":  "#93000a",
+                                            "on_error":  "#ffffff",
+                                            "tertiary_fixed_dim":  "#b8d23b",
+                                            "error_container":  "#ffdad6",
+                                            "tertiary":  "#1c2300",
+                                            "secondary_fixed_dim":  "#98ceeb",
+                                            "on_primary":  "#ffffff",
+                                            "on_secondary_fixed_variant":  "#084d65",
+                                            "on_tertiary_fixed_variant":  "#404c00",
+                                            "on_tertiary_container":  "#90a804"
+                                        },
+                        "designMd":  "---\nname: Vertical Cadastre Editorial\ncolors:\n  surface: \u0027#fdf9f0\u0027\n  surface-dim: \u0027#dddad1\u0027\n  surface-bright: \u0027#fdf9f0\u0027\n  surface-container-lowest: \u0027#ffffff\u0027\n  surface-container-low: \u0027#f7f3ea\u0027\n  surface-container: \u0027#f1eee5\u0027\n  surface-container-high: \u0027#ece8df\u0027\n  surface-container-highest: \u0027#e6e2d9\u0027\n  on-surface: \u0027#1c1c16\u0027\n  on-surface-variant: \u0027#424843\u0027\n  inverse-surface: \u0027#31302b\u0027\n  inverse-on-surface: \u0027#f4f0e7\u0027\n  outline: \u0027#727973\u0027\n  outline-variant: \u0027#c1c8c2\u0027\n  surface-tint: \u0027#456553\u0027\n  primary: \u0027#032517\u0027\n  on-primary: \u0027#ffffff\u0027\n  primary-container: \u0027#1b3b2b\u0027\n  on-primary-container: \u0027#83a590\u0027\n  inverse-primary: \u0027#abcfb8\u0027\n  secondary: \u0027#2c657e\u0027\n  on-secondary: \u0027#ffffff\u0027\n  secondary-container: \u0027#abe1ff\u0027\n  on-secondary-container: \u0027#2d657f\u0027\n  tertiary: \u0027#1c2300\u0027\n  on-tertiary: \u0027#ffffff\u0027\n  tertiary-container: \u0027#303900\u0027\n  on-tertiary-container: \u0027#90a804\u0027\n  error: \u0027#ba1a1a\u0027\n  on-error: \u0027#ffffff\u0027\n  error-container: \u0027#ffdad6\u0027\n  on-error-container: \u0027#93000a\u0027\n  primary-fixed: \u0027#c7ebd4\u0027\n  primary-fixed-dim: \u0027#abcfb8\u0027\n  on-primary-fixed: \u0027#002113\u0027\n  on-primary-fixed-variant: \u0027#2d4d3c\u0027\n  secondary-fixed: \u0027#c1e8ff\u0027\n  secondary-fixed-dim: \u0027#98ceeb\u0027\n  on-secondary-fixed: \u0027#001e2b\u0027\n  on-secondary-fixed-variant: \u0027#084d65\u0027\n  tertiary-fixed: \u0027#d4ef55\u0027\n  tertiary-fixed-dim: \u0027#b8d23b\u0027\n  on-tertiary-fixed: \u0027#181e00\u0027\n  on-tertiary-fixed-variant: \u0027#404c00\u0027\n  background: \u0027#fdf9f0\u0027\n  on-background: \u0027#1c1c16\u0027\n  surface-variant: \u0027#e6e2d9\u0027\ntypography:\n  display-hero:\n    fontFamily: Newsreader\n    fontSize: 56px\n    fontWeight: \u0027400\u0027\n    lineHeight: 64px\n    letterSpacing: -0.02em\n  display-hero-mobile:\n    fontFamily: Newsreader\n    fontSize: 36px\n    fontWeight: \u0027400\u0027\n    lineHeight: 44px\n    letterSpacing: -0.01em\n  headline-lg:\n    fontFamily: Newsreader\n    fontSize: 40px\n    fontWeight: \u0027500\u0027\n    lineHeight: 48px\n    letterSpacing: -0.02em\n  headline-lg-mobile:\n    fontFamily: Newsreader\n    fontSize: 28px\n    fontWeight: \u0027500\u0027\n    lineHeight: 36px\n    letterSpacing: -0.01em\n  headline-md:\n    fontFamily: Newsreader\n    fontSize: 28px\n    fontWeight: \u0027500\u0027\n    lineHeight: 36px\n    letterSpacing: -0.01em\n  headline-sm:\n    fontFamily: Newsreader\n    fontSize: 20px\n    fontWeight: \u0027600\u0027\n    lineHeight: 28px\n  body-lg:\n    fontFamily: Hanken Grotesk\n    fontSize: 17px\n    fontWeight: \u0027400\u0027\n    lineHeight: 26px\n    letterSpacing: -0.005em\n  body-md:\n    fontFamily: Hanken Grotesk\n    fontSize: 14px\n    fontWeight: \u0027400\u0027\n    lineHeight: 22px\n  body-sm:\n    fontFamily: Hanken Grotesk\n    fontSize: 12px\n    fontWeight: \u0027400\u0027\n    lineHeight: 18px\n  data-mono:\n    fontFamily: JetBrains Mono\n    fontSize: 13px\n    fontWeight: \u0027500\u0027\n    lineHeight: 18px\n    letterSpacing: 0.01em\n  data-mono-sm:\n    fontFamily: JetBrains Mono\n    fontSize: 11px\n    fontWeight: \u0027400\u0027\n    lineHeight: 16px\n    letterSpacing: 0.02em\n  label-caps:\n    fontFamily: Hanken Grotesk\n    fontSize: 11px\n    fontWeight: \u0027600\u0027\n    lineHeight: 14px\n    letterSpacing: 0.08em\nrounded:\n  sm: 0.25rem\n  DEFAULT: 0.5rem\n  md: 0.75rem\n  lg: 1rem\n  xl: 1.5rem\n  full: 9999px\nspacing:\n  gutter: 1.5rem\n  gutter-sm: 1rem\n  gutter-lg: 2rem\n  margin: 2rem\n  margin-sm: 1rem\n  margin-lg: 3rem\n  space-2xs: 0.125rem\n  space-xs: 0.25rem\n  space-sm: 0.5rem\n  space-md: 1rem\n  space-lg: 1.5rem\n  space-xl: 2.5rem\n  space-2xl: 4rem\n---\n\n## Brand \u0026 Style\n\nThis design system establishes a high-craft editorial aesthetic positioned at the intersection of architectural publishing, cartographic tradition, and computational spatial modeling. It bridges technical GIS precision with the tactile, deliberate presence of an archival monograph. \n\nTargeted at spatial computational engineers, lead architects, urban planners, and cadastral authorities, the interface evokes the intellectual gravitas of an architectural folio alongside the fluid capability of real-time 3D volumetric extrusion engines. The emotional tone is authoritative, quiet, and deeply analyticalâ€”avoiding standard software tropes in favor of editorial pacing, structured grid discipline, and purposeful material warmth.\n\nThe aesthetic fuses **Editorial Minimalism** with **Tactile Technical Architecture**:\n- Architectural drafting precision expressed through hairline division lines, dimension hashes, spatial axis annotations, and structural registration marks.\n- Editorial layouts defined by dynamic pacing: generous archival margins offset by compact, high-density spatial inspection data panels.\n- Restrained, purposeful feedback: light-reactive surfaces, subtle depth layering, and tactile data chips that echo drafted cartographic legends.\n\n## Colors\n\nThe palette balances warm, fibrous ground papers against deep botanical ink tones and precise blueprint accents:\n\n- **Foundation Canvas \u0026 Containers:** The base canvas operates on `#FBF9F4` (Parchment Base), layering upward into `#F5F1E8` (Surface Fill) and `#ECE6DA` (Recessed Wells \u0026 Inspector Panels). This warmth eliminates clinical screen glare during extended plan-vectorizing sessions.\n- **Structural Text \u0026 Line Work (Forest Greens):** Primary typography and structural linework leverage `#12281D` (Deepest Forest Ink) for titles and primary metrics, `#1B3B2B` (Core Structural Green) for interface boundaries and headers, and `#2B523E` (Muted Leaf) for secondary metadata.\n- **Architectural Accents (Cyan/Blue Blueprint Series):** `#3B728C` provides purposeful contrast for interactive states, viewport crosshairs, and spatial coordinates. `#B2D1E0` and `#D4E5ED` serve as background washes for selected floor plates, elevation slices, and bounding boxes.\n- **Precision Highlights (Citron Cadastre):** `#C3DD45` and `#D8E97C` function as surgical accents reserved for anchor nodes, snapping vertices, extrusion deltas, active floor levels, and live processing badges.\n- **Fine Linework:** Borders, structural grid marks, and dimension ticks employ semi-transparent dark greens: `#1B3B2B30` for structural divisions and `#2D4A3A1F` for fine interior container rules.\n\n## Typography\n\nThe typographic system pairs three specialized voices:\n\n1. **Editorial Serifs (`Newsreader`):** Applied to view headers, project nomenclature, and volume scale overviews. Display scales incorporate optical sizing to ensure calligraphic flourishes balance against strict engineering grids.\n2. **Technical Grotesque (`Hanken Grotesk`):** Serves as the primary communicative workhorse for control surfaces, long-form spatial property notes, tooltips, and modal dialogues. Clean geometry ensures high legibility on warm paper backdrops.\n3. **Drafting Monospace (`JetBrains Mono`):** Applied rigorously to GIS coordinates (Northing/Easting/Z-elevation), polygon point tables, spatial parsing tolerances, file hashes, and scale factors. All numerical values must render tabular numerals with zero ambiguity between characters.\n\n## Layout \u0026 Spacing\n\nThe layout is built upon an **Asymmetrical Drafting Studio Grid**:\n\n- **Desktop (1440px+):** A 16-column layout with 2rem margins and 1.5rem gutters. A fixed 360px editorial tool panel sits on the left, a fluid central viewport handles 2D vector overlays and 3D spatial projections, and a collapsible 320px cadastre inspector rests on the right.\n- **Tablet (768px - 1439px):** An 8-column layout with 1.5rem margins and 1rem gutters. Inspector panels convert to bottom-docked sliding sheets or overlay drawers to maximize the active viewport.\n- **Mobile (\u003c 768px):** A 4-column layout with 1rem margins. Complex floorplan vectoring simplifies to a single-stream view toggle (Plan Mode vs. Isometric 3D vs. Unit Spatial Registry).\n\nSpacing maintains rhythmic intervals based on 4px units. Component internals leverage `space-sm` (8px) and `space-md` (16px) for tight architectural density, while screen layouts feature expansive `space-xl` and `space-2xl` breathing room to reflect editorial monograph standards.\n\n## Elevation \u0026 Depth\n\nVisual hierarchy uses physical sheet-paper layering and subtle translucent stacking rather than aggressive artificial lighting:\n\n- **Level 0 (Site Ground):** Baseline `#FBF9F4` paper canvas. Completely unlifted, featuring fine `#1B3B2B15` drafting grid crosses at 40px intervals.\n- **Level 1 (Drafting Plates \u0026 Cards):** Flat `#F5F1E8` surfaces bordered by a hairline `#1B3B2B25` stroke. Elevation is articulated via a subtle tone shift and an ambient floor: `box-shadow: 0 1px 3px rgba(27, 59, 43, 0.04), 0 4px 12px rgba(27, 59, 43, 0.02)`.\n- **Level 2 (Active Toolbars \u0026 Inspection Overlays):** Floating tool palettes and floating cursor badges utilize 92% opaque `#FBF9F4` backed by `backdrop-filter: blur(8px)`. Border is defined by `#1B3B2B35`, paired with an architectural drop shadow: `box-shadow: 0 4px 16px rgba(27, 59, 43, 0.08), 0 1px 2px rgba(27, 59, 43, 0.04)`.\n- **Level 3 (Modals \u0026 3D Clipping Planes):** `#FBF9F4` foreground surrounded by a 1px `#1B3B2B` accent stroke, framed by a soft ambient shadow: `box-shadow: 0 16px 36px rgba(18, 40, 29, 0.12), 0 2px 6px rgba(18, 40, 29, 0.06)`.\n\n## Shapes\n\nThe design system pairs refined, organic container radii with surgical, straight-edge precision tools:\n\n- **Large Structural Containers (`rounded-2xl` / 16px):** Primary inspection panels, floating canvas windows, and project workspaces feature 16px radii. This softens the interface, echoing heavy archival book covers and premium physical portfolio sheets.\n- **Interactive Elements \u0026 Data Cells (`rounded-md` / 6px to 8px):** Buttons, inputs, and tabular cards use tighter roundedness, reinforcing instrumental precision.\n- **Micro Spatial Badges \u0026 Pointers (`rounded-sm` / 2px to 4px):** GIS labels, vertex coordinate flags, and elevation markers utilize minimal rounding, retaining the crisp character of hand-ruled survey markers.\n- **Architectural Sketched Cues:** Section boundaries frequently pair with faint hairline registration marks (`+` or `L`-brackets at 90-degree corners), celebrating the technical drafting process.\n\n## Components\n\n### Buttons\n- **Primary:** Solid `#1B3B2B` container, `#FBF9F4` typography, hairline `#12281D` edge. On hover, background shifts to `#2B523E` with a subtle elevation shift. Focus states show a 2px offset ring in `#C3DD45`.\n- **Secondary (Blueprint Style):** `#D4E5ED` surface, `#1B3B2B` typography, `#3B728C35` border. Transitions to `#B2D1E0` on hover.\n- **Tertiary / Ghost:** Transparent background, `#1B3B2B` text, framed by faint hairline dots. Highlights to `#F5F1E8` on hover.\n\n### Chips \u0026 Badges\n- **Spatial Status Chip:** Monospace text (`JetBrains Mono`, 11px) housed in a `#ECE6DA` capsule with a 1px `#1B3B2B25` border. Active spatial statuses (e.g., \"WALL RECONSTRUCTED\", \"PARCEL REGISTERED\") display a 6px solid `#C3DD45` indicator dot.\n- **Coordinate Tags:** Blue-tinted tags (`#D4E5ED`) carrying spatial axes (`X: 124.08 Y: 984.11 Z: +12.50m`) styled with fine `#3B728C40` borders.\n\n### Input Fields \u0026 Controls\n- **Numeric Spatial Field:** Set against `#ECE6DA` or `#FBF9F4`, styled with a crisp 1px `#1B3B2B30` border. Typographic entry uses `JetBrains Mono`. Focus activates a 1px solid `#1B3B2B` outline and a subtle inner shadow.\n- **Checkboxes \u0026 Radios:** Sharp-cornered 16px squares (`rounded-sm`), framed in `#1B3B2B`. Checked state fills `#1B3B2B` with a `#C3DD45` architectural diagonal tick or center square.\n\n### Cards \u0026 Grouping Structures\n- **Cadastral Parcel Card:** Outer shell utilizes `rounded-2xl` on `#F5F1E8`, encased in a `#1B3B2B20` stroke. Internal division headers utilize `label-caps` in `#2B523E`. Interior floor lists feature dotted horizontal separation rules (`#1B3B2B20`).\n\n### Domain-Specific Components\n- **Vertical Level Navigator (Floor-Stack Slider):** An elevation strip positioned adjacent to the 3D viewport. Shows physical floor plates stacked vertically. Active floor highlights with a `#C3DD45` left accent line and `#D4E5ED` pill fill, accompanied by precise AHD (Australian Height Datum / sea level) values.\n- **2D Plan Vector Anchor:** Interactive vector vertex rendered as a 6px hollow ring (`#1B3B2B`) that shifts to `#C3DD45` with crosshair extensions when snapped to an inferred boundary line.",
+                        "colorVariant":  "FIDELITY",
+                        "overridePrimaryColor":  "#1b3b2b",
+                        "overrideSecondaryColor":  "#3b728c",
+                        "overrideTertiaryColor":  "#c3dd45",
+                        "overrideNeutralColor":  "#f5f1e8",
+                        "spacingScale":  2,
+                        "typography":  {
+                                           "body-md":  {
+                                                           "fontFamily":  "Hanken Grotesk",
+                                                           "fontSize":  "14px",
+                                                           "fontWeight":  "400",
+                                                           "lineHeight":  "22px"
+                                                       },
+                                           "data-mono-sm":  {
+                                                                "fontFamily":  "JetBrains Mono",
+                                                                "fontSize":  "11px",
+                                                                "fontWeight":  "400",
+                                                                "lineHeight":  "16px",
+                                                                "letterSpacing":  "0.02em"
+                                                            },
+                                           "label-caps":  {
+                                                              "fontFamily":  "Hanken Grotesk",
+                                                              "fontSize":  "11px",
+                                                              "fontWeight":  "600",
+                                                              "lineHeight":  "14px",
+                                                              "letterSpacing":  "0.08em"
+                                                          },
+                                           "headline-md":  {
+                                                               "fontFamily":  "Newsreader",
+                                                               "fontSize":  "28px",
+                                                               "fontWeight":  "500",
+                                                               "lineHeight":  "36px",
+                                                               "letterSpacing":  "-0.01em"
+                                                           },
+                                           "headline-lg-mobile":  {
+                                                                      "fontFamily":  "Newsreader",
+                                                                      "fontSize":  "28px",
+                                                                      "fontWeight":  "500",
+                                                                      "lineHeight":  "36px",
+                                                                      "letterSpacing":  "-0.01em"
+                                                                  },
+                                           "body-sm":  {
+                                                           "fontFamily":  "Hanken Grotesk",
+                                                           "fontSize":  "12px",
+                                                           "fontWeight":  "400",
+                                                           "lineHeight":  "18px"
+                                                       },
+                                           "display-hero-mobile":  {
+                                                                       "fontFamily":  "Newsreader",
+                                                                       "fontSize":  "36px",
+                                                                       "fontWeight":  "400",
+                                                                       "lineHeight":  "44px",
+                                                                       "letterSpacing":  "-0.01em"
+                                                                   },
+                                           "headline-lg":  {
+                                                               "fontFamily":  "Newsreader",
+                                                               "fontSize":  "40px",
+                                                               "fontWeight":  "500",
+                                                               "lineHeight":  "48px",
+                                                               "letterSpacing":  "-0.02em"
+                                                           },
+                                           "data-mono":  {
+                                                             "fontFamily":  "JetBrains Mono",
+                                                             "fontSize":  "13px",
+                                                             "fontWeight":  "500",
+                                                             "lineHeight":  "18px",
+                                                             "letterSpacing":  "0.01em"
+                                                         },
+                                           "headline-sm":  {
+                                                               "fontFamily":  "Newsreader",
+                                                               "fontSize":  "20px",
+                                                               "fontWeight":  "600",
+                                                               "lineHeight":  "28px"
+                                                           },
+                                           "body-lg":  {
+                                                           "fontFamily":  "Hanken Grotesk",
+                                                           "fontSize":  "17px",
+                                                           "fontWeight":  "400",
+                                                           "lineHeight":  "26px",
+                                                           "letterSpacing":  "-0.005em"
+                                                       },
+                                           "display-hero":  {
+                                                                "fontFamily":  "Newsreader",
+                                                                "fontSize":  "56px",
+                                                                "fontWeight":  "400",
+                                                                "lineHeight":  "64px",
+                                                                "letterSpacing":  "-0.02em"
+                                                            }
+                                       },
+                        "spacing":  {
+                                        "space-2xl":  "4rem",
+                                        "gutter":  "1.5rem",
+                                        "space-2xs":  "0.125rem",
+                                        "margin":  "2rem",
+                                        "space-sm":  "0.5rem",
+                                        "space-md":  "1rem",
+                                        "margin-sm":  "1rem",
+                                        "margin-lg":  "3rem",
+                                        "space-lg":  "1.5rem",
+                                        "space-xl":  "2.5rem",
+                                        "gutter-lg":  "2rem",
+                                        "gutter-sm":  "1rem",
+                                        "space-xs":  "0.25rem"
+                                    },
+                        "headlineFontFamily":  "Newsreader",
+                        "bodyFontFamily":  "Hanken Grotesk",
+                        "labelFontFamily":  "JetBrains Mono"
+                    },
+    "screenInstances":  [
+                            {
+                                "id":  "1e2198a991c44c408e1032c3e0437f4e",
+                                "sourceScreen":  "projects/5216024575605869770/screens/1e2198a991c44c408e1032c3e0437f4e",
+                                "x":  2444,
+                                "width":  1280,
+                                "height":  3253
+                            },
+                            {
+                                "id":  "523eddd053f54cf59fc7c18af4e7d045",
+                                "sourceScreen":  "projects/5216024575605869770/screens/523eddd053f54cf59fc7c18af4e7d045",
+                                "y":  5109,
+                                "width":  1280,
+                                "height":  1380
+                            },
+                            {
+                                "id":  "assets_db942ece20d649388d002e0398b9af69",
+                                "x":  844,
+                                "width":  960,
+                                "height":  540,
+                                "sourceAsset":  "assets/db942ece20d649388d002e0398b9af69",
+                                "type":  "DESIGN_SYSTEM_INSTANCE"
+                            },
+                            {
+                                "id":  "b80e324f97424caaba640338380bc8f4",
+                                "sourceScreen":  "projects/5216024575605869770/screens/b80e324f97424caaba640338380bc8f4",
+                                "x":  1868,
+                                "width":  512,
+                                "height":  504
+                            },
+                            {
+                                "id":  "e33710cc8d254bcc8cf6e95da5c47eb8",
+                                "sourceScreen":  "projects/5216024575605869770/screens/e33710cc8d254bcc8cf6e95da5c47eb8",
+                                "y":  3563,
+                                "width":  1280,
+                                "height":  1290
+                            },
+                            {
+                                "id":  "e82d3029-e749-4056-bfcf-8181212550db",
+                                "sourceScreen":  "projects/5216024575605869770/screens/9442582821009448775",
+                                "width":  780,
+                                "height":  1768,
+                                "type":  "SCREEN_INSTANCE"
+                            },
+                            {
+                                "id":  "eeed33333e084cfea197445610c96c98",
+                                "sourceScreen":  "projects/5216024575605869770/screens/eeed33333e084cfea197445610c96c98",
+                                "y":  8431,
+                                "width":  1280,
+                                "height":  1426
+                            },
+                            {
+                                "id":  "f9c3bd2fb81f40a49052679c0f1c514e",
+                                "sourceScreen":  "projects/5216024575605869770/screens/f9c3bd2fb81f40a49052679c0f1c514e",
+                                "y":  6745,
+                                "width":  1280,
+                                "height":  1430
+                            }
+                        ],
+    "metadata":  {
+                     "userRole":  "OWNER"
+                 }
+}
