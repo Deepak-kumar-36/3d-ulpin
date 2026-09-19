@@ -20,3 +20,4 @@ cache/
 # OS
 .DS_Store
 Thumbs.db
+backend/data/ulpin.db
