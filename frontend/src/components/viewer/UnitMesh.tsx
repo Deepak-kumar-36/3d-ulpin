@@ -131,11 +131,11 @@ export function UnitMesh({
     }
     
     if (meshRef.current) {
-      // Tactile physical lift and scale when hovered or selected
-      const targetScale = isSelected ? 1.02 : isHovered ? 1.015 : 1.0;
+      // Tactile physical lift and scale when hovered or selected (refined for subtle architectural feel)
+      const targetScale = isSelected ? 1.015 : isHovered ? 1.008 : 1.0;
       meshRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 8 * delta);
       
-      const targetY = isSelected ? 0.22 : isHovered ? 0.12 : 0.0;
+      const targetY = isSelected ? 0.15 : isHovered ? 0.08 : 0.0;
       meshRef.current.position.y = THREE.MathUtils.lerp(meshRef.current.position.y, targetY, 8 * delta);
     }
   });
