@@ -31,4 +31,8 @@ PLAN_CONFIGS: dict[str, dict] = {
     "L3": {
         "close_frac": 0.06,
     },
+    # Real terminal has diverse room sizes (small shops & offices up to large baggage rooms)
+    "real_terminal": {
+        "min_area_frac": 0.0006,
+    },
 }

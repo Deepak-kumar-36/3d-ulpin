@@ -21,6 +21,13 @@ Generated via `make_plans.py` with realistic ~70px door openings, structural col
 | `L2` | `close_frac=0.06` | 6 | ✅ Pass | 6 units: Office A, Office B, Hall, Meeting, Pantry, Studio. Noise and gradient handled cleanly; `close_frac=0.06` seals ~70px doors. |
 | `L3` | `close_frac=0.06` | 6 | ✅ Pass | 6 units: Store, Open Workspace, Lounge, Hall, Lab, Server Rm. Columns inside Open Workspace handled; `close_frac=0.06` seals door gaps cleanly. |
 
+## Real Plans
+
+| floor_id | Config Overrides | Units | Status | Notes |
+|----------|-----------------|-------|--------|-------|
+| `real_terminal` | `min_area_frac=0.0006` | 11 | ✅ Pass | Cleveland Union Terminal. Detects Baggage Room, Trucking Passage, Express Facilities, Mechanical Equipment, Lunch Room, Kitchen/Dining, Parcel Room, and Lobby rooms. Open concourses correctly excluded as exterior/circulation space. |
+| `real_office` | defaults | 7 | ✅ Pass | Facility floor plan. Cleaned artificial red highlight box to reveal full Office Space suite. Detects Office Space, Air Lock, VCF, and individual office units. Open bays correctly flood-filled. |
+
 
 ## Config Reference
 
