@@ -1,232 +1,162 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import ScrollReveal from '../components/ui/ScrollReveal';
+import { BuildingHeroPreview } from '../components/viewer/BuildingHeroPreview';
 
 export default function LandingPage() {
+  const containerVariants: any = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.3,
+      }
+    }
+  };
+
+  const itemVariants: any = {
+    hidden: { opacity: 0, y: 30, filter: 'blur(10px)' },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      filter: 'blur(0px)',
+      transition: { duration: 0.9, ease: "easeOut" }
+    }
+  };
+
   return (
-    <div className="flex flex-col w-full">
-      {/* SECTION 1: HERO (Slide 1) */}
-      <section className="relative w-full min-h-[calc(100vh-64px)] flex flex-col border-b border-outline">
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 relative">
-          
-          {/* Left Column */}
-          <div className="lg:col-span-7 flex flex-col justify-between p-8 md:p-12 border-r border-outline relative z-10 bg-surface/50 backdrop-blur-sm">
-            
+    <div className="flex flex-col w-full min-h-[calc(100vh-64px)] justify-between relative overflow-hidden">
+      
+      {/* Abstract Background Elements for extra animation */}
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 0.05, scale: 1 }}
+        transition={{ duration: 4, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+        className="absolute top-1/4 -left-1/4 w-[800px] h-[800px] bg-primary rounded-full blur-[120px] pointer-events-none"
+      />
+      <motion.div 
+        initial={{ opacity: 0, scale: 1.2 }}
+        animate={{ opacity: 0.03, scale: 1 }}
+        transition={{ duration: 5, repeat: Infinity, repeatType: "reverse", ease: "easeInOut", delay: 1 }}
+        className="absolute bottom-0 -right-1/4 w-[600px] h-[600px] bg-[#68a2b8] rounded-full blur-[100px] pointer-events-none"
+      />
+
+      {/* Primary Focused Architectural Section */}
+      <section className="flex-1 w-full max-w-7xl mx-auto px-6 py-8 md:py-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+        
+        {/* Left Column: Product Definition & Actions */}
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="lg:col-span-6 flex flex-col gap-6"
+        >
+          {/* Contextual Label */}
+          <motion.div variants={itemVariants} className="flex items-center gap-3 font-mono text-[10px] tracking-widest uppercase text-primary">
+            <motion.span 
+              initial={{ scaleX: 0 }} 
+              animate={{ scaleX: 1 }} 
+              transition={{ delay: 0.6, duration: 0.8, ease: "easeOut" }} 
+              className="w-8 h-[2px] bg-primary origin-left shadow-[0_0_10px_rgba(195,221,69,0.8)]" 
+            />
+            <span>CADASTRE ENGINE // 2D TO 3D STRATIFIED PROPERTY MAPPING</span>
+          </motion.div>
+
+          {/* Verta Wordmark Image in Hero for Maximum Visual Impact */}
+          <motion.div variants={itemVariants} className="relative py-2">
+            <motion.img 
+              src="/verta-wordmark.jpg" 
+              alt="Verta" 
+              className="w-full max-w-[320px] md:max-w-[420px] object-contain drop-shadow-[0_0_25px_rgba(255,255,255,0.08)] pointer-events-none"
+              whileHover={{ scale: 1.02, filter: 'drop-shadow(0 0 35px rgba(255,255,255,0.15))' }}
+              transition={{ duration: 0.4 }}
+            />
+            {/* Animated Glitch/Glow behind logo */}
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 2.2, duration: 0.8 }}
-              className="flex items-center gap-4 text-on-surface-variant font-mono text-[10px] tracking-widest uppercase mb-12"
+              animate={{ opacity: [0.1, 0.3, 0.1] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute inset-0 bg-primary/20 blur-[50px] -z-10 mix-blend-screen rounded-full"
+            />
+          </motion.div>
+
+          {/* Strong Headline */}
+          <motion.h2 variants={itemVariants} className="font-headline text-[24px] md:text-[32px] font-medium tracking-tight text-on-surface leading-snug">
+            Automated 3D Vertical Property Mapping from 2D Building Plans.
+          </motion.h2>
+
+          {/* Short PRD-Aligned Explanation */}
+          <motion.p variants={itemVariants} className="font-body text-[15px] md:text-[17px] text-on-surface-variant leading-relaxed max-w-xl">
+            Convert architectural building floor plans into validated, uniquely-identified 3D property units. Bridge flat 2D land parcel footprints with vertical multi-strata ownership volumes.
+          </motion.p>
+
+          {/* Core Technical Actions */}
+          <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-4 pt-4">
+            <Link 
+              to="/project/demo/viewer" 
+              className="px-8 py-4 bg-primary text-on-primary font-mono text-sm tracking-widest uppercase font-bold rounded-lg hover:bg-primary/90 transition-all duration-300 flex items-center gap-3 shadow-[0_0_20px_rgba(195,221,69,0.3)] hover:shadow-[0_0_35px_rgba(195,221,69,0.5)] hover:-translate-y-1 cursor-pointer group relative overflow-hidden"
             >
-              <span className="w-8 h-[1px] bg-outline"></span>
-              <span>TRACK 02</span>
-              <span className="text-on-surface font-semibold">URBAN PLANNING</span>
-            </motion.div>
+              {/* Shine effect on button */}
+              <motion.div 
+                animate={{ x: ['-100%', '200%'] }}
+                transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 3, ease: "easeInOut" }}
+                className="absolute top-0 bottom-0 w-1/3 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12"
+              />
+              <span className="relative z-10">ENTER 3D CADASTRE</span>
+              <span className="material-icon text-[18px] relative z-10 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </Link>
 
-            <motion.div
-              initial={{ opacity: 0, filter: 'blur(10px)' }}
-              animate={{ opacity: 1, filter: 'blur(0px)' }}
-              transition={{ delay: 2.4, duration: 1 }}
-              className="flex flex-col gap-8 mb-auto"
+            <Link 
+              to="/project/demo/upload" 
+              className="px-8 py-4 bg-surface/80 backdrop-blur-md border border-outline hover:border-primary/50 text-on-surface font-mono text-sm tracking-widest uppercase rounded-lg hover:bg-surface-container-highest transition-all duration-300 flex items-center gap-3 cursor-pointer group hover:-translate-y-1 hover:shadow-cadastre"
             >
-              <div className="relative w-fit">
-                <h1 className="font-display text-[100px] md:text-[180px] font-bold leading-[0.85] tracking-tighter text-on-surface">
-                  Verta
-                </h1>
-                <span className="absolute top-2 -right-6 font-mono text-[12px] text-on-surface-variant">TM</span>
-              </div>
-              
-              <div className="flex flex-col gap-6 mt-4">
-                <h2 className="font-headline text-[24px] md:text-[32px] tracking-[0.2em] leading-snug font-medium text-on-surface">
-                  BEYOND PARCELS.<br />INTO POSSIBILITIES.
-                </h2>
-                <p className="font-body text-[18px] md:text-[22px] text-on-surface-variant max-w-xl font-light">
-                  Automated 3D Vertical Property Mapping<br />from 2D Building Plans.
-                </p>
-                
-                <div className="flex items-center gap-4 mt-4">
-                  <Link to="/project/demo/viewer" className="px-8 py-4 bg-on-surface text-surface font-semibold tracking-wider hover:bg-tertiary transition-colors">
-                    ENTER 3D CADASTRE
-                  </Link>
-                  <Link to="/project/new/upload" className="px-8 py-4 border border-outline hover:bg-surface-container-high transition-colors tracking-wider text-on-surface">
-                    UPLOAD PLAN
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
+              <span>UPLOAD PLAN</span>
+              <span className="material-icon text-[18px] group-hover:-translate-y-1 transition-transform">upload_file</span>
+            </Link>
+          </motion.div>
 
-            {/* Team Block */}
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 2.6, duration: 0.8 }}
-              className="mt-12 pt-8 border-t border-outline flex flex-col gap-4"
-            >
-              <div className="flex items-center gap-4 text-on-surface-variant font-mono text-[10px] tracking-widest uppercase">
-                <span>TEAM</span>
-                <span className="w-8 h-[1px] bg-outline"></span>
-              </div>
-              <h3 className="font-display text-[28px] text-on-surface">Script in Shorts</h3>
-              <p className="font-mono text-[12px] text-on-surface-variant">
-                Deepak Kumar &nbsp;|&nbsp; Adarsh Kumar &nbsp;|&nbsp; Vishesh Bharti
-              </p>
-            </motion.div>
-
-          </div>
-
-          {/* Right Column (3D Visual) */}
-          <div className="lg:col-span-5 relative flex items-center justify-center p-8 bg-surface-container overflow-hidden border-l border-outline/30">
-            {/* The wireframe/building graphic would go here. We use an abstract CSS representation for now */}
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 2.5, duration: 1.5, ease: 'easeOut' }}
-              className="w-full h-[600px] border border-outline/50 flex items-center justify-center relative bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-center"
-            >
-              <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent z-10" />
-              
-              <div className="flex flex-col gap-12 z-20 absolute right-8 font-mono text-[10px] tracking-widest text-on-surface-variant uppercase items-end">
-                <span className="flex items-center gap-4"><span className="w-16 border-t border-dotted border-outline"></span>ROOFTOP</span>
-                <span className="flex items-center gap-4"><span className="w-16 border-t border-dotted border-outline"></span>F3</span>
-                <span className="flex items-center gap-4"><span className="w-16 border-t border-dotted border-outline"></span>F2</span>
-                <span className="flex items-center gap-4"><span className="w-16 border-t border-dotted border-outline"></span>F1</span>
-                <span className="flex items-center gap-4"><span className="w-16 border-t border-dotted border-outline"></span>G</span>
-                <span className="flex items-center gap-4"><span className="w-16 border-t border-dotted border-outline"></span>B1</span>
-              </div>
-
-              <div className="absolute bottom-12 right-12 text-right z-20">
-                <p className="font-mono text-[12px] tracking-[0.15em] leading-loose text-on-surface">
-                  SAME<br/>FOOTPRINT.<br/>A HIGHER<br/>PERSPECTIVE.
-                </p>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-
-        {/* Bottom Bar */}
-        <div className="w-full h-16 border-t border-outline flex items-center justify-between px-6 font-mono text-[10px] tracking-widest uppercase text-on-surface-variant">
-          <div className="flex items-center gap-8">
-            <span className="material-icon text-[16px]">arrow_forward</span>
-            <span>IDEAS</span>
-            <span>PEOPLE</span>
-            <span>IMPACT</span>
-          </div>
-          <span className="hidden md:inline">A 24-HOUR HACKATHON FOR A BETTER TOMORROW</span>
-        </div>
-      </section>
-
-      {/* SECTION 2: THE PROBLEM (Slide 2) */}
-      <section className="w-full min-h-screen flex flex-col">
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12">
-          
-          {/* Left Column: Typography */}
-          <div className="lg:col-span-5 flex flex-col p-8 md:p-12 border-r border-outline relative">
-            <ScrollReveal direction="up" delay={0}>
-              <div className="flex items-center gap-4 text-on-surface-variant font-mono text-[10px] tracking-widest uppercase mb-16">
-                <span className="w-8 h-[1px] bg-outline"></span>
-                <span>01 / 08</span>
-                <span className="text-on-surface font-semibold">THE PROBLEM</span>
-              </div>
-
-              <div className="flex flex-col gap-6">
-                <h2 className="font-display text-[64px] md:text-[100px] font-bold leading-[0.9] tracking-tight">
-                  CITIES <br/>ARE <span className="text-tertiary">3D.</span>
-                </h2>
-                <h3 className="font-headline text-[20px] md:text-[24px] tracking-[0.15em] leading-snug font-medium text-on-surface mt-4">
-                  BUT PROPERTY RECORDS<br/>ARE STILL MOSTLY 2D.
-                </h3>
-                <p className="font-body text-[18px] text-on-surface-variant leading-relaxed max-w-md mt-6">
-                  Traditional land records capture where the property is, but not which property unit exists on which floor, at which elevation.
-                </p>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal direction="up" delay={200} className="mt-auto pt-16">
-              <div className="flex items-center gap-4 mb-4">
-                 <span className="w-8 h-[1px] bg-outline"></span>
-              </div>
-              <p className="font-mono text-[14px] tracking-widest uppercase text-on-surface-variant">THE RESULT?</p>
-              <p className="font-mono text-[16px] tracking-widest uppercase text-on-surface mt-2">A CRITICAL REPRESENTATION GAP.</p>
-            </ScrollReveal>
-          </div>
-
-          {/* Middle Column: 2D */}
-          <div className="lg:col-span-3 flex flex-col p-8 md:p-12 border-r border-outline bg-surface-container-low">
-             <ScrollReveal direction="up" delay={100} className="flex flex-col h-full">
-               <h3 className="font-display text-[64px] font-bold leading-none mb-4">2D</h3>
-               <p className="font-mono text-[12px] tracking-widest uppercase text-on-surface mb-2">A FLAT VIEW</p>
-               <p className="font-mono text-[10px] tracking-widest uppercase text-on-surface-variant mb-12">SHOWS THE PARCEL.<br/>NOT THE PEOPLE.</p>
-               
-               <div className="flex-1 w-full border border-outline relative bg-surface-container flex items-center justify-center overflow-hidden grayscale opacity-70">
-                 {/* Fake Satellite Map */}
-                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/shattered-island.png')] mix-blend-overlay"></div>
-                 {/* 2D Polygon */}
-                 <div className="w-48 h-48 border-2 border-tertiary bg-tertiary/20 transform rotate-12 z-10 rounded-sm shadow-[0_0_20px_rgba(141,163,153,0.3)]"></div>
-               </div>
-
-               <div className="mt-8">
-                 <p className="font-mono text-[12px] tracking-widest uppercase text-on-surface mb-2">PARCEL BOUNDARY</p>
-                 <p className="font-mono text-[10px] tracking-widest uppercase text-on-surface-variant">A SINGLE SHAPE FOR A COMPLEX REALITY.</p>
-               </div>
-             </ScrollReveal>
-          </div>
-
-          {/* Right Column: 3D */}
-          <div className="lg:col-span-4 flex flex-col p-8 md:p-12 bg-surface-container-low relative">
-            <div className="absolute top-8 right-8 text-right font-mono text-[10px] tracking-widest uppercase text-on-surface-variant">
-              TRACK 02<br/><span className="text-on-surface">URBAN PLANNING</span>
+          {/* Key Pipeline Stages */}
+          <motion.div variants={itemVariants} className="pt-8 border-t border-outline/30 grid grid-cols-3 gap-6">
+            <div className="flex flex-col gap-2">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-primary">01 / DETECT</span>
+              <span className="font-body text-xs text-on-surface-variant">2D Room Boundary Polygons</span>
             </div>
+            <div className="flex flex-col gap-1">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-primary">02 / EXTRUDE</span>
+              <span className="font-body text-xs text-on-surface-variant">3D Volumes & Elevation Stacking</span>
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-primary">03 / VALIDATE</span>
+              <span className="font-body text-xs text-on-surface-variant">Overlap & Containment Checks</span>
+            </div>
+          </motion.div>
+        </motion.div>
 
-            <ScrollReveal direction="up" delay={200} className="flex flex-col h-full mt-16 md:mt-0">
-               <h3 className="font-display text-[64px] font-bold leading-none mb-4 text-on-surface">3D</h3>
-               <p className="font-mono text-[12px] tracking-widest uppercase text-on-surface mb-2">A TRUE PICTURE</p>
-               <p className="font-mono text-[10px] tracking-widest uppercase text-on-surface-variant mb-12">SHOWS EVERY UNIT.<br/>ON EVERY FLOOR.</p>
-               
-               <div className="flex-1 w-full border border-outline relative bg-surface-container flex items-center justify-center overflow-hidden">
-                 {/* Exploded 3D view abstract representation */}
-                 <div className="relative w-full h-full flex flex-col justify-center items-center gap-8 py-12">
-                   {[
-                     { label: 'ROOFTOP', type: '' },
-                     { label: 'F3', type: 'Residential' },
-                     { label: 'F2', type: 'Residential' },
-                     { label: 'F1', type: 'Commercial' },
-                     { label: 'B1', type: 'Parking / Storage' },
-                   ].map((f, i) => (
-                     <div key={i} className="relative w-48 h-12 border border-tertiary/40 bg-surface flex items-center justify-center transform -skew-y-12 hover:bg-tertiary/10 transition-colors cursor-pointer group">
-                       <div className="absolute -right-24 top-1/2 -translate-y-1/2 flex flex-col">
-                         <span className="font-mono text-[10px] tracking-widest uppercase text-on-surface flex items-center gap-2">
-                           <span className="w-8 border-t border-dotted border-outline group-hover:border-tertiary"></span>
-                           {f.label}
-                         </span>
-                         {f.type && <span className="font-mono text-[8px] tracking-widest text-on-surface-variant ml-10 mt-1">{f.type}</span>}
-                       </div>
-                     </div>
-                   ))}
-                   {/* Ghosting connecting lines */}
-                   <div className="absolute top-1/4 bottom-1/4 left-1/2 w-48 -ml-24 border-x border-dashed border-outline-variant/30 transform -skew-y-12 pointer-events-none"></div>
-                 </div>
-               </div>
-
-               <div className="mt-8">
-                 <p className="font-mono text-[12px] tracking-widest uppercase text-on-surface mb-2">VERTICAL PROPERTY UNITS</p>
-                 <p className="font-mono text-[10px] tracking-widest uppercase text-on-surface-variant">A CLEARER, FAIRER, SMARTER URBAN FUTURE.</p>
-               </div>
-            </ScrollReveal>
-          </div>
-        </div>
-
-        {/* Bottom Bar */}
-        <div className="w-full h-16 border-t border-outline flex items-center justify-between px-6 font-mono text-[10px] tracking-widest uppercase text-on-surface-variant bg-surface">
-          <div className="flex items-center gap-8">
-            <span className="material-icon text-[16px]">arrow_forward</span>
-            <span className="hover:text-on-surface cursor-pointer">PROBLEM</span>
-            <span className="hover:text-on-surface cursor-pointer">SOLUTION</span>
-            <span className="hover:text-on-surface cursor-pointer">PROTOTYPE</span>
-            <span className="hover:text-on-surface cursor-pointer">IMPACT</span>
-          </div>
-          <span className="hidden md:inline">VERTA &nbsp;/&nbsp; SCRIPT IN SHORTS</span>
-        </div>
+        {/* Right Column: Live Interactive 3D Architectural Cutaway */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          className="lg:col-span-6 h-[480px] md:h-[560px] w-full"
+        >
+          <BuildingHeroPreview />
+        </motion.div>
       </section>
+
+      {/* Minimal Technical Telemetry Bar */}
+      <footer className="w-full border-t border-outline/30 bg-surface/80 backdrop-blur-md px-6 py-3 flex flex-wrap items-center justify-between font-mono text-[10px] tracking-wider uppercase text-on-surface-variant">
+        <div className="flex items-center gap-6">
+          <span className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+            <span className="text-on-surface">DEMO PARCEL: DL-9821-2024</span>
+          </span>
+          <span className="hidden sm:inline">COORDINATE SYSTEM: LOCAL CARTESIAN</span>
+          <span className="hidden md:inline">STRATA: B01 TO F05</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <span>29 3D VOLUMES DETECTED</span>
+          <span className="text-primary font-semibold">1 VALIDATION ANOMALY</span>
+        </div>
+      </footer>
     </div>
   );
 }

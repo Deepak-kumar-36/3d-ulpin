@@ -1,10 +1,10 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Grid, OrthographicCamera, Bounds } from '@react-three/drei';
+import { Grid, CameraControls, BakeShadows } from '@react-three/drei';
 import type { Project } from '../../data/types';
 import { FloorGroup } from './FloorGroup';
 import { getFloorUnits } from '../../data/mockProject';
-import { MATERIALS } from '../../viewer/scene';
+import { COMMON_MATERIALS } from '../../viewer/scene';
 import * as THREE from 'three';
 import ErrorBoundary from '../ui/ErrorBoundary';
 
@@ -15,8 +15,11 @@ interface Props {
   onHoverUnit: (id: string | null) => void;
   onClickUnit: (id: string) => void;
   activeFloorId: string | 'all';
+  onSelectFloor?: (id: string | 'all') => void;
   visibleLayers: Record<string, boolean>;
-  projectionMode: 'isometric' | 'exploded' | 'xray';
+  interactionMode: 'building' | 'exploration';
+  onEnterExploration: () => void;
+  projectionMode?: 'isometric' | 'exploded' | 'xray';
 }
 
 function Scene({
@@ -26,10 +29,13 @@ function Scene({
   onHoverUnit,
   onClickUnit,
   activeFloorId,
+  onSelectFloor,
   visibleLayers,
-  projectionMode,
+  interactionMode,
+  onEnterExploration,
+  projectionMode = 'isometric',
 }: Props) {
-  // Ground Parcel Line
+  // Ground Parcel Boundary Line (at elevation 0.0)
   const parcelGeometry = useMemo(() => {
     const shape = new THREE.Shape();
     const pb = project.parcel_boundary;
@@ -41,21 +47,15 @@ function Scene({
     }
     const points = shape.getPoints();
     const geo = new THREE.BufferGeometry().setFromPoints(points);
-    geo.rotateX(Math.PI / 2); // Lay flat
-    
-    // Create actual line object so we can compute distances for dashed lines
-    const lineObj = new THREE.Line(geo, MATERIALS.parcel);
-    lineObj.computeLineDistances();
-    return lineObj;
+    geo.rotateX(Math.PI / 2); // Lay flat on XZ plane
+    return geo;
   }, [project.parcel_boundary]);
 
-  // Center building to origin by bounding box
+  // Center building footprint dynamically based on bounding box
   const centerOffset = useMemo(() => {
-    if (!project.floors || project.floors.length === 0) return new THREE.Vector3(0, 0, 0);
+    if (!project.floors || project.floors.length === 0) return new THREE.Vector3(-15, 0, -13);
     
-    // Find min and max x,y of footprints
     let minX = Infinity, minZ = Infinity, maxX = -Infinity, maxZ = -Infinity;
-    
     for (const f of project.floors) {
       const fp = f.footprint;
       if (fp && fp.length > 0) {
@@ -67,114 +67,204 @@ function Scene({
         }
       }
     }
-    
-    if (minX === Infinity) return new THREE.Vector3(0, 0, 0); // fallback
-    
+    if (minX === Infinity) return new THREE.Vector3(-15, 0, -13);
     const cx = (minX + maxX) / 2;
     const cz = (minZ + maxZ) / 2;
     return new THREE.Vector3(-cx, 0, -cz);
   }, [project.floors]);
 
   return (
-    <group position={centerOffset}>
-      {/* Lighting for the dark theme blueprint look */}
-      <ambientLight intensity={0.4} />
-      <directionalLight position={[10, 20, 10]} intensity={1.5} />
-      <directionalLight position={[-10, 10, -10]} intensity={0.5} />
+    <group 
+      position={centerOffset}
+      onClick={() => {
+        if (interactionMode === 'building') {
+          onEnterExploration();
+        }
+      }}
+    >
+      {/* Dynamic Lighting Rig */}
+      <ambientLight intensity={0.6} />
+      <directionalLight 
+        position={[35, 60, 40]} 
+        intensity={1.2} 
+        castShadow 
+        shadow-mapSize={[2048, 2048]}
+        shadow-camera-left={-30}
+        shadow-camera-right={30}
+        shadow-camera-top={30}
+        shadow-camera-bottom={-30}
+      />
+      <directionalLight position={[-30, 40, -25]} intensity={0.4} color="#8fb0a1" />
+      <hemisphereLight intensity={0.3} color="#ffffff" groundColor="#06080a" />
 
-      <Bounds fit clip observe margin={1.2}>
-        {/* Ground Parcel */}
-        {visibleLayers.boundary && (
-          <primitive object={parcelGeometry} />
-        )}
+      {/* Cadastre Property Parcel Boundary on Ground */}
+      {visibleLayers.cadastre_boundary && parcelGeometry && (
+        <primitive object={new THREE.LineLoop(parcelGeometry, COMMON_MATERIALS.parcelBoundary)} />
+      )}
 
-        {/* Floors */}
-        {project.floors.map((floor, index) => {
-          const isVisible = activeFloorId === 'all' || activeFloorId === floor.id;
-          
-          // Basement visibility check
-          if (floor.floor_number < 0 && !visibleLayers.basement) return null;
+      {/* Floors with full architectural solids */}
+      {project.floors.map((floor) => {
+        const isFloorActive = activeFloorId === 'all' || activeFloorId === floor.id;
+        
+        let explodeOffset = 0;
+        if (projectionMode === 'exploded' && isFloorActive) {
+          explodeOffset = floor.floor_number * 3.5;
+        }
 
-          // Exploded mode offset calculation
-          let explodeOffset = 0;
-          if (projectionMode === 'exploded') {
-            explodeOffset = index * 4;
-          }
-
-          return (
-            <FloorGroup
-              key={floor.id}
-              floor={floor}
-              units={getFloorUnits(project, floor.floor_number)}
-              isVisible={isVisible}
-              selectedUnitId={selectedUnitId}
-              hoveredUnitId={hoveredUnitId}
-              onHoverUnit={onHoverUnit}
-              onClickUnit={onClickUnit}
-              explodeOffset={explodeOffset}
-              visibleLayers={visibleLayers}
-              projectionMode={projectionMode}
-            />
-          );
-        })}
-      </Bounds>
+        return (
+          <FloorGroup
+            key={floor.id}
+            floor={floor}
+            units={getFloorUnits(project, floor.floor_number)}
+            isVisible={true}
+            isFloorActive={isFloorActive}
+            selectedUnitId={selectedUnitId}
+            hoveredUnitId={hoveredUnitId}
+            onHoverUnit={onHoverUnit}
+            onClickUnit={onClickUnit}
+            onSelectFloor={(fId) => onSelectFloor?.(fId)}
+            explodeOffset={explodeOffset}
+            showFloorLabel={true}
+            visibleLayers={visibleLayers}
+            projectionMode={projectionMode}
+          />
+        );
+      })}
       
-      {/* Drafting grid */}
+      {/* Architectural Ground Drafting Grid */}
       <Grid 
         infiniteGrid 
-        fadeDistance={50} 
-        sectionColor="#333333" 
-        sectionThickness={1}
-        cellColor="#111111"
-        cellThickness={0.5}
-        position={[0, -0.1, 0]}
+        fadeDistance={65} 
+        sectionColor="#26332d" 
+        sectionThickness={1.2}
+        cellColor="#121815"
+        cellThickness={0.6}
+        position={[15, -0.05, 13]}
       />
     </group>
   );
 }
 
 export default function Viewport(props: Props) {
-  // Check if we are running in demo mode
   const isDemo = !!(props.project as any)._isDemoData;
+  const cameraControlsRef = useRef<CameraControls>(null);
+
+  // Smoothly glide camera when active floor or interaction mode changes
+  useEffect(() => {
+    if (!cameraControlsRef.current) return;
+    
+    if (props.interactionMode === 'building') {
+      cameraControlsRef.current.setLookAt(30, 26, 30, 0, 8, 0, true);
+    } else {
+      if (props.activeFloorId === 'all') {
+        cameraControlsRef.current.setLookAt(28, 22, 28, 0, 8, 0, true);
+      } else {
+        const floor = props.project.floors.find(f => f.id === props.activeFloorId);
+        if (floor) {
+          const elev = floor.elevation_base;
+          cameraControlsRef.current.setLookAt(
+            22, 
+            elev + 15, 
+            22, 
+            0, 
+            elev + 1.5, 
+            0, 
+            true
+          );
+        }
+      }
+    }
+  }, [props.activeFloorId, props.interactionMode, props.project]);
+
+  // When a unit is selected, smoothly frame it
+  useEffect(() => {
+    if (!props.selectedUnitId || !cameraControlsRef.current) return;
+    const unit = props.project.units.find(u => u.id === props.selectedUnitId);
+    if (unit) {
+      const elev = unit.elevation;
+      cameraControlsRef.current.setLookAt(
+        18,
+        elev + 12,
+        18,
+        0,
+        elev + 2,
+        0,
+        true
+      );
+    }
+  }, [props.selectedUnitId, props.project.units]);
 
   return (
-    <div className="w-full h-full relative bg-surface-container rounded-xl overflow-hidden shadow-cadastre">
+    <div className="w-full h-full relative bg-surface-container rounded-xl overflow-hidden shadow-cadastre group">
       {/* HUD overlay */}
-      <div className="absolute top-4 left-4 right-4 z-10 flex flex-col pointer-events-none gap-2">
-        <div className="flex justify-between items-start">
-          <div className="pointer-events-auto bg-surface/90 backdrop-blur-md px-4 py-2 rounded shadow-cadastre-sm flex items-center gap-2">
+      <div className="absolute top-4 left-4 right-4 z-10 flex justify-between items-center pointer-events-none">
+        <div className="flex items-center gap-3">
+          <div className="pointer-events-auto bg-surface/90 backdrop-blur-md px-4 py-2 rounded shadow-cadastre-sm flex items-center gap-3 border border-outline/20">
             <span className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" />
-            <span className="font-label-caps text-primary tracking-wider uppercase">
-              {props.activeFloorId === 'all' ? 'FULL CADASTRE VIEW' : `STRATUM: ${props.activeFloorId.replace('floor-', '').toUpperCase()}`}
-            </span>
+            <div className="flex flex-col">
+              <span className="font-label-caps text-primary tracking-wider uppercase text-[10px]">
+                {props.interactionMode === 'building' 
+                  ? 'MACRO BUILDING OVERVIEW' 
+                  : props.activeFloorId === 'all' 
+                    ? 'FULL VERTICAL CADASTRE' 
+                    : `ACTIVE STRATUM: ${props.activeFloorId.replace('floor-', '').toUpperCase()}`}
+              </span>
+              <span className="font-mono text-[9px] text-on-surface-variant">
+                {props.interactionMode === 'building'
+                  ? 'Click building to begin floor inspection'
+                  : 'Scroll mouse wheel to traverse strata'}
+              </span>
+            </div>
           </div>
+
           {isDemo && (
-             <div className="bg-error/20 text-error px-2 py-1 rounded text-xs font-mono border border-error/30 uppercase pointer-events-auto">
-               DEMO DATA
-             </div>
+            <div className="pointer-events-auto bg-error/20 text-error px-2 py-1 rounded text-xs font-mono border border-error/30 uppercase">
+              DEMO DATA
+            </div>
+          )}
+
+          {props.interactionMode === 'building' && (
+            <button 
+              onClick={props.onEnterExploration}
+              className="pointer-events-auto bg-surface/95 backdrop-blur-md px-3.5 py-2 rounded shadow-cadastre-sm flex items-center gap-2 hover:bg-primary/20 hover:border-primary text-primary transition-all duration-200 border border-primary/40 cursor-pointer group hover:shadow-[0_0_15px_rgba(195,221,69,0.25)]"
+              title="Show Strata & Floor Navigation"
+            >
+              <span className="material-icon text-[18px] group-hover:scale-110 transition-transform">layers</span>
+              <span className="font-label-caps tracking-wider uppercase text-xs font-semibold">Show Strata</span>
+            </button>
           )}
         </div>
         
-        {/* Navigation Hint */}
-        <div className="pointer-events-auto mt-auto self-end bg-surface/80 text-on-surface-dim px-3 py-1.5 rounded text-xs font-mono shadow-cadastre-sm opacity-60">
-          Hint: Shift + scroll or ↑/↓ to change floor
-        </div>
+        {/* Reset Camera Button */}
+        <button 
+          onClick={() => {
+            cameraControlsRef.current?.setLookAt(30, 26, 30, 0, 8, 0, true);
+          }}
+          className="pointer-events-auto bg-surface/90 backdrop-blur-md px-4 py-2 rounded shadow-cadastre-sm flex items-center gap-2 hover:bg-surface-container-high transition-colors text-on-surface border border-outline/20 cursor-pointer"
+        >
+          <span className="material-icon text-[16px]">center_focus_strong</span>
+          <span className="font-label-caps tracking-wider uppercase text-xs">Reset View</span>
+        </button>
       </div>
 
       <ErrorBoundary>
-        <Canvas 
-          dpr={[1, 2]} 
-          camera={{ position: [25, 25, 25], fov: 45 }}
-          onPointerMissed={() => props.onClickUnit('')}
-        >
-          <color attach="background" args={['#050505']} />
+        <Canvas dpr={[1, 2]} camera={{ position: [30, 26, 30], fov: 42 }}>
+          <color attach="background" args={['#06080a']} />
+          <fog attach="fog" args={['#06080a', 45, 120]} />
           
-          {props.projectionMode === 'isometric' ? (
-            <OrthographicCamera makeDefault position={[30, 30, 30]} zoom={20} />
-          ) : null}
-
           <Scene {...props} />
-          <OrbitControls makeDefault minPolarAngle={0} maxPolarAngle={Math.PI / 2 + 0.1} />
+          
+          <CameraControls 
+            ref={cameraControlsRef} 
+            makeDefault 
+            smoothTime={0.4}
+            minDistance={8}
+            maxDistance={90}
+            minPolarAngle={0.1} 
+            maxPolarAngle={Math.PI / 2 + 0.12} 
+            dollyToCursor={true}
+          />
+          <BakeShadows />
         </Canvas>
       </ErrorBoundary>
     </div>

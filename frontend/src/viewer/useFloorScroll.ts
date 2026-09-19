@@ -5,15 +5,25 @@ interface Props {
   floors: Floor[];
   activeFloorId: string | 'all';
   onSelectFloor: (id: string | 'all') => void;
-  onDeselectUnit: () => void;
+  onDeselectUnit?: () => void;
   targetRef: React.RefObject<HTMLDivElement | null>;
+  enabled?: boolean;
 }
 
-export function useFloorScroll({ floors, activeFloorId, onSelectFloor, onDeselectUnit, targetRef }: Props) {
-  const isScrolling = useRef(false);
-  const scrollTimeout = useRef<number | null>(null);
+export function useFloorScroll({
+  floors,
+  activeFloorId,
+  onSelectFloor,
+  onDeselectUnit,
+  targetRef,
+  enabled = true,
+}: Props) {
+  const accumulatedDelta = useRef(0);
+  const isCooldown = useRef(false);
+  const cooldownTimer = useRef<number | null>(null);
+  const decayTimer = useRef<number | null>(null);
 
-  // Stabilize the callbacks via ref so the effect doesn't constantly re-run
+  // Stabilize callbacks via refs
   const onSelectFloorRef = useRef(onSelectFloor);
   const onDeselectUnitRef = useRef(onDeselectUnit);
   const activeFloorIdRef = useRef(activeFloorId);
@@ -28,96 +38,95 @@ export function useFloorScroll({ floors, activeFloorId, onSelectFloor, onDeselec
 
   useEffect(() => {
     const target = targetRef.current;
-    if (!target) return;
+    if (!target || !enabled) return;
 
-    const getNextFloorId = (direction: number): string | 'all' => {
-      const currentFloors = floorsRef.current;
-      if (!currentFloors.length) return 'all';
+    // Ordered bottom to top: B1, GF, F1, F2, F3, etc.
+    const orderedFloors = [...floorsRef.current].sort((a, b) => a.floor_number - b.floor_number);
+    if (orderedFloors.length === 0) return;
 
-      // Ordered from bottom to top for logical scrolling
-      const orderedFloors = [...currentFloors].sort((a, b) => a.floor_number - b.floor_number);
-      const currentFloorId = activeFloorIdRef.current;
+    const SCROLL_THRESHOLD = 60;
 
-      let nextFloorId: string | 'all' = currentFloorId;
+    const changeFloor = (direction: number) => {
+      const currentFloors = [...floorsRef.current].sort((a, b) => a.floor_number - b.floor_number);
+      if (currentFloors.length === 0) return;
 
-      if (currentFloorId === 'all') {
-        if (direction > 0) {
-          nextFloorId = orderedFloors[orderedFloors.length - 1].id; // Go to top floor
+      const currentId = activeFloorIdRef.current;
+      let nextFloorId: string | 'all' = currentId;
+
+      if (currentId === 'all') {
+        if (direction < 0) {
+          const gf = currentFloors.find(f => f.floor_number === 0) || currentFloors[0];
+          nextFloorId = gf.id;
         } else {
-          nextFloorId = orderedFloors[0].id; // Go to bottom floor
+          nextFloorId = currentFloors[currentFloors.length - 1].id;
         }
       } else {
-        const currentIndex = orderedFloors.findIndex(f => f.id === currentFloorId);
+        const currentIndex = currentFloors.findIndex(f => f.id === currentId);
         if (direction > 0) {
-          // Scroll down -> go to lower floor
+          // Downward -> descend
           if (currentIndex > 0) {
-            nextFloorId = orderedFloors[currentIndex - 1].id;
-          } else {
-            nextFloorId = 'all'; // Go back to all when hitting bottom
+            nextFloorId = currentFloors[currentIndex - 1].id;
           }
         } else {
-          // Scroll up -> go to higher floor
-          if (currentIndex < orderedFloors.length - 1) {
-            nextFloorId = orderedFloors[currentIndex + 1].id;
-          } else {
-            nextFloorId = 'all'; // Go back to all when hitting top
+          // Upward -> ascend
+          if (currentIndex < currentFloors.length - 1) {
+            nextFloorId = currentFloors[currentIndex + 1].id;
           }
         }
       }
-      return nextFloorId;
-    };
 
-    const handleSelectNextFloor = (direction: number) => {
-      const nextFloorId = getNextFloorId(direction);
-      if (nextFloorId !== activeFloorIdRef.current) {
+      if (nextFloorId !== currentId) {
         onSelectFloorRef.current(nextFloorId);
-        
-        // Debounce / Cooldown
-        isScrolling.current = true;
-        if (scrollTimeout.current) window.clearTimeout(scrollTimeout.current);
-        scrollTimeout.current = window.setTimeout(() => {
-          isScrolling.current = false;
-        }, 400); // 400ms cooldown matches transition duration
+        isCooldown.current = true;
+        if (cooldownTimer.current) window.clearTimeout(cooldownTimer.current);
+        cooldownTimer.current = window.setTimeout(() => {
+          isCooldown.current = false;
+        }, 320);
       }
     };
 
     const handleWheel = (e: WheelEvent) => {
-      // Only switch floors when Shift is held
-      if (!e.shiftKey) return;
-      
       e.preventDefault();
-      if (isScrolling.current) return;
+      if (isCooldown.current) return;
 
-      const direction = Math.sign(e.deltaY);
-      handleSelectNextFloor(direction);
+      accumulatedDelta.current += e.deltaY;
+
+      if (decayTimer.current) window.clearTimeout(decayTimer.current);
+      decayTimer.current = window.setTimeout(() => {
+        accumulatedDelta.current = 0;
+      }, 200);
+
+      if (Math.abs(accumulatedDelta.current) >= SCROLL_THRESHOLD) {
+        const direction = Math.sign(accumulatedDelta.current);
+        accumulatedDelta.current = 0;
+        changeFloor(direction);
+      }
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if focus is in an input
       if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') {
         return;
       }
 
       if (e.key === 'Escape') {
-        if (onDeselectUnitRef.current) {
-          onDeselectUnitRef.current();
-        }
+        onDeselectUnitRef.current?.();
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
-        if (!isScrolling.current) handleSelectNextFloor(-1);
+        if (!isCooldown.current) changeFloor(-1);
       } else if (e.key === 'ArrowDown') {
         e.preventDefault();
-        if (!isScrolling.current) handleSelectNextFloor(1);
+        if (!isCooldown.current) changeFloor(1);
       }
     };
 
     target.addEventListener('wheel', handleWheel, { passive: false });
     window.addEventListener('keydown', handleKeyDown);
-    
+
     return () => {
       target.removeEventListener('wheel', handleWheel);
       window.removeEventListener('keydown', handleKeyDown);
-      if (scrollTimeout.current) window.clearTimeout(scrollTimeout.current);
+      if (cooldownTimer.current) window.clearTimeout(cooldownTimer.current);
+      if (decayTimer.current) window.clearTimeout(decayTimer.current);
     };
-  }, [targetRef]);
+  }, [targetRef, enabled]);
 }
