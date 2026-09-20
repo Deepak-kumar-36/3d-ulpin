@@ -4,7 +4,7 @@ SQLite database layer using SQLAlchemy ORM.
 All geometry columns store GeoJSON-compatible JSON strings.
 Spatial operations are handled in-application via Shapely, not in the DB.
 """
-from sqlalchemy import create_engine, Column, String, Float, Integer, ForeignKey, Text
+from sqlalchemy import create_engine, Column, String, Float, Integer, ForeignKey, Text, UniqueConstraint
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 import os
 
@@ -29,6 +29,8 @@ class ProjectModel(Base):
     parcel = relationship("ParcelModel", back_populates="projects")
     building = relationship("BuildingModel", uselist=False, back_populates="project",
                             cascade="all, delete-orphan")
+    properties = relationship("PropertyModel", back_populates="project",
+                              cascade="all, delete-orphan")
 
 
 class ParcelModel(Base):
@@ -84,6 +86,7 @@ class UnitModel(Base):
     floor = relationship("FloorModel", back_populates="units")
     validations = relationship("ValidationModel", back_populates="unit",
                                cascade="all, delete-orphan")
+    property_links = relationship("PropertyUnitModel", back_populates="unit")
 
 
 class ValidationModel(Base):
@@ -96,6 +99,37 @@ class ValidationModel(Base):
     message = Column(String)
 
     unit = relationship("UnitModel", back_populates="validations")
+
+
+class PropertyModel(Base):
+    """Logical property bundle — groups one or more physical units under one ownership record."""
+    __tablename__ = "properties"
+
+    id = Column(String, primary_key=True)           # e.g. "PROP-00001"
+    project_id = Column(String, ForeignKey("projects.id"), nullable=False)
+    name = Column(String, nullable=False)
+    description = Column(String, default="")
+    created_at = Column(String, nullable=False)      # ISO timestamp
+    updated_at = Column(String, nullable=False)
+
+    project = relationship("ProjectModel", back_populates="properties")
+    unit_links = relationship("PropertyUnitModel", back_populates="property",
+                              cascade="all, delete-orphan")
+
+
+class PropertyUnitModel(Base):
+    """Join table linking a property to its constituent units."""
+    __tablename__ = "property_units"
+    __table_args__ = (
+        UniqueConstraint("property_id", "unit_id", name="uq_property_unit"),
+    )
+
+    id = Column(String, primary_key=True)
+    property_id = Column(String, ForeignKey("properties.id"), nullable=False)
+    unit_id = Column(String, ForeignKey("units.id"), nullable=False)
+
+    property = relationship("PropertyModel", back_populates="unit_links")
+    unit = relationship("UnitModel", back_populates="property_links")
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────────

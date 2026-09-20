@@ -1,12 +1,14 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getProject, normalizeProject } from '../api/client';
-import type { Project } from '../data/types';
+import type { Project, Property } from '../data/types';
 import Viewport from '../components/viewer/Viewport';
 import LayerPanel from '../components/viewer/LayerPanel';
 import InfoPanel from '../components/viewer/InfoPanel';
 import ValidationBar from '../components/viewer/ValidationBar';
+import PropertySelectionBar from '../components/viewer/PropertySelectionBar';
+import CreatePropertyModal from '../components/viewer/CreatePropertyModal';
 import { useFloorScroll } from '../viewer/useFloorScroll';
 
 export default function ViewerWorkspace() {
@@ -17,8 +19,9 @@ export default function ViewerWorkspace() {
 
   // State
   const [activeFloorId, setActiveFloorId] = useState<string | 'all'>('all');
-  const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
+  const [selectedUnitIds, setSelectedUnitIds] = useState<Set<string>>(new Set());
   const [hoveredUnitId, setHoveredUnitId] = useState<string | null>(null);
+  const [showPropertyModal, setShowPropertyModal] = useState(false);
   const [projectionMode, setProjectionMode] = useState<'isometric' | 'exploded' | 'xray'>('isometric');
   const [visibleLayers, setVisibleLayers] = useState<Record<string, boolean>>({
     cadastre_boundary: true,
@@ -79,22 +82,46 @@ export default function ViewerWorkspace() {
 
   const handleSelectFloor = (fId: string | 'all') => {
     setActiveFloorId(fId);
-    if (fId !== 'all') {
-      setSelectedUnitId(prev => {
-        if (!prev || !project) return null;
-        const u = project.units.find(unit => unit.id === prev);
-        if (u && u.floor_id !== fId) return null;
-        return prev;
+    if (fId !== 'all' && project) {
+      // Clear selections that aren't on the new floor
+      setSelectedUnitIds(prev => {
+        const filtered = new Set<string>();
+        for (const uid of prev) {
+          const u = project.units.find(unit => unit.id === uid);
+          if (u && u.floor_id === fId) filtered.add(uid);
+        }
+        return filtered.size !== prev.size ? filtered : prev;
       });
     }
   };
+
+  const handleClickUnit = useCallback((unitId: string, ctrlKey: boolean) => {
+    setSelectedUnitIds(prev => {
+      if (ctrlKey) {
+        // Multi-select: toggle the clicked unit
+        const next = new Set(prev);
+        if (next.has(unitId)) {
+          next.delete(unitId);
+        } else {
+          next.add(unitId);
+        }
+        return next;
+      } else {
+        // Single click: if already the only selection, deselect; otherwise select only this
+        if (prev.size === 1 && prev.has(unitId)) {
+          return new Set();
+        }
+        return new Set([unitId]);
+      }
+    });
+  }, []);
 
   // Hook up continuous mouse-wheel stratum exploration
   useFloorScroll({
     floors: project?.floors || [],
     activeFloorId,
     onSelectFloor: handleSelectFloor,
-    onDeselectUnit: () => setSelectedUnitId(null),
+    onDeselectUnit: () => setSelectedUnitIds(new Set()),
     targetRef: viewportRef,
     enabled: interactionMode === 'exploration',
   });
@@ -115,6 +142,18 @@ export default function ViewerWorkspace() {
       });
   }, [project]);
 
+  // Build a map: unit_id -> property for quick lookup
+  const unitPropertyMap = useMemo(() => {
+    const map = new Map<string, Property>();
+    if (!project) return map;
+    for (const prop of project.properties || []) {
+      for (const uid of prop.unit_ids) {
+        map.set(uid, prop);
+      }
+    }
+    return map;
+  }, [project]);
+
   if (loading || !project) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-surface">
@@ -123,7 +162,19 @@ export default function ViewerWorkspace() {
     );
   }
 
-  const selectedUnit = selectedUnitId ? project.units.find(u => u.id === selectedUnitId) || null : null;
+  const selectedUnit = selectedUnitIds.size === 1 
+    ? project.units.find(u => selectedUnitIds.has(u.id)) || null 
+    : null;
+  const selectedUnits = project.units.filter(u => selectedUnitIds.has(u.id));
+
+  const handlePropertyCreated = (newProp: Property) => {
+    // Update project state with the new property
+    setProject(prev => {
+      if (!prev) return prev;
+      const existingProps = prev.properties || [];
+      return { ...prev, properties: [...existingProps, newProp] };
+    });
+  };
 
   return (
     <motion.div
@@ -152,7 +203,7 @@ export default function ViewerWorkspace() {
               onClick={() => {
                 setInteractionMode('building');
                 setActiveFloorId('all');
-                setSelectedUnitId(null);
+                setSelectedUnitIds(new Set());
               }}
               className="bg-surface/90 backdrop-blur-md px-6 py-2 rounded-full shadow-cadastre flex items-center gap-2 hover:bg-surface-container-high hover:text-primary transition-all duration-200 border border-outline/20 text-on-surface cursor-pointer"
             >
@@ -213,7 +264,7 @@ export default function ViewerWorkspace() {
             onCollapse={() => {
               setInteractionMode('building');
               setActiveFloorId('all');
-              setSelectedUnitId(null);
+              setSelectedUnitIds(new Set());
             }}
           />
         </motion.div>
@@ -224,13 +275,14 @@ export default function ViewerWorkspace() {
             project={project}
             activeFloorId={activeFloorId}
             onSelectFloor={(fId) => handleSelectFloor(fId)}
-            selectedUnitId={selectedUnitId}
+            selectedUnitIds={selectedUnitIds}
             hoveredUnitId={hoveredUnitId}
             onHoverUnit={setHoveredUnitId}
-            onClickUnit={(uId: string) => setSelectedUnitId(uId === selectedUnitId ? null : uId)}
+            onClickUnit={handleClickUnit}
             visibleLayers={visibleLayers}
             projectionMode={projectionMode}
             interactionMode={interactionMode}
+            unitPropertyMap={unitPropertyMap}
             onEnterExploration={() => {
               setInteractionMode('exploration');
               if (activeFloorId === 'all') {
@@ -248,8 +300,9 @@ export default function ViewerWorkspace() {
         >
           <InfoPanel 
             selectedUnit={selectedUnit}
-            onClose={() => setSelectedUnitId(null)}
+            onClose={() => setSelectedUnitIds(new Set())}
             projectId={project.id}
+            unitPropertyMap={unitPropertyMap}
           />
         </motion.div>
       </div>
@@ -267,10 +320,29 @@ export default function ViewerWorkspace() {
           onSelectUnit={(unitId, floorId) => {
             setInteractionMode('exploration');
             setActiveFloorId(floorId);
-            setSelectedUnitId(unitId);
+            setSelectedUnitIds(new Set([unitId]));
           }}
         />
       </motion.div>
+
+      {/* Property Selection Bar (bottom floating) */}
+      <PropertySelectionBar
+        selectedUnits={selectedUnits}
+        onClearSelection={() => setSelectedUnitIds(new Set())}
+        onCreateProperty={() => setShowPropertyModal(true)}
+      />
+
+      {/* Create Property Modal */}
+      <CreatePropertyModal
+        isOpen={showPropertyModal}
+        onClose={() => {
+          setShowPropertyModal(false);
+          setSelectedUnitIds(new Set());
+        }}
+        selectedUnits={selectedUnits}
+        projectId={project.id}
+        onPropertyCreated={handlePropertyCreated}
+      />
     </motion.div>
   );
 }

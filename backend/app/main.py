@@ -34,16 +34,20 @@ if _root not in sys.path:
 if _backend not in sys.path:
     sys.path.insert(0, _backend)
 
-from app.storage.database import init_db, get_db, ProjectModel, UnitModel, FloorModel
+from app.storage.database import init_db, get_db, ProjectModel, UnitModel, FloorModel, PropertyModel
 from app.schemas import (
     ProjectCreate, FloorUnitsInput, UnitPatchInput,
     ProjectResponse, FullProjectResponse, ExtrudeResponse,
     ValidateResponse, ProcessResponse, HealthResponse,
     UnitResponse, ValidationResult,
+    PropertyCreate, PropertyResponse, PropertyListItem,
 )
 from app.services import (
     create_project, ingest_units, run_validation,
     get_full_project, run_fallback_pipeline,
+    create_property_bundle, get_property_detail,
+    list_project_properties, add_unit_to_property,
+    remove_unit_from_property, delete_property_bundle,
 )
 from app.geometry.extrusion import extrude_polygon, compute_elevation, polygon_area
 from app.geometry.ulpin import generate_ulpin
@@ -579,6 +583,70 @@ def preview_cv_transform(body: dict):
 
     transformed = transform_cv_floor(cv_json, floor_number, px_per_meter)
     return transformed
+
+
+# ── Property Bundling ──────────────────────────────────────────────────────────
+
+@app.post("/properties", tags=["Properties"])
+def create_property_endpoint(body: PropertyCreate, db: Session = Depends(get_db)):
+    """Create a new property bundle grouping multiple units."""
+    try:
+        result = create_property_bundle(
+            db=db,
+            project_id=body.project_id,
+            name=body.name,
+            unit_ids=body.unit_ids,
+            description=body.description,
+        )
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get("/properties/{property_id}", tags=["Properties"])
+def get_property_endpoint(property_id: str, db: Session = Depends(get_db)):
+    """Retrieve a property bundle with full unit details."""
+    result = get_property_detail(db, property_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Property not found")
+    return result
+
+
+@app.get("/project/{project_id}/properties", tags=["Properties"])
+def list_properties_endpoint(project_id: str, db: Session = Depends(get_db)):
+    """List all properties for a project."""
+    try:
+        return list_project_properties(db, project_id)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@app.post("/properties/{property_id}/units/{unit_id}", tags=["Properties"])
+def add_unit_endpoint(property_id: str, unit_id: str, db: Session = Depends(get_db)):
+    """Add a unit to an existing property."""
+    try:
+        return add_unit_to_property(db, property_id, unit_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.delete("/properties/{property_id}/units/{unit_id}", tags=["Properties"])
+def remove_unit_endpoint(property_id: str, unit_id: str, db: Session = Depends(get_db)):
+    """Remove a unit from a property (does NOT delete the unit)."""
+    try:
+        return remove_unit_from_property(db, property_id, unit_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.delete("/properties/{property_id}", tags=["Properties"])
+def delete_property_endpoint(property_id: str, db: Session = Depends(get_db)):
+    """Delete a property bundle. Units are NOT deleted."""
+    try:
+        delete_property_bundle(db, property_id)
+        return {"status": "deleted", "property_id": property_id}
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @app.get("/")

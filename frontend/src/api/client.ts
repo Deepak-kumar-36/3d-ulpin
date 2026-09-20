@@ -191,6 +191,7 @@ export function normalizeProject(raw: any): Project {
     building,
     floors,
     units,
+    properties: Array.isArray(raw.properties) ? raw.properties : [],
     validation_summary,
     _isDemoData: raw._isDemoData,
   } as Project;
@@ -272,4 +273,70 @@ export function getDemoProject(): Project {
 // ── Adapt vision results into a Project ───────────────────────────────
 export function buildProjectFromVision(floors: VisionFloor[], projectName: string): Project {
   return normalizeProject(adaptVisionFloors(floors, projectName));
+}
+
+
+// ── Property Bundling API ─────────────────────────────────────────────
+
+import type { Property } from '../data/types';
+
+export async function createProperty(
+  projectId: string,
+  name: string,
+  unitIds: string[],
+  description = '',
+): Promise<Property> {
+  const res = await fetch(`${API_BASE}/properties`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      project_id: projectId,
+      name,
+      unit_ids: unitIds,
+      description,
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || `Failed to create property (HTTP ${res.status})`);
+  }
+  return res.json();
+}
+
+export async function getProjectProperties(projectId: string): Promise<Property[]> {
+  const res = await fetch(`${API_BASE}/project/${projectId}/properties`);
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export async function addUnitToProperty(propertyId: string, unitId: string): Promise<Property> {
+  const res = await fetch(`${API_BASE}/properties/${propertyId}/units/${unitId}`, {
+    method: 'POST',
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || `Failed to add unit`);
+  }
+  return res.json();
+}
+
+export async function removeUnitFromProperty(propertyId: string, unitId: string): Promise<Property> {
+  const res = await fetch(`${API_BASE}/properties/${propertyId}/units/${unitId}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || `Failed to remove unit`);
+  }
+  return res.json();
+}
+
+export async function deleteProperty(propertyId: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/properties/${propertyId}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || `Failed to delete property`);
+  }
 }

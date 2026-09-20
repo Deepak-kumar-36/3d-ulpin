@@ -1,7 +1,7 @@
 import { useMemo, useEffect, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Grid, CameraControls, BakeShadows } from '@react-three/drei';
-import type { Project } from '../../data/types';
+import type { Project, Property } from '../../data/types';
 import { FloorGroup } from './FloorGroup';
 import { Roof } from './Roof';
 import { getFloorUnits } from '../../data/mockProject';
@@ -11,21 +11,22 @@ import ErrorBoundary from '../ui/ErrorBoundary';
 
 interface Props {
   project: Project;
-  selectedUnitId: string | null;
+  selectedUnitIds: Set<string>;
   hoveredUnitId: string | null;
   onHoverUnit: (id: string | null) => void;
-  onClickUnit: (id: string) => void;
+  onClickUnit: (id: string, ctrlKey: boolean) => void;
   activeFloorId: string | 'all';
   onSelectFloor?: (id: string | 'all') => void;
   visibleLayers: Record<string, boolean>;
   interactionMode: 'building' | 'exploration';
   onEnterExploration: () => void;
   projectionMode?: 'isometric' | 'exploded' | 'xray';
+  unitPropertyMap?: Map<string, Property>;
 }
 
 function Scene({
   project,
-  selectedUnitId,
+  selectedUnitIds,
   hoveredUnitId,
   onHoverUnit,
   onClickUnit,
@@ -35,6 +36,7 @@ function Scene({
   interactionMode,
   onEnterExploration,
   projectionMode = 'isometric',
+  unitPropertyMap,
 }: Props) {
   // Ground Parcel Boundary Line (at elevation 0.0)
   const parcelGeometry = useMemo(() => {
@@ -119,7 +121,7 @@ function Scene({
             units={getFloorUnits(project, floor.floor_number)}
             isVisible={true}
             isFloorActive={isFloorActive}
-            selectedUnitId={selectedUnitId}
+            selectedUnitIds={selectedUnitIds}
             hoveredUnitId={hoveredUnitId}
             onHoverUnit={onHoverUnit}
             onClickUnit={onClickUnit}
@@ -128,6 +130,7 @@ function Scene({
             showFloorLabel={true}
             visibleLayers={visibleLayers}
             projectionMode={projectionMode}
+            unitPropertyMap={unitPropertyMap}
           />
         );
       })}
@@ -190,23 +193,48 @@ export default function Viewport(props: Props) {
     }
   }, [props.activeFloorId, props.interactionMode, props.project]);
 
-  // When a unit is selected, smoothly frame it
+  // When units are selected, smoothly frame them
   useEffect(() => {
-    if (!props.selectedUnitId || !cameraControlsRef.current) return;
-    const unit = props.project.units.find(u => u.id === props.selectedUnitId);
-    if (unit) {
-      const elev = unit.elevation;
-      cameraControlsRef.current.setLookAt(
-        18,
-        elev + 12,
-        18,
-        0,
-        elev + 2,
-        0,
-        true
-      );
+    if (props.selectedUnitIds.size === 0 || !cameraControlsRef.current) return;
+    
+    // Find all selected units
+    const selected = props.project.units.filter(u => props.selectedUnitIds.has(u.id));
+    if (selected.length > 0) {
+      if (selected.length === 1) {
+        // Single unit logic (as before)
+        const unit = selected[0];
+        const elev = unit.elevation;
+        cameraControlsRef.current.setLookAt(
+          18,
+          elev + 12,
+          18,
+          0,
+          elev + 2,
+          0,
+          true
+        );
+      } else {
+        // Multi-unit logic: approximate a bounding center/elevation
+        let minElev = Infinity;
+        let maxElev = -Infinity;
+        selected.forEach(u => {
+          minElev = Math.min(minElev, u.elevation);
+          maxElev = Math.max(maxElev, u.elevation + u.height);
+        });
+        const centerElev = (minElev + maxElev) / 2;
+        // Back the camera up a bit more for multiple units
+        cameraControlsRef.current.setLookAt(
+          22,
+          centerElev + 15,
+          22,
+          0,
+          centerElev,
+          0,
+          true
+        );
+      }
     }
-  }, [props.selectedUnitId, props.project.units]);
+  }, [props.selectedUnitIds, props.project.units]);
 
   return (
     <div className="w-full h-full relative bg-surface-container rounded-xl overflow-hidden shadow-cadastre group">

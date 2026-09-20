@@ -2,9 +2,9 @@ import { useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { useCursor, Edges, Html } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
-import type { Unit } from '../../data/types';
+import type { Unit, Property } from '../../data/types';
 import { 
-  createExtrudedGeometry, 
+  createUnitGeometry, 
   getUnitMaterial, 
   getOutlineColor,
   COMMON_MATERIALS 
@@ -19,9 +19,10 @@ interface Props {
   isHovered: boolean;
   isFloorActive?: boolean;
   onHover: (id: string | null) => void;
-  onClick: (id: string) => void;
+  onClick: (id: string, ctrlKey: boolean) => void;
   projectionMode?: 'isometric' | 'exploded' | 'xray';
   showAnchors?: boolean;
+  property?: Property;
 }
 
 export function UnitMesh({ 
@@ -33,13 +34,14 @@ export function UnitMesh({
   onClick,
   projectionMode = 'isometric',
   showAnchors = false,
+  property,
 }: Props) {
   const meshRef = useRef<THREE.Mesh>(null);
 
-  // Compute extruded 3D solid volume from 2D polygon
+  // Compute geometry from backend data (or fallback extrusion)
   const geometry = useMemo(() => {
-    return createExtrudedGeometry(unit.polygon_2d, Math.max(0.1, unit.height - 0.04));
-  }, [unit.polygon_2d, unit.height]);
+    return createUnitGeometry(unit);
+  }, [unit]);
 
   // Clone material once per unit/state so emissive animations don't interfere
   const material = useMemo(() => {
@@ -52,7 +54,19 @@ export function UnitMesh({
     return mat;
   }, [unit, isSelected, isFloorActive, projectionMode]);
 
-  const outlineColor = getOutlineColor(unit, isSelected, isFloorActive);
+  const baseOutlineColor = getOutlineColor(unit, isSelected, isFloorActive);
+  
+  // If this unit belongs to a property, override the outline color to show grouping
+  // unless it's currently selected (selected color takes precedence)
+  const outlineColor = useMemo(() => {
+    if (isSelected) return baseOutlineColor;
+    if (property) {
+      // Use a distinct tint for property-grouped units (e.g. purple/indigo tint)
+      return isFloorActive ? '#8b5cf6' : '#6b21a8';
+    }
+    return baseOutlineColor;
+  }, [isSelected, property, isFloorActive, baseOutlineColor]);
+
   const hasFail = unit.validations.some(v => v.status === 'fail');
   const hasWarning = unit.validations.some(v => v.status === 'warning');
 
@@ -114,7 +128,7 @@ export function UnitMesh({
         material={material}
         onClick={(e) => {
           e.stopPropagation();
-          onClick(unit.id);
+          onClick(unit.id, e.ctrlKey || e.metaKey);
         }}
         onPointerOver={(e) => {
           e.stopPropagation();

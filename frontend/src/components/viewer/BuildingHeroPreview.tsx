@@ -63,7 +63,7 @@ function HeroScene() {
           units={getFloorUnits(DEMO_PROJECT, floor.floor_number)}
           isVisible={true}
           isFloorActive={true}
-          selectedUnitId={null}
+          selectedUnitIds={new Set()}
           hoveredUnitId={null}
           onHoverUnit={() => {}}
           onClickUnit={() => navigate('/project/demo/viewer')}

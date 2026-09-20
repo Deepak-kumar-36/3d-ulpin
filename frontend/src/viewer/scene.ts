@@ -350,6 +350,31 @@ export const OUTLINE_COLORS = {
 };
 
 /**
+ * Extrudes a 2D polygon into a 3D geometry using Three.js ExtrudeGeometry.
+ */
+export function createExtrudedGeometry(polygon2d: number[][], height: number): THREE.ExtrudeGeometry {
+  const shape = new THREE.Shape();
+  if (polygon2d.length === 0) return new THREE.ExtrudeGeometry(shape, { depth: height, bevelEnabled: false });
+
+  shape.moveTo(polygon2d[0][0], polygon2d[0][1]);
+  for (let i = 1; i < polygon2d.length; i++) {
+    shape.lineTo(polygon2d[i][0], polygon2d[i][1]);
+  }
+
+  const extrudeSettings = {
+    depth: height,
+    bevelEnabled: false,
+  };
+
+  const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+  
+  geometry.rotateX(Math.PI / 2);
+  geometry.translate(0, height, 0);
+
+  return geometry;
+}
+
+/**
  * Creates geometry from backend pre-calculated vertices and faces.
  * Falls back to extruding the 2D polygon if 3D data is missing.
  */

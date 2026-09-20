@@ -7,21 +7,23 @@ import { UnitMesh } from './UnitMesh';
 import { Staircase } from './Staircase';
 import { COMMON_MATERIALS, createExtrudedGeometry } from '../../viewer/scene';
 import { createExteriorWalls } from '../../viewer/archGeometry';
+import type { Property } from '../../data/types';
 
 interface Props {
   floor: Floor;
   units: Unit[];
   isVisible: boolean;
   isFloorActive: boolean;
-  selectedUnitId: string | null;
+  selectedUnitIds: Set<string>;
   hoveredUnitId: string | null;
   onHoverUnit: (id: string | null) => void;
-  onClickUnit: (id: string) => void;
+  onClickUnit: (id: string, ctrlKey: boolean) => void;
   onSelectFloor?: (id: string) => void;
   explodeOffset?: number;
   showFloorLabel?: boolean;
   visibleLayers?: Record<string, boolean>;
   projectionMode?: 'isometric' | 'exploded' | 'xray';
+  unitPropertyMap?: Map<string, Property>;
 }
 
 const SLAB_THICKNESS = 0.28;
@@ -39,15 +41,16 @@ export function FloorGroup({
   units,
   isVisible,
   isFloorActive,
-  selectedUnitId,
+  selectedUnitIds,
   hoveredUnitId,
   onHoverUnit,
   onClickUnit,
   onSelectFloor,
   explodeOffset = 0,
-  showFloorLabel = true,
+  showFloorLabel = false,
   visibleLayers = { footprint: true, units: true, anchors: true },
   projectionMode = 'isometric',
+  unitPropertyMap,
 }: Props) {
   const groupRef = useRef<THREE.Group>(null);
 
@@ -190,12 +193,13 @@ export function FloorGroup({
           key={unit.id}
           unit={unit}
           isFloorActive={isFloorActive}
-          isSelected={unit.id === selectedUnitId}
+          isSelected={selectedUnitIds.has(unit.id)}
           isHovered={unit.id === hoveredUnitId}
           onHover={onHoverUnit}
           onClick={onClickUnit}
           projectionMode={projectionMode}
           showAnchors={visibleLayers.anchors}
+          property={unitPropertyMap?.get(unit.id)}
         />
       ))}
     </group>

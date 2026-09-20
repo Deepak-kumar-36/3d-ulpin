@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import type { Unit } from '../../data/types';
+import type { Unit, Property } from '../../data/types';
 import MonoValue from '../ui/MonoValue';
 import StatusChip from '../ui/StatusChip';
 import ScrollReveal from '../ui/ScrollReveal';
@@ -8,9 +8,10 @@ interface Props {
   selectedUnit: Unit | null;
   onClose: () => void;
   projectId: string;
+  unitPropertyMap?: Map<string, Property>;
 }
 
-export default function InfoPanel({ selectedUnit, onClose, projectId }: Props) {
+export default function InfoPanel({ selectedUnit, onClose, projectId, unitPropertyMap }: Props) {
   const navigate = useNavigate();
 
   if (!selectedUnit) {
@@ -78,6 +79,44 @@ export default function InfoPanel({ selectedUnit, onClose, projectId }: Props) {
         </ScrollReveal>
 
         <hr className="border-outline-variant/20" />
+
+        {/* Property Bundle Info (if grouped) */}
+        {unitPropertyMap && unitPropertyMap.has(selectedUnit.id) && (
+          <>
+            <ScrollReveal delay={40} direction="up" className="flex flex-col gap-3">
+              <div className="flex items-center gap-2">
+                <span className="material-icon text-primary text-[18px]">link</span>
+                <span className="font-label-caps uppercase text-primary">Property Bundle</span>
+              </div>
+              
+              <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 flex flex-col gap-2">
+                <div className="flex justify-between items-start">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-on-surface-variant uppercase tracking-wider">Property Name</span>
+                    <span className="font-semibold text-on-surface text-sm">{unitPropertyMap.get(selectedUnit.id)!.name}</span>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <span className="text-[10px] text-on-surface-variant uppercase tracking-wider">Property ID</span>
+                    <span className="font-mono text-primary font-bold text-xs">{unitPropertyMap.get(selectedUnit.id)!.property_id}</span>
+                  </div>
+                </div>
+                
+                <div className="flex justify-between items-center mt-1 pt-2 border-t border-primary/10">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-on-surface-variant uppercase tracking-wider">Grouped Units</span>
+                    <span className="font-mono text-on-surface text-xs">{unitPropertyMap.get(selectedUnit.id)!.unit_ids.length}</span>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <span className="text-[10px] text-on-surface-variant uppercase tracking-wider">Combined Area</span>
+                    <span className="font-mono text-on-surface text-xs">{unitPropertyMap.get(selectedUnit.id)!.total_area.toFixed(2)} m²</span>
+                  </div>
+                </div>
+              </div>
+            </ScrollReveal>
+
+            <hr className="border-outline-variant/20" />
+          </>
+        )}
 
         {/* Validation Rules Detail */}
         <ScrollReveal delay={100} direction="up" className="flex flex-col gap-3">

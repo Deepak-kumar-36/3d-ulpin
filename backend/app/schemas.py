@@ -124,3 +124,45 @@ class ProcessResponse(BaseModel):
 class HealthResponse(BaseModel):
     status: str
     version: str
+
+
+# ── Property Bundling Schemas ──────────────────────────────────────────────────
+
+class PropertyCreate(BaseModel):
+    """Create a new property bundle grouping multiple units."""
+    name: str = Field(..., min_length=1, description="Property name / title")
+    project_id: str = Field(..., description="Project this property belongs to")
+    unit_ids: List[str] = Field(..., min_length=1, description="List of unit IDs to include")
+    description: str = Field("", description="Optional description")
+
+
+class PropertyUnitSummary(BaseModel):
+    """Lightweight unit info within a property response."""
+    id: str
+    ulpin_3d: str
+    floor_number: int
+    area: float
+    unit_type: str
+
+
+class PropertyResponse(BaseModel):
+    """Full property detail with associated units."""
+    property_id: str
+    name: str
+    project_id: str
+    description: str
+    unit_ids: List[str]
+    units: List[PropertyUnitSummary]
+    total_area: float
+    floors: List[str]  # Floor labels containing property units
+    created_at: str
+    updated_at: str
+
+
+class PropertyListItem(BaseModel):
+    """Summary item for listing properties."""
+    property_id: str
+    name: str
+    unit_count: int
+    total_area: float
+    created_at: str

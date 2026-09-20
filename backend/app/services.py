@@ -10,6 +10,7 @@ It accepts normalised polygon data and runs the geometry/validation pipeline.
 """
 import json
 import uuid
+from datetime import datetime, timezone
 from typing import List, Dict, Any, Optional
 
 from sqlalchemy.orm import Session
@@ -17,6 +18,7 @@ from shapely.geometry import Polygon
 
 from app.storage.database import (
     ProjectModel, ParcelModel, BuildingModel, FloorModel, UnitModel, ValidationModel,
+    PropertyModel, PropertyUnitModel,
 )
 from app.geometry.extrusion import extrude_polygon, compute_elevation, polygon_area
 from app.geometry.ulpin import generate_ulpin
@@ -327,6 +329,23 @@ def get_full_project(db: Session, project_id: str) -> Optional[Dict[str, Any]]:
 
     summary = summarize_validation(all_validations)
 
+    # ── Property bundles ──
+    properties_out = []
+    for prop in project.properties:
+        prop_unit_ids = [link.unit_id for link in prop.unit_links]
+        prop_total_area = sum(
+            u["area"] for u in units_out if u["id"] in prop_unit_ids
+        )
+        properties_out.append({
+            "property_id": prop.id,
+            "name": prop.name,
+            "description": prop.description or "",
+            "unit_ids": prop_unit_ids,
+            "total_area": round(prop_total_area, 2),
+            "created_at": prop.created_at,
+            "updated_at": prop.updated_at,
+        })
+
     return {
         "id": project.id,
         "name": project.name,
@@ -344,6 +363,7 @@ def get_full_project(db: Session, project_id: str) -> Optional[Dict[str, Any]]:
         },
         "floors": floors_out,
         "units": units_out,
+        "properties": properties_out,
         "validation_summary": summary,
     }
 
@@ -384,3 +404,235 @@ def run_fallback_pipeline(db: Session) -> Dict[str, Any]:
     run_validation(db, project_id)
 
     return get_full_project(db, project_id)
+
+
+# ── Property Bundling ──────────────────────────────────────────────────────────
+
+def _next_property_id(db: Session) -> str:
+    """Generate the next sequential PROP-XXXXX identifier."""
+    last = (
+        db.query(PropertyModel)
+        .order_by(PropertyModel.id.desc())
+        .first()
+    )
+    if last and last.id.startswith("PROP-"):
+        try:
+            num = int(last.id.split("-")[1]) + 1
+        except (IndexError, ValueError):
+            num = 1
+    else:
+        num = 1
+    return f"PROP-{num:05d}"
+
+
+def create_property_bundle(
+    db: Session,
+    project_id: str,
+    name: str,
+    unit_ids: List[str],
+    description: str = "",
+) -> Dict[str, Any]:
+    """Create a logical property bundle grouping the given units."""
+    # Validate project exists
+    project = db.query(ProjectModel).filter_by(id=project_id).first()
+    if not project:
+        raise ValueError(f"Project {project_id} not found")
+
+    if not unit_ids:
+        raise ValueError("At least one unit must be selected")
+
+    # Remove duplicates preserving order
+    seen = set()
+    unique_unit_ids = []
+    for uid in unit_ids:
+        if uid not in seen:
+            seen.add(uid)
+            unique_unit_ids.append(uid)
+    unit_ids = unique_unit_ids
+
+    # Validate all units exist and belong to this project
+    project_unit_ids = set()
+    for floor_rec in project.building.floors:
+        for unit_rec in floor_rec.units:
+            project_unit_ids.add(unit_rec.id)
+
+    for uid in unit_ids:
+        if uid not in project_unit_ids:
+            raise ValueError(f"Unit {uid} does not exist in project {project_id}")
+
+    # Check if any unit is already assigned to another property
+    for uid in unit_ids:
+        existing = (
+            db.query(PropertyUnitModel)
+            .filter_by(unit_id=uid)
+            .first()
+        )
+        if existing:
+            raise ValueError(
+                f"Unit {uid} is already assigned to Property {existing.property_id}"
+            )
+
+    now = datetime.now(timezone.utc).isoformat()
+    prop_id = _next_property_id(db)
+
+    prop = PropertyModel(
+        id=prop_id,
+        project_id=project_id,
+        name=name,
+        description=description,
+        created_at=now,
+        updated_at=now,
+    )
+    db.add(prop)
+    db.flush()
+
+    for uid in unit_ids:
+        link = PropertyUnitModel(
+            id=str(uuid.uuid4()),
+            property_id=prop_id,
+            unit_id=uid,
+        )
+        db.add(link)
+
+    db.commit()
+    return get_property_detail(db, prop_id)
+
+
+def get_property_detail(db: Session, property_id: str) -> Optional[Dict[str, Any]]:
+    """Retrieve full property detail with unit info."""
+    prop = db.query(PropertyModel).filter_by(id=property_id).first()
+    if not prop:
+        return None
+
+    units_info = []
+    total_area = 0.0
+    floor_labels = set()
+
+    for link in prop.unit_links:
+        unit = link.unit
+        floor_rec = unit.floor
+        fn = floor_rec.floor_number
+        if fn < 0:
+            label = f"Basement {abs(fn)}"
+        elif fn == 0:
+            label = "Ground Floor"
+        else:
+            label = f"Floor {fn:02d}"
+        floor_labels.add(label)
+        total_area += unit.area
+        units_info.append({
+            "id": unit.id,
+            "ulpin_3d": unit.ulpin_3d,
+            "floor_number": fn,
+            "area": unit.area,
+            "unit_type": unit.unit_type,
+        })
+
+    return {
+        "property_id": prop.id,
+        "name": prop.name,
+        "project_id": prop.project_id,
+        "description": prop.description or "",
+        "unit_ids": [link.unit_id for link in prop.unit_links],
+        "units": units_info,
+        "total_area": round(total_area, 2),
+        "floors": sorted(floor_labels),
+        "created_at": prop.created_at,
+        "updated_at": prop.updated_at,
+    }
+
+
+def list_project_properties(db: Session, project_id: str) -> List[Dict[str, Any]]:
+    """List all properties for a project."""
+    project = db.query(ProjectModel).filter_by(id=project_id).first()
+    if not project:
+        raise ValueError(f"Project {project_id} not found")
+
+    result = []
+    for prop in project.properties:
+        total_area = sum(link.unit.area for link in prop.unit_links)
+        result.append({
+            "property_id": prop.id,
+            "name": prop.name,
+            "unit_count": len(prop.unit_links),
+            "total_area": round(total_area, 2),
+            "created_at": prop.created_at,
+        })
+    return result
+
+
+def add_unit_to_property(db: Session, property_id: str, unit_id: str) -> Dict[str, Any]:
+    """Add a single unit to an existing property."""
+    prop = db.query(PropertyModel).filter_by(id=property_id).first()
+    if not prop:
+        raise ValueError(f"Property {property_id} not found")
+
+    unit = db.query(UnitModel).filter_by(id=unit_id).first()
+    if not unit:
+        raise ValueError(f"Unit {unit_id} not found")
+
+    # Verify unit belongs to same project
+    project_unit_ids = set()
+    project = prop.project
+    for floor_rec in project.building.floors:
+        for u in floor_rec.units:
+            project_unit_ids.add(u.id)
+    if unit_id not in project_unit_ids:
+        raise ValueError(f"Unit {unit_id} does not belong to project {prop.project_id}")
+
+    # Check if already in this property
+    existing = (
+        db.query(PropertyUnitModel)
+        .filter_by(property_id=property_id, unit_id=unit_id)
+        .first()
+    )
+    if existing:
+        raise ValueError(f"Unit {unit_id} is already in Property {property_id}")
+
+    # Check if in another property
+    other = db.query(PropertyUnitModel).filter_by(unit_id=unit_id).first()
+    if other:
+        raise ValueError(
+            f"Unit {unit_id} is already assigned to Property {other.property_id}"
+        )
+
+    link = PropertyUnitModel(
+        id=str(uuid.uuid4()),
+        property_id=property_id,
+        unit_id=unit_id,
+    )
+    db.add(link)
+    prop.updated_at = datetime.now(timezone.utc).isoformat()
+    db.commit()
+    return get_property_detail(db, property_id)
+
+
+def remove_unit_from_property(db: Session, property_id: str, unit_id: str) -> Dict[str, Any]:
+    """Remove a unit from a property (does NOT delete the unit)."""
+    prop = db.query(PropertyModel).filter_by(id=property_id).first()
+    if not prop:
+        raise ValueError(f"Property {property_id} not found")
+
+    link = (
+        db.query(PropertyUnitModel)
+        .filter_by(property_id=property_id, unit_id=unit_id)
+        .first()
+    )
+    if not link:
+        raise ValueError(f"Unit {unit_id} is not in Property {property_id}")
+
+    db.delete(link)
+    prop.updated_at = datetime.now(timezone.utc).isoformat()
+    db.commit()
+    return get_property_detail(db, property_id)
+
+
+def delete_property_bundle(db: Session, property_id: str) -> bool:
+    """Delete a property bundle. Units are NOT deleted."""
+    prop = db.query(PropertyModel).filter_by(id=property_id).first()
+    if not prop:
+        raise ValueError(f"Property {property_id} not found")
+
+    db.delete(prop)  # cascade deletes PropertyUnitModel links only
+    db.commit()
+    return True

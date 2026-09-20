@@ -8,7 +8,19 @@ export interface Project {
   building: Building;
   floors: Floor[];
   units: Unit[];
+  properties?: Property[];
   validation_summary: ValidationSummary;
+}
+
+export interface Property {
+  property_id: string;
+  name: string;
+  project_id?: string;
+  description: string;
+  unit_ids: string[];
+  total_area: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Building {
